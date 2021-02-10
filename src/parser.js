@@ -1,4 +1,4 @@
-import ohm from 'ohm-js'
+import ohm from "ohm-js"
 import {
     block,
     boolean,

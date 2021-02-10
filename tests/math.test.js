@@ -1,4 +1,4 @@
-
+import {jest} from '@jest/globals';
 import {all, l, s, b, setup_parser} from './util.js'
 import {list} from '../src/ast.js'
 
