@@ -17,8 +17,6 @@ import {drop, get_field, join, length, map, range, reverse, select, sort, sum, t
 import {dataset} from './dataset.js'
 import {Parser} from './parser.js'
 
-console.log("running the index")
-
 let scope
 let parser
 export function setup_parser() {
@@ -34,19 +32,14 @@ export function setup_parser() {
 
 }
 
-async function eval_code(code) {
+export async function eval_code(code) {
     let match = parser.parse(code)
-    console.log("parsed",match)
+    // console.log("parsed",match)
     if(match.failed()) throw new Error("match failed")
     let ast = parser.ast(match)
-    console.log('ast',ast)
+    // console.log('ast',ast)
     return Promise.resolve(ast.evalFilament(scope)).catch(e => {
         console.error(e)
         return false
     })
 }
-
-setup_parser()
-eval_code('4+2').then((v)=>{
-    console.log("done",v)
-})

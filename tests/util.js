@@ -57,7 +57,7 @@ export function setup_parser() {
 
 }
 
-async function eval_code(code) {
+export async function eval_code(code) {
     let match = parser.parse(code)
     if(match.failed()) throw new Error("match failed")
     let ast = parser.ast(match)
