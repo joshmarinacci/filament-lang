@@ -1,11 +1,12 @@
-import {all, all_close_scalar, s, setup_parser, t} from './util.js'
-import {scalar} from '../src/ast.js'
-
-beforeAll(() => setup_parser())
+import {setup_parser } from "../src/index.js"
+import {all, all_close_scalar, b, l, s} from "./common.js"
+import {list, scalar, string} from '../src/ast.js'
 
 
 describe('length',() => {
-    test('metric', async () => {
+    setup_parser()
+
+    it('metric', async () => {
         await all([
             ['42m',scalar(42,'meter')],
             ['42ft',scalar(42,'foot')],
@@ -16,7 +17,7 @@ describe('length',() => {
         ])
     })
 
-    test('us standard', async () =>{
+    it('us standard', async () =>{
         await all([
             ['42ft',scalar(42,'foot')],
             ['50in',s(50,'inch')],
@@ -26,13 +27,13 @@ describe('length',() => {
         ])
     })
 
-    test('metric to us', async() => {
+    it('metric to us', async() => {
         await all_close_scalar([
             ['42m as feet',s(137.795,'foot')],
         ])
     })
 
-    test('us to metric',async() => {
+    it('us to metric',async() => {
         await all_close_scalar([
             ['3mi as km',s(4.82803,'kilometers')],
             ['4ft as meter',s(1.2192,'meter')],
@@ -44,7 +45,7 @@ describe('length',() => {
         ])
     })
 
-    test('unit multiply and divide',async() => {
+    it('unit multiply and divide',async() => {
         await all_close_scalar([
             ["50in * 5",s( 50*5,'inch')],
             ["50 * 5in", s(50*5,'inch')],
@@ -58,7 +59,7 @@ describe('length',() => {
         ])
     })
 
-    test('unit add and subtract',async () => {
+    it('unit add and subtract',async () => {
             await all_close_scalar([
                 // ['4ft + 5',s(9,'feet')], // should error
                 ['4ft + 5ft',s( 9,'feet')],
@@ -80,10 +81,10 @@ describe('length',() => {
     })
 
 })
-describe('complex',()=>{
-    test.skip('complex', ()=>{
+// describe('complex',()=>{
+    // test.skip('complex', ()=>{
         /*
-        test("complex units",(t)=>{
+        it("complex units",(t)=>{
             compareComplexUnit(t, '1ft/s', new LiteralNumber(1).withUnits([['foot',1]],[['second',1]]))],
             compareComplexUnit(t,'3ft * (1ft/s)', new LiteralNumber(3).withUnits([['foot',2]],[['second',1]]))],
             compareComplexUnit(t,'3ft / (1 ft/s)',new LiteralNumber(3).withUnits([['second',1]]))],
@@ -129,11 +130,11 @@ describe('complex',()=>{
         })],
 
          */
-    })
+    // })
 
-})
+// })
 describe('duration',()=>{
-    test('standard',async ()=>{
+    it('standard',async ()=>{
         await all([
             ['4hr',s(4,'hour')],
             ['42min',s(42,'minutes')],
@@ -152,7 +153,7 @@ describe('duration',()=>{
     })
 })
 describe('mass',()=>{
-    test('standard',async ()=> {
+    it('standard',async ()=> {
         await all_close_scalar([
             ["50g", s(50, 'gram')],
             ["50kg", s(50, 'kilograms')],
@@ -171,7 +172,7 @@ describe('mass',()=>{
     })
 })
 describe("volume",()=>{
-    test('us',async ()=>{
+    it('us',async ()=>{
         await all_close_scalar([
             ['5gal',s(5,'gallons')],
             ['5cups',s(5,'cups')],
@@ -207,7 +208,7 @@ describe("volume",()=>{
             //['3 cups + (1/2cups)',3.5,'cups')],
         ])
     })
-    test('metric',async ()=>{
+    it('metric',async ()=>{
         await all_close_scalar([
             ['3l',s(3,'liters')],
             ['3ml',s(3,'milliliters')],
@@ -220,7 +221,7 @@ describe("volume",()=>{
             // ['3 cm^3 as ml',3,'milliliter')],
         ])
     })
-    test('conversions',async ()=>{
+    it('conversions',async ()=>{
         await all([
             // ['1ft * 2ft * 3ft as liter', s(169.901,'liter')],
             // ['(3ft * 3ft * 3ft) as gallon',s(201.974,'gallon')],
@@ -235,7 +236,7 @@ describe("volume",()=>{
     })
 })
 describe('area',()=>{
-    test('us',async ()=> {
+    it('us',async ()=> {
         await all([
             // ['9sqft',s(9,'foot',2)],
             ['8acres',s(8,'acre')],
@@ -243,39 +244,39 @@ describe('area',()=>{
             // ['1000ac as sqm',s(1000*4046.8564224,'meters',2)],
         ])
     })
-    test('metric',async ()=> {
+    it('metric',async ()=> {
         await all([
         ])
     })
 
-    test.skip('other',async ()=>{
-        await all([
-            ["42 square miles",s(42,'mile',2)],
-            ['8ft^2',s(8,'foot',2)],
-            ['(8ft)^2',s(64,'foot',1)],
-            ["1 square miles as acres",s(640,"acre")],
-            ["200ft * 300ft as acres",s(1.3774105,"acre")],
-            ["42 mi^2",s(42,'mile',2)],
-            ['10 square miles',s(10,'mile',2)],
-            //['10 sq mi',s10,'mile',s2)],
-            ['10 square meters',s(10,'meter',2)],
-            //['10 sq m',s10,'meter',s2)],
-            ['9ft * 9m',s(24.6888,'meter',2)],
-            ['8m * 9ft',s(236.2204724,'foot',2)],
-            ['3ft * 6ft',s(18,'foot',2)],
-            //['(3ft * 6ft) as sq mi',s6.4566e-7,'miles',s2)],
-            //['40 acres as sq mi',s0.0625,'miles',s2)],
-            //['25sqmi + 1000acres',s68796559.1808,'meters',s2)],
-            ['10m^2',s(0,'meter',2)],
-
-            ['1m * 2m as acre',s(0.000494211,'acre')],
-            ['1km * 2km as acre',s(494.211,'acre')],
-            ['1m * 2m as square feet',s(21.5278,'feet',2)],
-            //['1m * 2m as sq ft',21.5278,'feet',2)],
-            ['1m * 2m as ft^2' ,s(21.5278,'feet',2)],
-            ['1m * 2m as sqft' ,s(21.5278,'feet',2)],
-            ['1m * 2m as square feet' ,s(21.5278,'feet',2)],
-        ])
-    })
+    // test.skip('other',async ()=>{
+    //     await all([
+    //         ["42 square miles",s(42,'mile',2)],
+    //         ['8ft^2',s(8,'foot',2)],
+    //         ['(8ft)^2',s(64,'foot',1)],
+    //         ["1 square miles as acres",s(640,"acre")],
+    //         ["200ft * 300ft as acres",s(1.3774105,"acre")],
+    //         ["42 mi^2",s(42,'mile',2)],
+    //         ['10 square miles',s(10,'mile',2)],
+    //         //['10 sq mi',s10,'mile',s2)],
+    //         ['10 square meters',s(10,'meter',2)],
+    //         //['10 sq m',s10,'meter',s2)],
+    //         ['9ft * 9m',s(24.6888,'meter',2)],
+    //         ['8m * 9ft',s(236.2204724,'foot',2)],
+    //         ['3ft * 6ft',s(18,'foot',2)],
+    //         //['(3ft * 6ft) as sq mi',s6.4566e-7,'miles',s2)],
+    //         //['40 acres as sq mi',s0.0625,'miles',s2)],
+    //         //['25sqmi + 1000acres',s68796559.1808,'meters',s2)],
+    //         ['10m^2',s(0,'meter',2)],
+    //
+    //         ['1m * 2m as acre',s(0.000494211,'acre')],
+    //         ['1km * 2km as acre',s(494.211,'acre')],
+    //         ['1m * 2m as square feet',s(21.5278,'feet',2)],
+    //         //['1m * 2m as sq ft',21.5278,'feet',2)],
+    //         ['1m * 2m as ft^2' ,s(21.5278,'feet',2)],
+    //         ['1m * 2m as sqft' ,s(21.5278,'feet',2)],
+    //         ['1m * 2m as square feet' ,s(21.5278,'feet',2)],
+    //     ])
+    // })
 
 })
