@@ -44,4 +44,10 @@ export async function eval_code(code) {
     })
 }
 
-export {is_scalar, is_boolean} from "./ast.js"
+export {is_scalar,
+    is_boolean,
+    is_canvas_result,
+    is_error_result,
+    is_list,
+    is_string
+} from "./ast.js"
