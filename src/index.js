@@ -43,3 +43,5 @@ export async function eval_code(code) {
         return false
     })
 }
+
+export {is_scalar, is_boolean} from "./ast.js"
