@@ -1,11 +1,11 @@
 import {setup_parser } from "../src/index.js"
-import {all, b, l, s} from "./common.js"
+import {all, b, l, s, setup} from "./common.js"
 import {list, string} from '../src/ast.js'
 
+await setup()
+console.log("done with setup")
+
 describe('complex',() => {
-
-    setup_parser()
-
     it("gui examples", async () => {
         await all([
             ['add(1,2)', s(3)],

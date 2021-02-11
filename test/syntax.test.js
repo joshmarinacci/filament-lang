@@ -1,12 +1,12 @@
 import {setup_parser } from "../src/index.js"
-import {all, b, l, s} from "./common.js"
+import {all, b, l, s, setup} from "./common.js"
 import {list, scalar, string} from '../src/ast.js'
 
+await setup()
+console.log("done with setup")
 
 
 describe('syntax',() => {
-    setup_parser()
-
     it('case identifier tests', async () => {
         await all([
             ['pi',s(Math.PI)],

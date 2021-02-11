@@ -1,10 +1,12 @@
 import {setup_parser } from "../src/index.js"
-import {all, all_close_scalar, b, l, s} from "./common.js"
+import {all, all_close_scalar, b, l, s, setup} from "./common.js"
 import {list, scalar, string} from '../src/ast.js'
+
+await setup()
+console.log("done with setup")
 
 
 describe('length',() => {
-    setup_parser()
 
     it('metric', async () => {
         await all([

@@ -14,8 +14,9 @@ import {
     subtract
 } from './math.js'
 import {drop, get_field, join, length, map, range, reverse, select, sort, sum, take} from './lists.js'
-import {dataset} from './dataset.js'
+import {dataset, stockhistory} from './dataset.js'
 import {Parser} from './parser.js'
+import {chart, histogram} from './chart.js'
 
 let scope
 let parser
@@ -26,6 +27,7 @@ export async function setup_parser(grammar_source) {
     scope.install(range,length,take,drop,join,reverse,map, get_field, select,sort,sum)
     scope.install(dataset)
     scope.install(convertunit)
+    scope.install(chart, histogram, stockhistory)
     scope.set_var('pi',scalar(Math.PI))
     parser = new Parser(scope,grammar_source)
 }

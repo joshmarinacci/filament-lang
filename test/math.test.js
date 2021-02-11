@@ -1,10 +1,11 @@
 import {setup_parser} from "../src/index.js"
-import {all, s, l, b} from "./common.js"
+import {all, s, l, b, setup} from "./common.js"
 import {list} from "../src/ast.js"
 
-describe('math',() => {
-    setup_parser()
+await setup()
+console.log("done with setup")
 
+describe('math',() => {
     it("binary math operators", async ()=>{
         await all([
             ['4+2',s(6)],
