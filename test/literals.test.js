@@ -1,9 +1,10 @@
-import {setup_parser } from "../src/index.js"
-import {all, b, l, s} from "./common.js"
+import {all, b, l, s, setup} from "./common.js"
 import {list, string} from '../src/ast.js'
 
-describe('literals', function() {
-    setup_parser()
+await setup()
+console.log("done with setup")
+
+describe('literals', async function() {
     it("integers",async () => {
         await all([
             ['4', s(4)],

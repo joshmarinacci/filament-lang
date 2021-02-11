@@ -1,7 +1,13 @@
+import {promises as fs} from "fs"
 import assert from "assert"
-import {eval_code} from '../src/index.js'
+import {eval_code, setup_parser} from '../src/index.js'
 import {boolean, list, scalar} from '../src/ast.js'
 
+
+export async function setup() {
+    let grammar_source = (await fs.readFile(new URL('../src/filament.ohm', import.meta.url))).toString();
+    await setup_parser(grammar_source)
+}
 export async function t(str, ans) {
     let ret = await eval_code(str)
     // console.log(str,'became',ret)

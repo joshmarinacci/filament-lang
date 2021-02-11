@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fetch from 'node-fetch'
 import {scalar, Scope} from './ast.js'
 import {
     add, and, convertunit,
@@ -19,17 +19,15 @@ import {Parser} from './parser.js'
 
 let scope
 let parser
-export function setup_parser() {
-    let g2_source = fs.readFileSync("src/filament.ohm").toString()
-    scope = new Scope('eval_ast')
+export async function setup_parser(grammar_source) {
+    scope = new Scope('main')
     scope.install(add,subtract,multiply,divide, power,mod, negate, factorial, is_prime)
     scope.install(lessthan,lessthanorequal,equal,notequal,greaterthanorequal,greaterthan,and,or,not)
     scope.install(range,length,take,drop,join,reverse,map, get_field, select,sort,sum)
     scope.install(dataset)
     scope.install(convertunit)
     scope.set_var('pi',scalar(Math.PI))
-    parser = new Parser(scope,g2_source)
-
+    parser = new Parser(scope,grammar_source)
 }
 
 export async function eval_code(code) {
@@ -49,5 +47,5 @@ export {is_scalar,
     is_canvas_result,
     is_error_result,
     is_list,
-    is_string
+    is_string,
 } from "./ast.js"
