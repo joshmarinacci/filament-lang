@@ -141,7 +141,7 @@ async function generate_canvas_images(doc, basedir, subdir) {
 }
 
 function render_code_output(block) {
-    let code =`<pre>
+    let code =`<pre class="code">
   <code data-language="${block.language}">${block.content}</code>
 </pre>
 result
@@ -152,10 +152,10 @@ result
     } else {
         if(block.result) {
             console.log("code block is",block, block.result.toString())
-            code += `<p><code>${block.result.toString()}</code></p>`
+            code += `<p class="result"><code>${block.result.toString()}</code></p>`
             console.log("final code is",code)
         } else {
-            code += `<p><code>${block.src}</code></p>`
+            code += `<p><code>BROKEN OUTPUT</code></p>`
         }
     }
     return code
@@ -175,7 +175,9 @@ function render_html(doc) {
     }).join("\n")
     let template = `
      <html>
-     <head><title>${title}</title></head>
+     <head><title>${title}</title>
+     <link rel="stylesheet" href="style.css">
+     </head>
         <body>
         ${content}
         </body>
@@ -183,8 +185,15 @@ function render_html(doc) {
     return template
 }
 
+async function copy(src, dst) {
+    console.log("copying",src,'to',dst)
+    let src_ref = await fs.readFile(src)
+    await fs.writeFile(dst,src_ref.toString())
+}
+
 async function convert_file(infile_path, outdir_path, outfile_name) {
     await mkdir(outdir_path)
+    await copy("tools/style.css",path.join(outdir_path,'style.css'))
     let raw_markdown = (await fs.readFile(infile_path)).toString()
     let doc = await parse_markdown(raw_markdown+"\n")
     await eval_filament(doc)

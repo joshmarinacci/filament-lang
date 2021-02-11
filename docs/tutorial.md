@@ -1,24 +1,33 @@
 
-# HL Tutorial
+# Filament Tutorial
 
-Welcome to HL, a humanist programming language.  Computers are amazing. They can calculate incredible things super fast. They can aswer questions and draw graphics. However, computers are actually very dumb. All they do is simple
-arithmetic. But they can do it super duper fast.  To do smart things humans have to teach them.  This is called programming. Anyone can program, including you!
-
+Welcome to Filament, a humanist programming language. Computers are amazing. They can calculate incredible things 
+super fast. They can answer questions and draw graphics. However, computers are actually very dumb. All they do is 
+simple arithmetic. What makes them amazing is that they can do it *super duper fast*.  To do smart things humans 
+have to teach them.  This is called programming. Anyone can program, including you!
 
 
 ## Arithmetic
 
-HL understands arithmetic. Try typing in a math quesiton like `2+2` then press the 'run' button (or type control-return on your keyboard). HL will show you the answer: `4`.  Now try dividing 4 by 2 or multiplying 3 by 5. Type in `4/2`. Run it. Then type `3 * 5`  HL uses `/` to mean division and `*` for multiplication.
+Filament understands arithmetic. Try typing in a math quesiton like `2+2` then press the 'run' 
+button (or type control-return on your keyboard). Filament will show you the answer: `4`.  
+Now try dividing 4 by 2 or multiplying 3 by 5. Type in `4/2`. Run it. Then type `3 * 5`  
+Filament uses `/` to mean division and `*` for multiplication.
 
-HL understands longer math equations too. For example, imagine you have a refridgerator box that is 7 feet tall by 4 feet wide by 4 feet deep. You could find out the volume of the box by multiplying all of the sides.
+Filament understands longer math equations too. For example, imagine you have a 
+refridgerator box that is 7 feet tall by 4 feet wide by 4 feet deep. You could find out the volume of 
+the box by multiplying all of the sides.
 
-```filament 
+```filament
 7 * 4 * 4
 ```
 
+
 ### Units
 
-In the above problem only *we* know that the `7` meant `7 feet`. The computer doesn't know because we didn't tell it. Fortunately HL lets us tell the computer exactly what units we mean. Let's try that again. Type:
+In the above problem only *we* know that the `7` meant `7 feet`. The computer doesn't 
+know because we didn't tell it. Fortunately Filament lets us tell the computer exactly what 
+units we mean. Let's try that again with units:
 
 ```filament
 7feet * 4feet * 4feet
@@ -26,17 +35,19 @@ In the above problem only *we* know that the `7` meant `7 feet`. The computer do
 
 Now we get `112 cuft`.  Cool. HL knows to convert the answer into cubic feet.  But what if we didn't want cubic feet. We are talking about voume and there are several different units that could represent volume. Let's ask HL to convert it into gallons instead.
 
-``filament
+```tfilament
 7ft * 4ft * 4ft as gal
-``
+```
 
 which gives us the answer `837.81 gallons`.
 
-Notice that this time we abbreviated `feet` to `ft` and `gal` for `gallons`.   HL understands the full names and abbrevations for over a hundred kinds of units, and it can convert between any of them.  Here's a few more examples to try.
+Notice that this time we abbreviated `feet` to `ft` and `gal` for `gallons`.   
+HL understands the full names and abbrevations for over a hundred kinds of units, 
+and it can convert between any of them.  Here's a few more examples to try.
 
-convert your height into centimeters. I'm 5'4", so
+Convert your height into centimeters. I'm 5 foot four inches so
 
-```javascript
+```filament
 5feet + 4inches as cm 
 ```
 
@@ -48,15 +59,16 @@ Some kitchen math:
 
 Calculate your age in seconds.
 
-``filament
+```tfilament
 now() - date("Jan 1st, 2003") as seconds
-``
+```
 
-If you try to convert something that can't be converted, like area to volume, then HL will let you know. Try this
+If you try to convert something that can't be converted, like area to volume, then Filament will let you know. Try this
 
-``filament
+```tilament
 7ft * 4ft as gal
-``
+```
+
 results in
 ``
 Error. Cannot convert ft^2 to gallons.
@@ -76,23 +88,17 @@ average (mean) radius of the Earth is *6,371.0* kilometers.
 
 Now we can divide these and convert to hours to see how long it would take.
 
-``
+```tilament
  6371.0km / 4000ft/s as hours
-``
-equals
-
-```filament
- 1.45hours
 ```
 
 So pretty fast. In fact.
 
 Oh, wait, That's not right. We are using the radius of the earth, not the circumference.  We know the circumferce of a circle is 2\*pi\*radius. Let's try that again.
 
-``filament
+```tilament
 (6371.0 km * 3.14 * 2) / 4000ft/s as hours  
-``
-gives us 9.11 hours.
+```
 
 So still pretty fast. He could almost go three times around the earth in a single 24 hour day.
 
@@ -110,7 +116,7 @@ Now let's take a look at lists. Imagine you want to add up some numbers. You cou
 ```
 or you could make them a list and use the sum function.
 
-```javascript
+```filament
 sum([4,5,6,7,8])
 ```
 
@@ -123,114 +129,116 @@ sort([8,4,7,1])
 
 get the length
 
-``javascript
+```tilament
 size([8,4,7,1])
-``
+```
 
 or combine sum and length to find the average
 ```filament
-let nums = [8,4,7,1] 
+nums << [8,4,7,1] 
 sum(nums) / size(num)
 ```
 
 Sometimes you need to generate a list. Suppose you wanted to know the sum of every number from 0 to 100.
 Of course you *could* write out the numbers directly, but HL has a way to generate lists for you. It's called range.
 
-``javascript
+```javascript
 // make a list from 0 to 9
 range(10)
 // = [0,1,2,3,4,5,6,7,8,9]
 // sum the numbers from 0 to 99
 sum(range(100))
 // 4950
-``
+```
 
 Range is flexible. You can give it both a start and end number, or even jump by steps.
-``javascript
+```javascript
 // 20 -> 30
 range(20,30)
 // [20,21,22,23,24,25,26,27,28,29]
 // 0 -> 100 by tens
 range(0,100,10)
 // [0,10,20,30,40,50,60,70,80,90]
-``
+```
 
 Remember that range will start at the minmum and go to one less than the max. So 0 to 10 will go up to 9.
 
 HL can handle big lists. If you ask for range(0,10_000_000) it will show the the first few and then ... before the last few.
 
-``javascript
+```javascript
 //you can use underscores to separate digits. they will be stripped out before calculations
 range(10_000_000)
 // [0, 1, 2, 3 .... 99_999_998, 99_999_999]
-``
+```
 
 Lists are very useful for lots of things, but sometimes you get more numbers than you need. Suppose you wanted all the numbers from from 0 to 20 minus then just the first three. Use take(list,3). Want just the last three use take(list,-3)
 
-``javascript
+```javascript
 let list = range(10)  // [0,1,2,3,4,5,6,7,8,9]
 take(list, 3)         // [0,1,2]
 take(list, -3)        // [7,8,9]
-``
+```
 You can also remove items from a list with drop
 
-``javascript
+```javascript
 drop(range(10), 8)  //remove the first 8
 // = [8,9]
-``
+```
 
 And finally you can join two lists together
 
-```javascript
+```filament
 join([4,2], [8,6])
 ```
 
 In addition to holding data, lists let you do things that you could do on a single number, but in bulk. You can add a number to a list
 
-```javascript
+```filament
 1 + [1,2,3]
 ```
 
 or add two lists together
 
-```javascript
+```filament
 [1,2,3] + [4,5,6]
 ```
 
-it might seem strange to do math on lists, but it's actually quite useful. Image you had a list of prices and you want to offer a 20% discount, you can do that with a single mulitplication.
+It might seem strange to do math on lists but it's actually quite useful. 
+Image you had a list of prices and you would like to offer a 20% discount.
+You can do that with a single multiplication.
 
-``filament
+```filament
 prices << [4.86, 5.23, 10.99, 8.43]
 sale_prices << 0.8 * prices
-``
+```
 
 Suppose you sold lemonade on four weekends in april, and another four in july. It would be nice
 to compare the sales for the different weekends to see if july did better thanks to warmer weather.
 You can do this by just subtracting two lists.
 
-``filament
+```filament
 april << [34, 44, 56, 42]
 july  << [67, 45, 77, 98]
 july - april
-``
+```
 
 doing math with lists is also great for working with vectors.
 
-``javascript
+```javascript
 V1 = [0,0,5]
 V2 = [1,0,1]
 
 V1 + V2 // add vectors
 V1 * V2 // dot product of vectors
 sqrt(sum(power(V1,2))) // magnitude of vector
-``
+```
 
 
 lists let you find data too. you can search for items using select and a small function. lets find
 all of the primes up to 10000
 
-```javascript
-select(range(10_000), where:is_prime)
+```filament
+select(range(100), where:is_prime)
 ```
 
 or all numbers evenly divisible by 5
@@ -243,31 +251,32 @@ calculating at total of 1,2, and 3. Instead of adding numbers together indivdual
 the sum function you can apply addition over every element in the list. `add over [1,2,3]` This
 is the same as putting a plus between each number: `1 + 2 + 3`. All of these are the same:
 
-``javascript
+```javascript
 1 + 2 + 3
 add over [1,2,3]
 + over [1,2,3]
 sum([1,2,3])
 reduce([1,2,3], with: (a,b)=>a+b)
-``
+```
+
 Remember that `+` is the same thing as using the `add` function.  With this functionality we can create
 our own factorial. If you remember, factorial of N is calculated by multiplying every lower number together with N.  So factorial of 4 is 1*2*3*4, which we can caluate with mul over [1*2*3*4]. Lets
 do factorial of 100
 
-``javascript
+```javascript
 mul over range(0,100) //= 9.332622e+157
-``
+```
 
 
 One of the coolest things about lists is that you can *draw* them. Just send a list into the chart() function to see it as a bar chart. Suppose you had a list of heights of your friends.
 
-```javascript
+```tilament
 chart([88,64,75,59])
 ```
 
 or just draw the numbers from 0 to 9
 
-```javascript
+```tilament
 chart(range(0,10))
 ```
 

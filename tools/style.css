@@ -1,0 +1,10 @@
+body {
+    background-color: #f8f8f8;
+}
+
+.code {
+    border: 1px solid red;
+}
+.result {
+    border: 1px solid blue;
+}
