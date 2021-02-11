@@ -6,7 +6,7 @@ arithmetic. But they can do it super duper fast.  To do smart things humans have
 
 
 
-# Arithmetic
+## Arithmetic
 
 HL understands arithmetic. Try typing in a math quesiton like `2+2` then press the 'run' button (or type control-return on your keyboard). HL will show you the answer: `4`.  Now try dividing 4 by 2 or multiplying 3 by 5. Type in `4/2`. Run it. Then type `3 * 5`  HL uses `/` to mean division and `*` for multiplication.
 
@@ -15,8 +15,6 @@ HL understands longer math equations too. For example, imagine you have a refrid
 ```filament 
 7 * 4 * 4
 ```
-
-which equals 112.
 
 ### Units
 
@@ -41,19 +39,11 @@ convert your height into centimeters. I'm 5'4", so
 ```javascript
 5feet + 4inches as cm 
 ```
-is
-``
-162.55cm
-``
 
 Some kitchen math:
 
-```javascript
+```filament
 2cups + 4tablespoons
-```
-is
-```javascript
-36tablespoons
 ```
 
 Calculate your age in seconds.

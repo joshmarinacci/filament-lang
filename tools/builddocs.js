@@ -25,6 +25,7 @@ import {default as PImage} from "pureimage"
 
 const H1    = (content) => ({type:'H1', content})
 const H2    = (content) => ({type:'H2',content})
+const H3    = (content) => ({type:'H3',content})
 const P     = (content) => ({type:'P',content})
 const code  = (language,content) => ({type:'CODE', language, content})
 
@@ -33,7 +34,8 @@ function parse_markdown_blocks(str) {
     parser.grammar = ohm.grammar(`
 MarkdownOuter {
   Doc = Block*
-  Block = h2 | h1 | code | para | blank
+  Block = h3 | h2 | h1 | code | para | blank
+  h3 = "###" rest
   h2 = "##" rest
   h1 = "#" rest
   para = line+  //paragraph is just multiple consecutive lines
@@ -52,6 +54,7 @@ MarkdownOuter {
         _terminal() { return this.sourceString },
         h1:(_,b) => H1(b.blocks()),
         h2:(_,b) => H2(b.blocks()),
+        h3:(_,b) => H3(b.blocks()),
         code:(_,name,cod,_2) => code(name.blocks(),cod.blocks().join("")),
         para: a=> P(a.sourceString),
         rest: (a,_) => a.blocks().join("")
@@ -87,14 +90,14 @@ async function parse_markdown(raw_markdown) {
 
 async function eval_filament(doc) {
     // l("evaluating all filament objects in",doc)
-    let codeblocks = doc.filter(block => block.type === 'CODE')
+    let codeblocks = doc.filter(block => block.type === 'CODE' && block.language === 'filament')
     // l("codeblocks",codeblocks)
     let filament_grammer = (await fs.readFile('src/filament.ohm')).toString()
     let parser = new Parser(null,filament_grammer)
     let scope = make_standard_scope()
 
     return Promise.all(codeblocks.map(async (code) => {
-        console.log(code)
+        // console.log('processing',code)
         let match = parser.parse('{'+code.content+'}')
         // console.log('match',match.failed())
         if(match.failed()) throw new Error("match failed on: " + code.content);
@@ -147,7 +150,13 @@ result
     if(block.src) {
         code += `<img src="${block.src}" width="500" height="250">`
     } else {
-        code += `<p><code>${block.src}</code></p>`
+        if(block.result) {
+            console.log("code block is",block, block.result.toString())
+            code += `<p><code>${block.result.toString()}</code></p>`
+            console.log("final code is",code)
+        } else {
+            code += `<p><code>${block.src}</code></p>`
+        }
     }
     return code
 }
@@ -159,6 +168,7 @@ function render_html(doc) {
         // l("block is",block)
         if(block.type === 'H1') return `<h1>${block.content}</h1>`
         if(block.type === 'H2') return `<h2>${block.content}</h2>`
+        if(block.type === 'H3') return `<h3>${block.content}</h3>`
         if(block.type === 'P') return `<p>${block.content}</p>`
         if(block.type === 'CODE') return render_code_output(block)
         return "ERROR"
@@ -180,7 +190,7 @@ async function convert_file(infile_path, outdir_path, outfile_name) {
     await eval_filament(doc)
     await generate_canvas_images(doc,outdir_path,'images')
     let html = render_html(doc)
-    console.log("final html is",html)
+    // console.log("final html is",html)
     await fs.writeFile(path.join(outdir_path,outfile_name),html)
 }
 
