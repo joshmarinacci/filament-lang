@@ -1,12 +1,13 @@
 import {boolean, list} from '../src/ast.js'
-import {all, s, setup_parser} from './util.js'
+import {setup_parser} from "../src/index.js"
+import {all, s, l, b} from "./common.js"
 
-beforeAll(() => setup_parser())
 const t = boolean(true)
 const f = boolean(false)
 
 describe('lists',() => {
-    test('is_prime',async ()=> {
+    setup_parser()
+    it('is_prime',async ()=> {
         await all([
             ['is_prime(4)', boolean(false)],
             ['is_prime(5)', boolean(true)],
@@ -15,7 +16,7 @@ describe('lists',() => {
             ['range(10) >> select(where:is_prime)', list([s(2), s(3), s(5), s(7)])],
         ])
     })
-    test('range', async ()=>{
+    it('range', async ()=>{
         await all([
             ['range(3)',list([s(0),s(1),s(2)])],
             ['range(8,min:3)',list([s(3),s(4),s(5),s(6),s(7)])],
@@ -24,7 +25,7 @@ describe('lists',() => {
         ])
     })
 
-    test('list length', async ()=>{
+    it('list length', async ()=>{
         await all([
             ['length([1,2,3])',s(3)],
             ['length(range(10))',s(10)],
@@ -32,7 +33,7 @@ describe('lists',() => {
         ])
     })
 
-    test("take from list", async() => {
+    it("take from list", async() => {
         await all([
             ['take([1,2,3],2)',list([s(1),s(2)])],
             ['take([1,2,3],4)',list([s(1),s(2),s(3)])],
@@ -41,7 +42,7 @@ describe('lists',() => {
     })
 
 
-    test('drop from list',async ()=>{
+    it('drop from list',async ()=>{
         await all([
             ['drop([1,2,3],1)',list([s(2),s(3)])],
             ['drop([1,2,3],-1)',list([s(1),s(2)])],
@@ -50,7 +51,7 @@ describe('lists',() => {
     })
 
 
-    test('join lists',async () => {
+    it('join lists',async () => {
         await all([
             ['join([1,2,3],[4,5,6])',list([s(1),s(2),s(3),s(4),s(5),s(6)])],
             ['join([1],[4,5,6])',list([s(1),s(4),s(5),s(6)])],
@@ -67,7 +68,7 @@ describe('lists',() => {
     //     ['map(range(3), (x)=>add(x,5))',list([5,6,7])],
     // ])
 
-    test('sorting a list', async ()=>{
+    it('sorting a list', async ()=>{
         await all([
             ['sort([3,1,2])',list([s(1),s(2),s(3)])],
             ['reverse(sort([3,1,2]))',list([s(3),s(2),s(1)])],
@@ -80,7 +81,7 @@ describe('lists',() => {
     // //     expect(select([1,2,3], {where:(x)=>x>1})).toEqual([2,3])
     // ])
     //
-    test('sum elements', async ()=>{
+    it('sum elements', async ()=>{
         await all([
             ['sum([1,2,3])',s(6)],
             // ['sum(range(5))',s(0+1+2+3+4)],
