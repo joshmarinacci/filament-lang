@@ -1,11 +1,12 @@
-import {list, scalar, string} from '../src/ast.js'
-import {all, setup_parser, l, s} from './util.js'
-
-beforeAll(() => setup_parser())
+import {setup_parser } from "../src/index.js"
+import {all, b, l, s} from "./common.js"
+import {list, string} from '../src/ast.js'
 
 describe('complex',() => {
 
-    test("gui examples", async () => {
+    setup_parser()
+
+    it("gui examples", async () => {
         await all([
             ['add(1,2)', s(3)],
             [`[1,2,3]`, l(1,2,3)],
