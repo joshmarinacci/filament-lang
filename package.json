@@ -15,5 +15,7 @@
     "node-fetch": "^2.6.1",
     "ohm-js": "^15.4.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "pureimage": "^0.2.5"
+  }
 }
