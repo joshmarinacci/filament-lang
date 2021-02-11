@@ -95,7 +95,7 @@ async function eval_filament(doc) {
 
     return Promise.all(codeblocks.map(async (code) => {
         console.log(code)
-        let match = parser.parse(code.content)
+        let match = parser.parse('{'+code.content+'}')
         // console.log('match',match.failed())
         if(match.failed()) throw new Error("match failed on: " + code.content);
         let ast = parser.ast(match)
@@ -186,6 +186,7 @@ async function convert_file(infile_path, outdir_path, outfile_name) {
 
 const fnt = PImage.registerFont('node_modules/pureimage/tests/unit/fixtures/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
 fnt.load(()=>{
-    convert_file('tools/test.md','output', 'output.html')
+    // convert_file('tools/test.md','output', 'output.html')
+    convert_file('docs/tutorial.md','output', 'tutorial.html')
         .then(()=>{console.log("done")})
         .catch(e => console.error(e))})
