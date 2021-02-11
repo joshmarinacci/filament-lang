@@ -1,11 +1,11 @@
-import {jest} from '@jest/globals';
-import {all, l, s, b, setup_parser} from './util.js'
-import {list} from '../src/ast.js'
-
-beforeAll(() => setup_parser())
+import {setup_parser} from "../src/index.js"
+import {all, s, l, b} from "./common.js"
+import {list} from "../src/ast.js"
 
 describe('math',() => {
-    test("binary math operators", async ()=>{
+    setup_parser()
+
+    it("binary math operators", async ()=>{
         await all([
             ['4+2',s(6)],
             ['4-2',s(2)],
@@ -15,7 +15,7 @@ describe('math',() => {
             ['4 mod 2',s(0)],
         ])
     })
-    test('binary ops on arrays',async() =>{
+    it('binary ops on arrays',async() =>{
         await all([
             ['[1,2]+[3,4]',l(4,6)],
             ['2*[1,2]',l(2,4)],
@@ -23,7 +23,7 @@ describe('math',() => {
             ['[4,5]<[8,9]',list([b(true),b(true)])],
         ])
     })
-    test("boolean operators", async ()=>{
+    it("boolean operators", async ()=>{
         await all([
             ['4 < 2',b(false)],
             ['4 > 2',b(true)],
@@ -35,7 +35,7 @@ describe('math',() => {
             // ['true or false',b(true)],
         ])
     })
-    test("unary  operators", async ()=>{
+    it("unary  operators", async ()=>{
         await all([
             ['-42',s(-42)],
             ['-4/2',s(-2)],
@@ -43,26 +43,25 @@ describe('math',() => {
             ['not true',b(false)],
         ])
     })
-    test('parens',async() => {
+    it('parens',async() => {
         await all([
             ['(4+2)',s(6)],
             ['((4*2)+42)',s((4*2)+42)],
             ['(4*(2+42))',s(4*(2+42))],
         ])
     })
-    test('precedence',async() => {
+    it('precedence',async() => {
         await all([
             ['4+2*4',s(4+2*4)],
             ['4*2+4',s(4*2+4)],
         ])
     })
 
-
-    test('trig',async ()=>{
+    it('trig',async ()=>{
         await all([
         ])
     })
-    test('constants', async ()=>{
+    it('constants', async ()=>{
         await all([
             ['pi',s(Math.PI)]
         ])
