@@ -79,6 +79,9 @@ export const divide = new FilamentFunction('divide',{a:REQUIRED, b:REQUIRED},
         if(is_scalar_with_unit(b) && is_scalar_without_unit(a)) {
             return scalar(b.value/a.value,b.unit)
         }
+        if(is_scalar_with_unit(a) && is_scalar_with_unit(b)) {
+            return scalar(a.value/b.value,a.unit,a.dim-b.dim)
+        }
     return binop(a,b,(a,b)=>a/b)
 })
 export const power = new FilamentFunction('power',{a:REQUIRED, b:REQUIRED},

@@ -64,6 +64,10 @@ class FScalar extends ASTNode {
             if (unit.length === 1) this.unit = unit[0]
         }
         this.unit = to_canonical_unit(this.unit)
+        if(this.dim === 0) {
+            //dimension of zero means no unit
+            this.unit = null
+        }
     }
     toString() {
         if(this.unit) return (""+this.value+' '+this.unit)

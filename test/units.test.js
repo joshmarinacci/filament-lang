@@ -51,34 +51,37 @@ describe('length',() => {
         await all_close_scalar([
             ["50in * 5",s( 50*5,'inch')],
             ["50 * 5in", s(50*5,'inch')],
-            ['2ft/2',s(1,"feet")],
-            ['2/2ft',s(1,"feet")],
+            ['2ft/2',s(1,"feet",1)],
+            ['2/2ft',s(1,"feet",1)],
             ['2ft*2',s(4,"feet")],
             ['2*2ft',s(4,"feet")],
             ['4ft * 5ft',s( 20,'feet',2)],
-            ['4ft / 2ft',s(  2)],
             ['1ft * 2ft * 3ft',s( 6,'feet',3)],
+        ])
+    })
+    it('no units and dim', async() => {
+        await all_close_scalar([
+            ['4ft / 2ft',s(  2,null,0)],
+            // ['4ft/2m',s(0.6096,null,0)],
+            //     // //['4ft/2gal',s(3,'none')],//should error
+            //     ['4ft - 2gal')],//should error
         ])
     })
 
     it('unit add and subtract',async () => {
-            await all_close_scalar([
-                // ['4ft + 5',s(9,'feet')], // should error
-                ['4ft + 5ft',s( 9,'feet')],
-                ['4ft - 5ft',s( -1,'feet')],
-                ['3ft + 6ft as meters',s(2.7432,'meters')],
-                ['(3ft + 6ft) as feet',s(9,'feet')],
-                ["1km+500m", s(1500,'meters')],
-                ["500m+1km", s(1.500,'kilometers')],
-                ['4m + 12ft',s(13.1234 + 12,'ft')],
-                ['4m + 12ft as m',s(4 + 3.6576,'m')],
-                ['40mm + 40cm + 4m',s(4.440,'m')],
-                ['4mm + 12ft',s(4/304.8 + 12,'ft')],
-                ['4mm + 12ft as mm',s(4 + 3657.6,'mm')],
-               // ['4ft/2ft',s(2,'none')],
-            // ['4ft/2m',s(0.6096,'none')],
-        //     // //['4ft/2gal',s(3,'none')],//should error
-        //     ['4ft - 2gal')],//should error
+        await all_close_scalar([
+            // ['4ft + 5',s(9,'feet')], // should error
+            ['4ft + 5ft',s( 9,'feet')],
+            ['4ft - 5ft',s( -1,'feet')],
+            ['3ft + 6ft as meters',s(2.7432,'meters')],
+            ['(3ft + 6ft) as feet',s(9,'feet')],
+            ["1km+500m", s(1500,'meters')],
+            ["500m+1km", s(1.500,'kilometers')],
+            ['4m + 12ft',s(13.1234 + 12,'ft')],
+            ['4m + 12ft as m',s(4 + 3.6576,'m')],
+            ['40mm + 40cm + 4m',s(4.440,'m')],
+            ['4mm + 12ft',s(4/304.8 + 12,'ft')],
+            ['4mm + 12ft as mm',s(4 + 3657.6,'mm')],
         ])
     })
 
