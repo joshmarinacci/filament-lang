@@ -102,6 +102,9 @@ function make_unop(name, cb) {
     return new FilamentFunction(name,{a:REQUIRED}, (a) => unop(a,cb))
 }
 
+export const sin = new FilamentFunction('sin', {a:REQUIRED}, (a) =>scalar(Math.sin(a.value)))
+export const cos = new FilamentFunction('cos', {a:REQUIRED}, (a) =>scalar(Math.cos(a.value)))
+export const tan = new FilamentFunction('tan', {a:REQUIRED}, (a) =>scalar(Math.tan(a.value)))
 // export const sin = (a) => unop(a, a=>Math.sin(a))
 // export const cos = (a) => unop(a, a=>Math.cos(a))
 // export const tan = (a) => unop(a, a=>Math.tan(a))

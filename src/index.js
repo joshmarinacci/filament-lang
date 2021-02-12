@@ -10,7 +10,7 @@ import {
     mod,
     multiply,
     negate, not, notequal, or,
-    power,
+    power, sin,
     subtract
 } from './math.js'
 import {drop, get_field, join, length, map, range, reverse, select, sort, sum, take} from './lists.js'
@@ -24,6 +24,7 @@ let parser
 export async function setup_parser(grammar_source) {
     scope = new Scope('main')
     scope.install(add,subtract,multiply,divide, power,mod, negate, factorial, is_prime)
+    scope.install(sin)//,cos,tan)
     scope.install(lessthan,lessthanorequal,equal,notequal,greaterthanorequal,greaterthan,and,or,not)
     scope.install(range,length,take,drop,join,reverse,map, get_field, select,sort,sum)
     scope.install(dataset)
