@@ -68,15 +68,29 @@ function l(...args) {
 }
 
 function parse_markdown_content(block) {
-    // l("parsing content from block",block)
-    // let parser = {}
-    // parser.grammar = ohm.grammar(`
-    // `)
-    // parser.semantics = parser.grammar.createSemantics()
-    // parser.semantics.addOperation('content',{
-    // })
-    // let match = parser.grammar.match(block)
-    // return parser.semantics(match).content()
+    if(block.type !== 'P') return block
+    l("parsing content from block",block)
+    let parser = {}
+    parser.grammar = ohm.grammar(`
+MarkdownInner {
+  Block = Para*
+  Para = bold | code | plain
+  plain = (~("*"|"\`") any)+
+  bold = "*" (~"*" any)* "*"
+  code = "\`" (~"\`" any)* "\`"
+}
+    `)
+    parser.semantics = parser.grammar.createSemantics()
+    parser.semantics.addOperation('content',{
+        _terminal() { return this.sourceString },
+        plain(a) {return ['plain',a.content().join("")] },
+        bold(_1,a,_2) { return ['bold',a.content().join("")] },
+        code:(_1,a,_2) => ['code',a.content().join("")],
+    })
+    let match = parser.grammar.match(block.content)
+    let res = parser.semantics(match).content()
+    console.log("result of content is",res)
+    block.content = res
     return block
 }
 
@@ -84,8 +98,7 @@ async function parse_markdown(raw_markdown) {
     // l('parsing raw markdown',raw_markdown)
     let blocks = parse_markdown_blocks(raw_markdown)
     // l("blocks are",blocks)
-    let doc = blocks.map(block => parse_markdown_content(block))
-    return doc
+    return blocks.map(block => parse_markdown_content(block))
 }
 
 async function eval_filament(doc) {
@@ -161,6 +174,16 @@ result
     return code
 }
 
+function render_paragraph_output(block) {
+    console.log("rendering block",block)
+    return '<p>' + block.content.map(run => {
+        if(run[0] === 'plain') return run[1]
+        if(run[0] === 'bold') return '<b>'+run[1]+'</b>'
+        if(run[0] === 'code') return '<code>'+run[1]+'</code>'
+        return run[1]
+    }).join("") + "</p>"
+}
+
 function render_html(doc) {
     // l('rendering html from doc',doc)
     const title = 'tutorial'
@@ -169,7 +192,7 @@ function render_html(doc) {
         if(block.type === 'H1') return `<h1>${block.content}</h1>`
         if(block.type === 'H2') return `<h2>${block.content}</h2>`
         if(block.type === 'H3') return `<h3>${block.content}</h3>`
-        if(block.type === 'P') return `<p>${block.content}</p>`
+        if(block.type === 'P') return render_paragraph_output(block)
         if(block.type === 'CODE') return render_code_output(block)
         return "ERROR"
     }).join("\n")
@@ -199,7 +222,7 @@ async function convert_file(infile_path, outdir_path, outfile_name) {
     await eval_filament(doc)
     await generate_canvas_images(doc,outdir_path,'images')
     let html = render_html(doc)
-    // console.log("final html is",html)
+    console.log("final html is",html)
     await fs.writeFile(path.join(outdir_path,outfile_name),html)
 }
 

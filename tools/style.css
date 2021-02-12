@@ -26,3 +26,10 @@ img {
     padding: 1rem;
     border: 1px solid black;
 }
+
+p code {
+    border: 1px solid brown;
+    background-color: yellow;
+    padding: 0.25em;
+    border-radius: 0.5em;
+}

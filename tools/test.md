@@ -2,20 +2,14 @@
 
 ## header2
 
-a paragraph of cool text
-is right here
+a paragraph with *bold* text in it 
+is right here and some `code` too
+in the same block
 
-# header 3
+### header 3
 
 ```filament
-{
 data << [42,43,44,45]
 chart(data)
-}
 ```
 
-lets mess with the alphabet
-
-```filament
-chart(dataset('alphabet'), x_label:'letter', y:'syllables')
-```

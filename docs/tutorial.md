@@ -9,7 +9,7 @@ have to teach them.  This is called programming. Anyone can program, including y
 
 ## Arithmetic
 
-Filament understands arithmetic. Try typing in a math quesiton like `2+2` then press the 'run' 
+Filament understands arithmetic. Try typing in a math question like `2+2` then press the 'run' 
 button (or type control-return on your keyboard). Filament will show you the answer: `4`.  
 Now try dividing 4 by 2 or multiplying 3 by 5. Type in `4/2`. Run it. Then type `3 * 5`  
 Filament uses `/` to mean division and `*` for multiplication.
