@@ -16,7 +16,7 @@ import path from 'path'
 import {promises as fs, createWriteStream, mkdir as real_mkdir} from 'fs'
 import ohm from 'ohm-js'
 import {Parser} from '../src/parser.js'
-import {is_canvas_result, Scope} from "../src/ast.js"
+import {block, call, ident, is_canvas_result, list, named, scalar, Scope, string} from "../src/ast.js"
 import {make_standard_scope} from '../src/lang.js'
 import {default as PImage} from "pureimage"
 
@@ -94,7 +94,7 @@ MarkdownInner {
     })
     let match = parser.grammar.match(block.content)
     let res = parser.semantics(match).content()
-    console.log("result of content is",res)
+    // console.log("result of content is",res)
     block.content = res
     return block
 }
@@ -107,11 +107,36 @@ async function parse_markdown(raw_markdown) {
 }
 
 async function eval_filament(doc) {
+
+
     // l("evaluating all filament objects in",doc)
     let codeblocks = doc.filter(block => block.type === 'CODE' && block.language === 'filament')
     // l("codeblocks",codeblocks)
     let filament_grammer = (await fs.readFile('src/filament.ohm')).toString()
     let parser = new Parser(null,filament_grammer)
+
+    const lit = v => `<span class="literal">${v}</span>`
+    const strlit = v => `<span class="literal">"${v}"</span>`
+    const id = v => ` <span class="id">${v}</span> `
+    const op = v => ` <span class='operator'>${v}</span> `
+    const argname = v => ` <span class='id'>${v}</span> `
+
+    parser.semantics.addOperation('hi',{
+        _terminal() { return this.sourceString },
+        ident : (i, i2) => id(i.hi() + i2.hi().join("")),
+
+        unitnumber: (v, u) => lit(v.hi() +  u.hi()),
+        number: (v) => lit(v.hi().join("")),
+        string: (_1, txt, _2) => strlit(txt.sourceString),
+
+        Block: (_1, statements, _2) => "<pre class='filament-code'><code>"+statements.hi().join("\n")+"\n</code></pre>\n",
+        PipeOp_left:(next,_,first) => next.hi() + op('&lt;&lt;') + first.hi(),
+        PipeOp_right:(first,_,next) => first.hi() + op("&gt;&gt;") + next.hi(),
+        NonemptyListOf: (a, b, c) => [a.hi()].concat(c.hi()),
+        List: (a, b, c) => '['+b.hi()+']',
+        FuncallExp: (ident, _1, args, _2) => ident.hi() + "(" + args.hi() + ")",
+        Arg_named: (a, _, c) => argname(a.hi()) + op(":") + c.hi(),
+    })
     let scope = make_standard_scope()
 
     return Promise.all(codeblocks.map(async (code) => {
@@ -124,6 +149,8 @@ async function eval_filament(doc) {
         let res = await ast.evalFilament(scope)
         // console.log("final result is",res,'for code',code)
         code.result = res
+        code.highlight = parser.semantics(match).hi()
+        console.log("highlighted:",code.highlight)
         return res
     })).then(()=>{
         // console.log("all done")
@@ -165,13 +192,16 @@ function render_code_output(block) {
 result
 `
 
+    if(block.language === 'filament') {
+        code = block.highlight
+    }
     if(block.src) {
         code += `<img src="${block.src}" width="500" height="250">`
     } else {
         if(block.result) {
             console.log("code block is",block, block.result.toString())
             code += `<p class="result"><code>${block.result.toString()}</code></p>`
-            console.log("final code is",code)
+            // console.log("final code is",code)
         } else {
             code += `<p><code>BROKEN OUTPUT</code></p>`
         }
@@ -180,7 +210,7 @@ result
 }
 
 function render_paragraph_output(block) {
-    console.log("rendering block",block)
+    // console.log("rendering block",block)
     return '<p>' + block.content.map(run => {
         if(run[0] === 'plain') return run[1]
         if(run[0] === 'bold') return '<b>'+run[1]+'</b>'
@@ -240,7 +270,7 @@ async function convert_file(infile_path, outdir_path, outfile_name) {
 
 const fnt = PImage.registerFont('node_modules/pureimage/tests/unit/fixtures/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
 fnt.load(()=>{
-    // convert_file('tools/test.md','output', 'output.html')
-    convert_file('docs/tutorial.md','output', 'tutorial.html')
+    convert_file('tools/test.md','output', 'output.html')
+    // convert_file('docs/tutorial.md','output', 'tutorial.html')
         .then(()=>{console.log("done")})
         .catch(e => console.error(e))})

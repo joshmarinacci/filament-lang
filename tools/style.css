@@ -6,7 +6,7 @@ body {
     font-family: serif;
 }
 
-.code {
+.code, .filament-code {
     border: 1px solid #facaca;
     padding: 1rem;
     background-color: #fff6c7;
@@ -32,4 +32,20 @@ p code {
     background-color: yellow;
     padding: 0.25em;
     border-radius: 0.5em;
+}
+
+
+.filament-code {
+    /*border: 5px solid red;*/
+    white-space: pre-line;
+}
+
+.filament-code .id {
+    color: blue;
+}
+.filament-code .operator {
+    color: red;
+}
+.filament-code .literal {
+    color: green;
 }
