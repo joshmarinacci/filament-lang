@@ -15,7 +15,7 @@
 import path from 'path'
 import {promises as fs, createWriteStream, mkdir as real_mkdir} from 'fs'
 import ohm from 'ohm-js'
-import {Parser} from '../src/parser.js'
+import {Parser, strip_under} from '../src/parser.js'
 import {block, call, ident, is_canvas_result, list, named, scalar, Scope, string} from "../src/ast.js"
 import {make_standard_scope} from '../src/lang.js'
 import {default as PImage} from "pureimage"
@@ -117,25 +117,33 @@ async function eval_filament(doc) {
 
     const lit = v => `<span class="literal">${v}</span>`
     const strlit = v => `<span class="literal">"${v}"</span>`
-    const id = v => ` <span class="id">${v}</span> `
+    const id = v => `<span class="id">${v}</span>`
     const op = v => ` <span class='operator'>${v}</span> `
-    const argname = v => ` <span class='id'>${v}</span> `
+    const argname = v => `<span class='id'>${v}</span>`
 
     parser.semantics.addOperation('hi',{
         _terminal() { return this.sourceString },
         ident : (i, i2) => id(i.hi() + i2.hi().join("")),
 
-        unitnumber: (v, u) => lit(v.hi() +  u.hi()),
-        number: (v) => lit(v.hi().join("")),
+        unit: u => u.sourceString,
+        unitnumber: (v, u) => lit(v.hi() +  lit(u.hi())),
+        number_fract: (a, b, c) => lit(parseFloat(strip_under(a.sourceString + b.sourceString + c.sourceString))),
+        number_whole: a => lit(parseInt(strip_under(a.sourceString))),
+        number_hex: (_, a) => lit(parseInt(strip_under(a.sourceString), 16)),
+        // number: (v) => l,
         string: (_1, txt, _2) => strlit(txt.sourceString),
 
         Block: (_1, statements, _2) => "<pre class='filament-code'><code>"+statements.hi().join("\n")+"\n</code></pre>\n",
         PipeOp_left:(next,_,first) => next.hi() + op('&lt;&lt;') + first.hi(),
         PipeOp_right:(first,_,next) => first.hi() + op("&gt;&gt;") + next.hi(),
         NonemptyListOf: (a, b, c) => [a.hi()].concat(c.hi()),
-        List: (a, b, c) => '['+b.hi()+']',
-        FuncallExp: (ident, _1, args, _2) => ident.hi() + "(" + args.hi() + ")",
+        List: (a, b, c) => '['+b.hi().join(", ")+']',
+        FuncallExp: (ident, _1, args, _2) => ident.hi() + "(" + args.hi().join(", ") + ")",
         Arg_named: (a, _, c) => argname(a.hi()) + op(":") + c.hi(),
+        AddExp_add: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
+        MulExp_mul: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
+        AsExp_convert: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
+
     })
     let scope = make_standard_scope()
 
@@ -270,7 +278,7 @@ async function convert_file(infile_path, outdir_path, outfile_name) {
 
 const fnt = PImage.registerFont('node_modules/pureimage/tests/unit/fixtures/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
 fnt.load(()=>{
-    convert_file('tools/test.md','output', 'output.html')
-    // convert_file('docs/tutorial.md','output', 'tutorial.html')
+    // convert_file('tools/test.md','output', 'output.html')
+    convert_file('docs/tutorial.md','output', 'tutorial.html')
         .then(()=>{console.log("done")})
         .catch(e => console.error(e))})
