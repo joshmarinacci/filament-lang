@@ -33,7 +33,7 @@ export async function setup_parser(grammar_source) {
 }
 
 export async function eval_code(code) {
-    let match = parser.parse(code)
+    let match = parser.parse(code+"\n")
     // console.log("parsed",match)
     if(match.failed()) throw new Error("match failed")
     let ast = parser.ast(match)

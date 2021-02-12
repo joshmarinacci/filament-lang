@@ -3,7 +3,6 @@ import {all, b, l, s, setup} from "./common.js"
 import {list, scalar, string} from '../src/ast.js'
 
 await setup()
-console.log("done with setup")
 
 
 describe('syntax',() => {
@@ -60,13 +59,12 @@ describe('syntax',() => {
         ])
     })
 
-    // test.skip('comments', async () => {
-    //     await all([
-    //         ['//comment', null, "//comment", null],
-    //         ['//42 * 58', null, "//42 * 58", null],
-    //         ['//    text    ', null, "//    text    ", null],
-    //     ])
-    // })
+    it('comments', async () => {
+        await all([
+            ['42 //comment', s(42)],
+            ['42 + /* stuff */ 58', s(42+58)],
+        ])
+    })
 
     it('variables and identifiers', async () => {
         await all([
