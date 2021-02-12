@@ -1,7 +1,8 @@
 import fetch from 'node-fetch'
 import {scalar, Scope} from './ast.js'
 import {
-    add, and, convertunit,
+    abs,
+    add, and, convertunit, cos,
     divide, equal,
     factorial, greaterthan, greaterthanorequal,
     is_prime,
@@ -11,7 +12,7 @@ import {
     multiply,
     negate, not, notequal, or,
     power, sin,
-    subtract
+    subtract, tan
 } from './math.js'
 import {drop, get_field, join, length, map, range, reverse, select, sort, sum, take} from './lists.js'
 import {dataset, stockhistory} from './dataset.js'
@@ -24,7 +25,7 @@ let parser
 export async function setup_parser(grammar_source) {
     scope = new Scope('main')
     scope.install(add,subtract,multiply,divide, power,mod, negate, factorial, is_prime)
-    scope.install(sin)//,cos,tan)
+    scope.install(abs,sin,cos,tan)
     scope.install(lessthan,lessthanorequal,equal,notequal,greaterthanorequal,greaterthan,and,or,not)
     scope.install(range,length,take,drop,join,reverse,map, get_field, select,sort,sum)
     scope.install(dataset)

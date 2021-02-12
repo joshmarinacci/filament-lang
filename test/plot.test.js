@@ -46,6 +46,15 @@ describe('plots',() => {
         plot(x:fun)
         }`,"output/xy.png")
     })
+    it('y = |x|',async ()=> {
+        await code_to_png(`{
+        def fun(x:?) {
+            abs(x)
+        }
+        plot(y:fun)
+        }`,"output/abs.png")
+    })
+
     it('sine wave',async ()=> {
         await code_to_png(`{
         def fun(theta:?) {
@@ -53,6 +62,28 @@ describe('plots',() => {
         }
         plot(y:fun)
         }`,"output/sinwav.png")
+    })
+    it('parametric circle',async ()=> {
+        await code_to_png(`{
+        def px(theta:?) {
+            sin(theta)
+        }
+        def py(theta:?) {
+            cos(theta)
+        }
+        plot(x:px,y:py)
+        }`,"output/parametric_circle.png")
+    })
+    it('lissajou',async ()=> {
+        await code_to_png(`{
+        def px2(theta:?) {
+            sin(2*theta)
+        }
+        def py2(theta:?) {
+            sin(3*theta)
+        }
+        plot(x:px2,y:py2)
+        }`,"output/lissajou.png")
     })
 
 })

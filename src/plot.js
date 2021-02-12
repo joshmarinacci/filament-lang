@@ -88,6 +88,18 @@ async function draw_x_to_y(ctx, b, zoom, origin, yfun) {
     return vals
 }
 
+async function draw_t_to_xy(ctx, b, zoom, origin, xfun, yfun) {
+    let vals = []
+    for (let i = -10; i < 10; i += 0.1) {
+        let t = scalar(i)
+        let x = await xfun.fun.apply(xfun, [t])
+        let y = await yfun.fun.apply(yfun, [t])
+        vals.push([x.value, y.value])
+    }
+    draw_plot(ctx,b,zoom,origin,vals)
+    return vals
+}
+
 export const plot = new FilamentFunction('plot',
     {
         x:null,
@@ -106,7 +118,7 @@ export const plot = new FilamentFunction('plot',
             // if (polar) draw_polar()
             if (x && !y) return draw_y_to_x(ctx,bounds,zoom,origin,x)
             if (y && !x) return draw_x_to_y(ctx,bounds,zoom,origin,y)
-            // if (y && !x) draw_y()
+            if (x &&  y) return draw_t_to_xy(ctx,bounds,zoom,origin,x,y)
             // if (x && y) draw_t()
         })
     })
