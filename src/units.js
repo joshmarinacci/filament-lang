@@ -316,6 +316,15 @@ export function to_canonical_unit(b) {
     return UNITS.getCanonicalName(b)
 }
 
+export function get_proper_unit(b) {
+    let name = UNITS.getCanonicalName(b)
+    console.log("proper name is",name)
+    let unit = UNITS.lookupUnit(name)
+    console.log("proper unit is",unit)
+    return unit
+}
+
+
 export function find_conversion(a,b) {
     // console.log("finding a conversion from",a,'to',b)
     let a_unit = UNITS.lookupUnit(a.unit)
@@ -374,7 +383,7 @@ export function convert_unit(a_val,a_unit, b_unit) {
             // console.log("new value is",a_unit,a_ratio,a_val, a_base)
             return convert_unit(a_val, a_base, b_unit)
         }
-        if(b_unit != b_base) {
+        if(b_unit !== b_base) {
             // console.log("reduce b and try again")
             let b_ratio = UNITS.lookupUnit(b_unit).ratio;
             a_val = a_val * b_ratio
@@ -382,6 +391,12 @@ export function convert_unit(a_val,a_unit, b_unit) {
             return convert_unit(a_val, a_unit, b_base)
         }
 
+        //check for dimension conversion if different dimensions
+        let conv2 = UNITS.findDimConversion(a_unit, b_unit)
+        if(conv2) {
+            // console.log("dimension conversion is",conv2)
+            return a_val / conv2.ratio
+        }
         throw new Error(`no conversion found for ${a_unit} to ${b_unit}. bases ${a_base} <> ${b_base}`)
     }
     return a_val

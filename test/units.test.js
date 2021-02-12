@@ -227,11 +227,11 @@ describe("volume",()=>{
         ])
     })
     it('conversions',async ()=>{
-        await all([
-            // ['1ft * 2ft * 3ft as liter', s(169.901,'liter')],
-            // ['(3ft * 3ft * 3ft) as gallon',s(201.974,'gallon')],
-            //['4 cuft as gal', 29.9221,'gal',1)],
-            //['4 cuft', 4,'feet',3)],
+        await all_close_scalar([
+            ['1ft * 2ft * 3ft as liter', s(169.901,'liter')],
+            ['(3ft * 3ft * 3ft) as gallon',s(201.974,'gallon')],
+            ['4cuft as gal', s(29.9221,'gal',1)],
+            // ['4cuft', s(4,'feet',3)],
             //['4 cu ft', 4,'feet',3)],
             // ['1m * 2m * 3m as liter', s(6000,'liter')],
             // ['4ft * 5ft * 6ft as gallon',s(897.659,'gallon')],
