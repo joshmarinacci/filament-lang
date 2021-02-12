@@ -12,7 +12,7 @@ import {
     power,
     subtract
 } from './math.js'
-import {drop, join, map, reverse, select, sort, sum, take, range, length, get_field} from './lists.js'
+import {drop, join, map, reverse, select, sort, sum, take, range, length, get_field } from './lists.js'
 import {chart, histogram, timeline} from './chart.js'
 import {dataset, stockhistory} from './dataset.js'
 

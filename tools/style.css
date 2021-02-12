@@ -1,10 +1,23 @@
 body {
     background-color: #f8f8f8;
+    max-width: 40rem;
+    line-height: 150%;
+    padding: 1rem;
+    font-family: serif;
 }
 
 .code {
-    border: 1px solid red;
+    border: 1px solid #facaca;
+    padding: 1rem;
+    background-color: #fff6c7;
 }
 .result {
-    border: 1px solid blue;
+    border: 1px solid #adadfd;
+    padding: 1rem;
+    background-color: #e0fff2;
+}
+
+h1, h2, h3 {
+    margin: 2rem 0 0 0;
+    font-family: sans-serif;
 }

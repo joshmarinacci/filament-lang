@@ -129,14 +129,15 @@ sort([8,4,7,1])
 
 get the length
 
-```tilament
-size([8,4,7,1])
+```filament
+length([8,4,7,1])
 ```
 
 or combine sum and length to find the average
+
 ```filament
 nums << [8,4,7,1] 
-sum(nums) / size(num)
+sum(nums) / length(nums)
 ```
 
 Sometimes you need to generate a list. Suppose you wanted to know the sum of every number from 0 to 100.
@@ -152,6 +153,7 @@ sum(range(100))
 ```
 
 Range is flexible. You can give it both a start and end number, or even jump by steps.
+
 ```javascript
 // 20 -> 30
 range(20,30)
@@ -270,28 +272,28 @@ mul over range(0,100) //= 9.332622e+157
 
 One of the coolest things about lists is that you can *draw* them. Just send a list into the chart() function to see it as a bar chart. Suppose you had a list of heights of your friends.
 
-```tilament
+```filament
 chart([88,64,75,59])
 ```
 
 or just draw the numbers from 0 to 9
 
-```tilament
-chart(range(0,10))
+```filament
+chart(range(10))
 ```
 
 You can use `range` plus `mapping` to draw charts of `x`, `power(x,2)`, `sin()` or other math equations, though there are better ways to draw it than bar charts, but it does work.
 
-``javascript
+```javascript
 chart(map(range(0,10), x=>x))
 chart(map(range(0,10), x=>power(x,2)))
 chart(map(range(0,100), x=>sin(x/10)))
-``
+```
 
 And one of the best parts about lists is that they can hold more than numbers. You can work with
 lists of strings, numbers, booleans, or even records.  Consider this simple list of people.
 
-``javascript
+```javascript
 let friends = [
     { first:'Bart', last:'Simpson'},
     { first:'Homer', last:'Simpson'},
@@ -299,7 +301,7 @@ let friends = [
 ]
 
 show(friends)
-``
+```
 
 the editor will show a list of records as a table, similar to a spreadhseet.
 
@@ -318,7 +320,7 @@ that have already been assembled.  HL comes with datsets for
 
 When you load a dataset with
 
-```javascript
+```filament
 elements << dataset('elements')
 ```
 it looks like this:
@@ -345,15 +347,15 @@ to draw. We have to tell it. Let's use `mean_radius` for the height of the bar c
 Now let's compare the radius of the orbit to the radius of the planet. This will show us if the smaller planets are clustered together or spread out.
 
 ```filament
-    planets << dataset('planets')
-    chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius')
+planets << dataset('planets')
+chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius')
 ```
 
 ![planets chart3](docs/images/planets_chart_3.png)
 
 Here's a fun one. Let's see which letters have one syllable vs two.
 
-```javascript
+```tilament
 chart(dataset('letters'), y_value:'syllables')
 ```
 
@@ -362,7 +364,7 @@ chart(dataset('letters'), y_value:'syllables')
 Let's check out the relative heights of the tallest buildings in the world:
 
 
-```javascript
+```filament
 buildings << dataset('tallest_buildings')
 b2 << take(buildings,5) 
 chart(b2, y:'height', x_label:'name')
