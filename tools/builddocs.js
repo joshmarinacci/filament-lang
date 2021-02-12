@@ -276,9 +276,38 @@ async function convert_file(infile_path, outdir_path, outfile_name) {
     await fs.writeFile(path.join(outdir_path,outfile_name),html)
 }
 
-const fnt = PImage.registerFont('node_modules/pureimage/tests/unit/fixtures/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
-fnt.load(()=>{
-    // convert_file('tools/test.md','output', 'output.html')
-    convert_file('docs/tutorial.md','output', 'tutorial.html')
-        .then(()=>{console.log("done")})
-        .catch(e => console.error(e))})
+function processArgs(args) {
+    let res = {
+        missing:false
+    }
+    args.slice(2).forEach(arg => {
+        let [key,value] = arg.split("=")
+        res[key.slice(2)] = value
+    })
+    if(!res.infile) {
+        res.missing = true
+        return res
+    }
+
+    if(!res.outdir) {
+        res.outdir = 'output'
+    }
+    if(!res.outfile) {
+        res.outfile = path.join(path.basename(res.infile,'.md')) + '.html'
+    }
+    return res
+}
+
+function run () {
+    let args = processArgs(process.argv)
+    if (args.missing) return console.log("files missing\nnode tools/builddoc --infile=in_markdown_file.md --outdir=out_dir")
+    console.log("using config",args)
+    const fnt = PImage.registerFont('node_modules/pureimage/tests/unit/fixtures/fonts/SourceSansPro-Regular.ttf','Source Sans Pro');
+    fnt.load(()=>{
+        return convert_file(args.infile, args.outdir, args.outfile)
+            .then(()=>console.log("done"))
+            .catch(e => console.error(e))
+    })
+}
+run()
+
