@@ -74,10 +74,11 @@ function parse_markdown_content(block) {
     parser.grammar = ohm.grammar(`
 MarkdownInner {
   Block = Para*
-  Para = bold | code | plain
-  plain = (~("*"|"\`") any)+
+  Para = link | bold | code | plain
+  plain = ( ~( "*" | "\`" | "[") any)+
   bold = "*" (~"*" any)* "*"
   code = "\`" (~"\`" any)* "\`"
+  link = "!"? "[" (~"]" any)* "]" "(" (~")" any)* ")"
 }
     `)
     parser.semantics = parser.grammar.createSemantics()
@@ -86,6 +87,10 @@ MarkdownInner {
         plain(a) {return ['plain',a.content().join("")] },
         bold(_1,a,_2) { return ['bold',a.content().join("")] },
         code:(_1,a,_2) => ['code',a.content().join("")],
+        link:(img,_1,text,_2,_3,url,_4) => ['link',
+            text.content().join(""),
+            url.content().join(""),
+            img.content().join("")]
     })
     let match = parser.grammar.match(block.content)
     let res = parser.semantics(match).content()
@@ -180,6 +185,13 @@ function render_paragraph_output(block) {
         if(run[0] === 'plain') return run[1]
         if(run[0] === 'bold') return '<b>'+run[1]+'</b>'
         if(run[0] === 'code') return '<code>'+run[1]+'</code>'
+        if(run[0] === 'link') {
+            if(run[3] === '!') {
+                return `<img src="${run[2]}" alt="${run[1]}"/>`
+            } else {
+                return `<a href="${run[2]}">${run[1]}</a>`
+            }
+        }
         return run[1]
     }).join("") + "</p>"
 }
