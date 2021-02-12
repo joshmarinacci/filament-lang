@@ -143,6 +143,7 @@ async function eval_filament(doc) {
         AddExp_add: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
         MulExp_mul: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
         AsExp_convert: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
+        UnExp:(a,b) => a.hi() + b.hi(),
 
     })
     let scope = make_standard_scope()
@@ -158,7 +159,7 @@ async function eval_filament(doc) {
         // console.log("final result is",res,'for code',code)
         code.result = res
         code.highlight = parser.semantics(match).hi()
-        console.log("highlighted:",code.highlight)
+        // console.log("highlighted:",code.highlight)
         return res
     })).then(()=>{
         // console.log("all done")

@@ -143,7 +143,7 @@ sum(nums) / length(nums)
 Sometimes you need to generate a list. Suppose you wanted to know the sum of every number from 0 to 100.
 Of course you *could* write out the numbers directly, but HL has a way to generate lists for you. It's called range.
 
-```javascript
+```filament
 // make a list from 0 to 9
 range(10)
 // = [0,1,2,3,4,5,6,7,8,9]
@@ -154,35 +154,34 @@ sum(range(100))
 
 Range is flexible. You can give it both a start and end number, or even jump by steps.
 
-```javascript
-// 20 -> 30
-range(20,30)
-// [20,21,22,23,24,25,26,27,28,29]
-// 0 -> 100 by tens
-range(0,100,10)
-// [0,10,20,30,40,50,60,70,80,90]
+```filament
+range(min:20,max:30)
+```
+
+```filament
+range(100,step:10)
 ```
 
 Remember that range will start at the minmum and go to one less than the max. So 0 to 10 will go up to 9.
 
-HL can handle big lists. If you ask for range(0,10_000_000) it will show the the first few and then ... before the last few.
+Filament can handle big lists. If you ask for range(0,10_000_000) it will show the the first few and then ... before the last few.
 
-```javascript
+```tilament
 //you can use underscores to separate digits. they will be stripped out before calculations
-range(10_000_000)
+range(10_000)
 // [0, 1, 2, 3 .... 99_999_998, 99_999_999]
 ```
 
 Lists are very useful for lots of things, but sometimes you get more numbers than you need. Suppose you wanted all the numbers from from 0 to 20 minus then just the first three. Use take(list,3). Want just the last three use take(list,-3)
 
-```javascript
-let list = range(10)  // [0,1,2,3,4,5,6,7,8,9]
+```filament
+list << range(10)  // [0,1,2,3,4,5,6,7,8,9]
 take(list, 3)         // [0,1,2]
 take(list, -3)        // [7,8,9]
 ```
 You can also remove items from a list with drop
 
-```javascript
+```filament
 drop(range(10), 8)  //remove the first 8
 // = [8,9]
 ```
@@ -236,7 +235,7 @@ sqrt(sum(power(V1,2))) // magnitude of vector
 ```
 
 
-lists let you find data too. you can search for items using select and a small function. lets find
+Lists let you find data too. you can search for items using select and a small function. lets find
 all of the primes up to 10000
 
 ```filament
@@ -248,8 +247,8 @@ or all numbers evenly divisible by 5
 select( range(10_000), where: x => x mod 5 )
 ```
 
-you can also apply functions to combine elements in a list in different ways. Consider
-calculating at total of 1,2, and 3. Instead of adding numbers together indivdually or using
+You can also apply functions to combine elements in a list in different ways. Consider
+calculating at total of 1,2, and 3. Instead of adding numbers together individually or using
 the sum function you can apply addition over every element in the list. `add over [1,2,3]` This
 is the same as putting a plus between each number: `1 + 2 + 3`. All of these are the same:
 
