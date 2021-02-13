@@ -57,3 +57,20 @@ p code {
     color: green;
 }
 
+div.wrapper {
+    overflow: scroll;
+    max-height: 200px;
+}
+table.output {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+table.output td {
+    border: 1px solid #ccc;
+    padding: 0.25em 0.5em;
+}
+table.output th {
+    border: 1px solid #ccc;
+    background-color: #ccc;
+    color: black;
+}

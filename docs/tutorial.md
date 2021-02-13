@@ -334,23 +334,27 @@ that have already been assembled.  Filament comes with datsets for
 * Planets of the solar system
 * Countries of the world.
 
-When you load a dataset with
+When you load a dataset it will be shown as a table.
 
 ```filament
 elements << dataset('elements')
 ```
-it looks like this:
-
-![elements table](docs/images/elements_table.png)
 
 Each column in the table is a field of each record in the datasets.
 
-Let's suppose you want to compare the sizes of the planets. First load the planets dataset. It looks like this:
+Let's suppose you want to compare the sizes of the planets. First load the 
+planets dataset.
 
-![planets table](docs/images/planets_table.png)
-
+```filament
+planets << dataset('planets')
+```
 
 Now add a chart to draw the planets.
+
+```filament
+planets << dataset('planets')
+chart(planets)
+```
 
 Hmm. That doesn't look right.  Chart doesn't
 know what part of the planets dataset we want
@@ -366,7 +370,7 @@ chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius')
 
 Here's a fun one. Let's see which letters have one syllable vs two.
 
-```tilament
+```ilament
 chart(dataset('letters'), y_value:'syllables')
 ```
 

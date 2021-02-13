@@ -172,10 +172,7 @@ async function eval_filament(doc) {
 async function mkdir(dir) {
     return new Promise((res,rej)=>{
         real_mkdir(dir,(err)=>{
-            console.log("done making")
-            if(err) {
-                // console.log(err)//return rej(err)
-            }
+            console.log("made dir",dir)
             res()
         })
     })
@@ -192,13 +189,14 @@ async function generate_canvas_images(doc, basedir, subdir) {
             let fname = `output.${i}.png`
             block.src = path.join(subdir,fname)
             await PImage.encodePNGToStream(img,createWriteStream(path.join(basedir,subdir,fname)))
-            console.log('rendered', block.content, 'to',block.src)
+            // console.log('rendered', block.content, 'to',block.src)
         })).then(done => {
             console.log("fully done writing images")
         })
 }
 
 function render_code_output(block) {
+    // console.log("rendering code output for",block.result)
     let code =`<pre class="code">
   <code data-language="${block.language}">${block.content}</code>
 </pre>
@@ -212,9 +210,23 @@ result
         code += `<img src="${block.src}" width="500" height="250">`
     } else {
         if(block.result) {
-            // console.log("code block is",block, block.result.toString())
-            code += `<div class="result"><code>${block.result.toString()}</code></div>`
-            // console.log("final code is",code)
+            if(block.result.type === 'table') {
+                let header = Object.entries(block.result.schema.properties).map(prop => {
+                    return `<th>${prop[0]}</th>`
+                }).join("")
+                let rows = block.result.value.map(record => {
+                    let cols = Object.values(record).map(value => {
+                        return `<td>${value}</td>`
+                    })
+                    return `<tr>${cols.join("")}</tr>`
+                }).join("\n")
+                code += `<div class="wrapper"><table class="output">
+                    <thead><tr>${header}</tr></thead>
+                    <tbody>${rows}</tbody>
+                    </table></div>`
+            } else {
+                code += `<div class="result"><code>${block.result.toString()}</code></div>`
+            }
         } else {
             code += `<p><code>BROKEN OUTPUT</code></p>`
         }
