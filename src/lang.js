@@ -1,6 +1,7 @@
 import {
+    abs,
     add,
-    and, convertunit,
+    and, convertunit, cos,
     divide,
     equal, factorial,
     greaterthan, greaterthanorequal, is_prime, lessthan, lessthanorequal,
@@ -9,8 +10,8 @@ import {
     negate, not,
     notequal,
     or,
-    power,
-    subtract
+    power, sin,
+    subtract, tan
 } from './math.js'
 import {drop, join, map, reverse, select, sort, sum, take, range, length, get_field } from './lists.js'
 import {chart, histogram, timeline} from './chart.js'
@@ -18,15 +19,17 @@ import {dataset, stockhistory} from './dataset.js'
 
 import {Parser} from './parser.js'
 import {Scope} from './ast.js'
+import {plot} from './plot.js'
 
 export function make_standard_scope() {
     let scope = new Scope("lang")
     scope.install(add, subtract, multiply, divide, power, negate, mod, factorial, is_prime)
+    scope.install(abs,sin,cos,tan)
     scope.install(lessthan, greaterthan, equal, notequal, lessthanorequal, greaterthanorequal, or, and, not)
     scope.install(range, length, take, drop, join, reverse, map, sort, sum, get_field, select)
     scope.install(dataset, stockhistory)
     scope.install(convertunit)
-    scope.install(chart, timeline, histogram)
+    scope.install(chart, timeline, histogram, plot)
     return scope
 }
 

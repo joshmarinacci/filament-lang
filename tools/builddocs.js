@@ -69,7 +69,7 @@ function l(...args) {
 
 function parse_markdown_content(block) {
     if(block.type !== 'P') return block
-    l("parsing content from block",block)
+    // l("parsing content from block",block)
     let parser = {}
     parser.grammar = ohm.grammar(`
 MarkdownInner {
@@ -137,13 +137,16 @@ async function eval_filament(doc) {
         PipeOp_left:(next,_,first) => next.hi() + op('&lt;&lt;') + first.hi(),
         PipeOp_right:(first,_,next) => first.hi() + op("&gt;&gt;") + next.hi(),
         NonemptyListOf: (a, b, c) => [a.hi()].concat(c.hi()),
-        List: (a, b, c) => '['+b.hi().join(", ")+']',
-        FuncallExp: (ident, _1, args, _2) => ident.hi() + "(" + args.hi().join(", ") + ")",
-        Arg_named: (a, _, c) => argname(a.hi()) + op(":") + c.hi(),
-        AddExp_add: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
-        MulExp_mul: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
-        AsExp_convert: (a, o, c) => a.hi()+op(o.hi())+c.hi(),
-        UnExp:(a,b) => a.hi() + b.hi(),
+        List: (a, b, c) => `[${b.hi().join(", ")}]`,
+        FuncallExp: (ident, _1, args, _2) => `${ident.hi()} ( ${args.hi().join(", ")} )`,
+        FundefExp: (def, ident,_1,args,_3,block ) => `${def.hi()} ${ident.hi()} ( ${args.hi()} ) { ${block.hi()} }`,
+        DefArg: (name,_,a) => argname(name.hi()) + op(":") + a.hi(),
+        Arg_named: (name, _, a) => argname(name.hi()) + op(":") + a.hi(),
+        AddExp_add: (a, o, b) => a.hi()+op(o.hi())+b.hi(),
+        MulExp_mul: (a, o, b) => a.hi()+op(o.hi())+b.hi(),
+        AsExp_convert: (a, o, unit) => a.hi()+op(o.hi())+unit.hi(),
+        UnExp:(o,a) => o.hi() + a.hi(),
+        BoolExp_bool:(a,o,b) => a.hi()+op(o.hi()+b.hi()),
 
     })
     let scope = make_standard_scope()
@@ -208,7 +211,7 @@ result
         code += `<img src="${block.src}" width="500" height="250">`
     } else {
         if(block.result) {
-            console.log("code block is",block, block.result.toString())
+            // console.log("code block is",block, block.result.toString())
             code += `<p class="result"><code>${block.result.toString()}</code></p>`
             // console.log("final code is",code)
         } else {
@@ -273,7 +276,7 @@ async function convert_file(infile_path, outdir_path, outfile_name) {
     await eval_filament(doc)
     await generate_canvas_images(doc,outdir_path,'images')
     let html = render_html(doc)
-    console.log("final html is",html)
+    //console.log("final html is",html)
     await fs.writeFile(path.join(outdir_path,outfile_name),html)
 }
 

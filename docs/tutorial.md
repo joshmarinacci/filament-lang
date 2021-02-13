@@ -243,31 +243,15 @@ select(range(100), where:is_prime)
 ```
 
 or all numbers evenly divisible by 5
-```javascript
-select( range(10_000), where: x => x mod 5 )
+
+```filament
+def good(x:?) {
+  x mod 5 = 0
+}
+select( range(100), where: good )
 ```
 
-You can also apply functions to combine elements in a list in different ways. Consider
-calculating at total of 1,2, and 3. Instead of adding numbers together individually or using
-the sum function you can apply addition over every element in the list. `add over [1,2,3]` This
-is the same as putting a plus between each number: `1 + 2 + 3`. All of these are the same:
-
-```javascript
-1 + 2 + 3
-add over [1,2,3]
-+ over [1,2,3]
-sum([1,2,3])
-reduce([1,2,3], with: (a,b)=>a+b)
-```
-
-Remember that `+` is the same thing as using the `add` function.  With this functionality we can create
-our own factorial. If you remember, factorial of N is calculated by multiplying every lower number together with N.  So factorial of 4 is 1*2*3*4, which we can caluate with mul over [1*2*3*4]. Lets
-do factorial of 100
-
-```javascript
-mul over range(0,100) //= 9.332622e+157
-```
-
+## charts
 
 One of the coolest things about lists is that you can *draw* them. Just send a list into the chart() function to see it as a bar chart. Suppose you had a list of heights of your friends.
 
@@ -281,28 +265,52 @@ or just draw the numbers from 0 to 9
 chart(range(10))
 ```
 
-You can use `range` plus `mapping` to draw charts of `x`, `power(x,2)`, `sin()` or other math equations, though there are better ways to draw it than bar charts, but it does work.
+## plotting equations
 
-```javascript
-chart(map(range(0,10), x=>x))
-chart(map(range(0,10), x=>power(x,2)))
-chart(map(range(0,100), x=>sin(x/10)))
+While you could use `range`, `map`, and `chart` to draw pictures of
+`x`, `power(x,2)`, `sin()` or other math equations. However, the
+`plot` function is a better choice.
+
+A quadratic equation
+
+```filament
+
+def quad(x:?) {
+    x**2 - 3*x - 4
+}
+
+plot(y:quad)
 ```
+
+Sine wave
+
+```filament
+def fun(theta:?) {
+    sin(theta*2)
+}
+plot(y:fun)
+```
+
+A polar Archimedes spiral
+
+```filament
+def fun(theta:?) {
+    0.25*theta
+}
+plot(polar:fun)
+```
+
+
+
 
 And one of the best parts about lists is that they can hold more than numbers. You can work with
-lists of strings, numbers, booleans, or even records.  Consider this simple list of people.
+lists of strings, numbers, booleans.  Consider this simple list of people.
 
 ```javascript
-let friends = [
-    { first:'Bart', last:'Simpson'},
-    { first:'Homer', last:'Simpson'},
-    { first:'Ned', last:'Flanders'},
-]
-
-show(friends)
+friends << ["Bart", "homer","Ned"]
 ```
 
-the editor will show a list of records as a table, similar to a spreadhseet.
+the editor will show a list of strings
 
 *screenshot*
 
@@ -335,13 +343,10 @@ Let's suppose you want to compare the sizes of the planets. First load the plane
 
 Now add a chart to draw the planets.
 
-![planets chart](docs/images/planets_chart_1.png)
-
 Hmm. That doesn't look right.  Chart doesn't
 know what part of the planets dataset we want
 to draw. We have to tell it. Let's use `mean_radius` for the height of the bar chart. For the label under each bar we can use the `name` property. We can tell the chart function what to do using the named arguments `x_label` and `y`.
 
-![planets chart2](docs/images/planets_chart_2.png)
 
 Now let's compare the radius of the orbit to the radius of the planet. This will show us if the smaller planets are clustered together or spread out.
 
@@ -350,15 +355,11 @@ planets << dataset('planets')
 chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius')
 ```
 
-![planets chart3](docs/images/planets_chart_3.png)
-
 Here's a fun one. Let's see which letters have one syllable vs two.
 
 ```tilament
 chart(dataset('letters'), y_value:'syllables')
 ```
-
-![letters chart](docs/images/letters_chart.png)
 
 Let's check out the relative heights of the tallest buildings in the world:
 
@@ -369,10 +370,5 @@ b2 << take(buildings,5)
 chart(b2, y:'height', x_label:'name')
 ```
 
-![tallest buildings](docs/images/buildings_chart.png)
 
 
-
-
-- Charts and datasets
-- Sounds and images
