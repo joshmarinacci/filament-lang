@@ -32,8 +32,8 @@ describe('math',() => {
             ['4 <> 2',b(true)],
             ['4 <= 2',b(false)],
             ['4 >= 2',b(true)],
-            // ['true and false',b(false)],
-            // ['true or false',b(true)],
+            ['true and false',b(false)],
+            ['true or false',b(true)],
         ])
     })
     it("unary  operators", async ()=>{
@@ -60,6 +60,9 @@ describe('math',() => {
 
     it('trig',async ()=>{
         await all([
+            [`sin(0)`,s(0)],
+            [`cos(0)`,s(1)],
+            [`tan(0)`,s(0)],
         ])
     })
     it('constants', async ()=>{

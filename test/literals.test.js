@@ -24,6 +24,7 @@ describe('literals', async function() {
         await all([
             ['0x42',s(0x42)],
             ['0xFF',s(0xFF)],
+            ['0xFF_AA_00',s(0xFFAA00)],
         ])
     })
     it('lists',async  () => {
