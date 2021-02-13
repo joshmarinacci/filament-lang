@@ -1,11 +1,22 @@
-import {setup_parser } from "../src/index.js"
 import {all, b, l, s, setup} from "./common.js"
 import {list, scalar, string} from '../src/ast.js'
+import {make_standard_scope} from '../src/lang.js'
+import {FilamentFunction} from '../src/parser.js'
 
 await setup()
 
 
 describe('syntax',() => {
+    let scope = make_standard_scope()
+    const func =  new FilamentFunction(  "func", { data:null, },
+        (data) => data)
+    scope.install(func)
+    const funk =  new FilamentFunction(  "funk", { data:null, },
+        (data) => data)
+    scope.install(funk)
+    let s42 = s(42)
+    let l42 = list([s(42)])
+
     it('case identifier tests', async () => {
         await all([
             ['pi',s(Math.PI)],
@@ -55,7 +66,6 @@ describe('syntax',() => {
             ['{def double(x:?) { x*2} map([1,2,3],with:double)}', list([s(2), s(4), s(6)])],
             ['{def first_letter(v:?) { take(v,1)} map(["foo","bar"],with:first_letter)}', list([string("f"), string("b")])],
             //TODO: ['range(100, step:10) as jesse',list([string('ten'),string('4D'),'ten twenty thirty 4D fifty 6D 7D AD 9D'])]
-            // [`def get_attack(pokemon) { pokemon.attack }`,"def get_attack(pokemon=?) {\npokemon.attack\n}\n"],
         ])
     })
 
@@ -92,63 +102,40 @@ describe('syntax',() => {
         ])
     })
 
-    // test.skip('function calls', async () => {
-    //     await all([
-    //         //'func' function returns data or first arg
-    //         ['func()', null],
-    //         ['func(42)', s(42)],
-    //         ['func([42])', call('func', [indexed(list([scalar(42)]))]), 'func([42])', list_42],
-    //         ['func(data:42)', call('func', [named('data', scalar(42))]), 'func(data:42)', 42],
-    //         ['func(data:[42],count:42)', call('func', [named('data', list([scalar(42)])), named('count', scalar(42))]), 'func(data:[42],count:42)', list_42],
-    //         ['func(count:42, [42])', call('func', [named('count', scalar(42)), indexed(list([scalar(42)]))]), 'func(count:42,[42])', list_42],
-    //         ['func(func(42))',call('func',[indexed(call('func',[indexed(scalar(42))]))]),'func(func(42))',_42],
-    //         ['func(42,func(42))',
-    //             call('func', [indexed(scalar(42)), indexed(call('func', [indexed(scalar(42))]))]),
-    //             'func(42,func(42))', 42],
-    //         // ['func(count:func,func(),func)',
-    //         //     call('func',[
-    //         //         named('count','func'),
-    //         //         indexed(call('func',[])),
-    //         //         indexed('func'),
-    //         //     ])
-    //         //     ,'func(count:func,func(),func)',
-    //         //     call('func',[])
-    //         // ],
-    //     ])
-    // })
+    it('function calls', async () => {
 
-    const list_42 = list([scalar(42)])
-    // test.skip("pipelines", async () => {
-    //     await all([
-    //         // ['func() >> funk()',null],
-    //         ['func([42]) >> funk()',list_42],
-    //         // ['func(42) >> func(count:42)',s(42)],
-    //         // ['func(42) >> func(count:42) >> func(42)', s(42)],
-    //         // ['func(arg: _42, [4_2 ]) >> func(count:42) >> funk(42) >> answer',
-    //         //     pipeline_right(
-    //         //         call('func',[
-    //         //             named('arg',scalar(42)),
-    //         //             indexed(list(scalar(42)))
-    //         //         ])
-    //         //     ),
-    //         //     'func([42], arg:42) >> func(count:42) >> func(42) >> answer',
-    //         // ]
-    //
-    //     ])
-    // })
-    //
+        await all([
+            //'func' function returns data or first arg
+            ['func()', null],
+            ['func(42)', s42],
+            ['func([42])', l42],
+            ['func(data:42)', s42],
+            ['func(data:[42],count:42)',l42],
+            ['func(count:42, [42])',l42],
+            ['func(func(42))',s42],
+            ['func(42,func(42))', s42],
+            ['func(count:func,func(),func)',null]
+        ],scope)
+    })
+
+    it("pipelines", async () => {
+        await all([
+            ['func() >> funk()',null],
+            ['func([42]) >> funk()',l42],
+            ['func(42) >> func(count:42)',s(42)],
+            ['func(42) >> func(count:42) >> func(42)', s(42)],
+            ['func(arg: _42, [4_2 ]) >> func(count:42) >> funk(42) >> answer',l42]
+        ],scope)
+    })
+
     it("blocks", async () => {
         await all([
             [`{4  2}`,s(2)],
             [`{4*2  2+4}`, s(6)],
             [`add(4,2)`,  s(6)],
-            // [`add([4,2,3])`,'add([4,2,3])'],
             ['{ add(4,2) subtract(4,2) }', s(2)],
-            // [`{ func() << func(2)
-            // func(4_0) }`,  s(40)],
-            // [`pokemons << dataset('pokemon')
-            //   take(pokemon,5) >> chart(pokemon, y:"attack", xLabel:'name')
-            // `,'dataset("pokemon")\ntake(pokemon,5) >> chart(pokemon, y:"attack", xlabel:"name")'],
-        ])
+            [`{ func() << func(2)
+            func(4_0) }`,  s(40)],
+        ],scope)
     })
 })

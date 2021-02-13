@@ -8,17 +8,17 @@ export async function setup() {
     let grammar_source = (await fs.readFile(new URL('../src/filament.ohm', import.meta.url))).toString();
     await setup_parser(grammar_source)
 }
-export async function t(str, ans) {
-    let ret = await eval_code(str)
+export async function t(str, ans,scope) {
+    let ret = await eval_code(str,scope)
     // console.log(str,'became',ret)
     // console.log('answer is',ans)
     assert.deepStrictEqual(ret,ans)
     // assert.equal(ret.value,ans.value)
 }
 
-export async function all(args) {
+export async function all(args,scope) {
     return Promise.all(args.map(tx => {
-        return Promise.resolve(t(tx[0],tx[1]))
+        return Promise.resolve(t(tx[0],tx[1],scope))
     }))
 }
 

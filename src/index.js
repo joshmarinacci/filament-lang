@@ -35,13 +35,14 @@ export async function setup_parser(grammar_source) {
     parser = new Parser(scope,grammar_source)
 }
 
-export async function eval_code(code) {
+export async function eval_code(code, custom_scope) {
+    if(!custom_scope) custom_scope = scope
     let match = parser.parse(code+"\n")
     // console.log("parsed",match)
     if(match.failed()) throw new Error("match failed")
     let ast = parser.ast(match)
     // console.log('ast',ast)
-    return Promise.resolve(ast.evalFilament(scope)).catch(e => {
+    return Promise.resolve(ast.evalFilament(custom_scope)).catch(e => {
         console.error(e)
         return false
     })
@@ -54,3 +55,4 @@ export {is_scalar,
     is_list,
     is_string,
 } from "./ast.js"
+
