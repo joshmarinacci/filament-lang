@@ -96,15 +96,13 @@ export const select = new FilamentFunction('select',{
     data:REQUIRED,
     where:REQUIRED,
 },function(data,where) {
-    return list(data._filter((el)=>{
-        let ret = where.fun.apply(where,[el])
-        // console.log("ret is",unpack(ret))
-        return unpack(ret)
-        // return Promise.resolve(ret).then(ret => {
-        //     console.log("returned",unpack(ret))
-        //     return ret
-        // })
-    }))
+    let proms = data._map((el)=>{
+        return Promise.resolve(where.fun.apply(where,[el]))
+    })
+    return Promise.all(proms).then(vals => {
+        let real_vals = data._filter((v,i)=>unpack(vals[i]))
+        return list(real_vals)
+    })
 })
 
 // * __sort__: sort list returning a new list, by: property to use for sorting `sort(data by:"date")` (should we use `order` instead?)

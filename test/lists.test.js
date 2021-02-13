@@ -64,11 +64,13 @@ describe('lists',() => {
         ])
     })
 
-    // eval_ast('map a list',[
-    //     ['map([1,2,3],x=>x*2)',list([2,4,6])],
-    //     ['map(range(3),x=>x*2)',list([0,2,4])],
-    //     ['map(range(3), (x)=>add(x,5))',list([5,6,7])],
-    // ])
+    it('map a list', async() => {
+        await all([
+            [`{   def double(x:?) { x*2 }   map([1,2,3],double) }`,list([s(2),s(4),s(6)])],
+            // ['map(range(3),x=>x*2)',list([0,2,4])],
+            // ['map(range(3), (x)=>add(x,5))',list([5,6,7])],
+        ])
+    })
 
     it('sorting a list', async ()=>{
         await all([
@@ -79,14 +81,16 @@ describe('lists',() => {
         ])
     })
 
-    // eval_ast('select',[
-    // //     expect(select([1,2,3], {where:(x)=>x>1})).toEqual([2,3])
-    // ])
+    it('select from a list', async ()=>{
+        await all([
+            [`{   def gr1(x:?) { x>1 }    select([1,2,3], where:gr1)     }`,list([s(2),s(3)])],
+        ])
+    })
     //
     it('sum elements', async ()=>{
         await all([
             ['sum([1,2,3])',s(6)],
-            // ['sum(range(5))',s(0+1+2+3+4)],
+            ['sum(range(5))',s(0+1+2+3+4)],
         ])
     })
 
