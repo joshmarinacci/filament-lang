@@ -1,4 +1,4 @@
-some cool text
+some *cool* text
 
 ```filament
 data << [42,43,44,45]

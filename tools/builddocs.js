@@ -238,13 +238,13 @@ function render_paragraph_output(block) {
     // console.log("rendering block",block)
     return '<p>' + block.content.map(run => {
         if(run[0] === 'plain') return run[1]
-        if(run[0] === 'bold') return '<b>'+run[1]+'</b>'
-        if(run[0] === 'code') return '<code>'+run[1]+'</code>'
+        if(run[0] === 'bold') return '<b>'+run[1]+'</b> '
+        if(run[0] === 'code') return '<code>'+run[1]+'</code> '
         if(run[0] === 'link') {
             if(run[3] === '!') {
-                return `<img src="${run[2]}" alt="${run[1]}"/>`
+                return `<img src="${run[2]}" alt="${run[1]}"/> `
             } else {
-                return `<a href="${run[2]}">${run[1]}</a>`
+                return `<a href="${run[2]}">${run[1]}</a> `
             }
         }
         return run[1]

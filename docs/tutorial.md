@@ -7,7 +7,7 @@ simple arithmetic. What makes them amazing is that they can do it *super duper f
 have to teach them.  This is called programming. Anyone can program, including you!
 
 
-## Arithmetic
+# Arithmetic
 
 Filament understands arithmetic. Try typing in a math question like `2+2` then press the 'run' 
 button (or type control-return on your keyboard). Filament will show you the answer: `4`.  
@@ -23,7 +23,7 @@ the box by multiplying all of the sides.
 ```
 
 
-### Units
+## Units
 
 In the above problem only *we* know that the `7` meant `7 feet`. The computer doesn't 
 know because we didn't tell it. Fortunately Filament lets us tell the computer exactly what 
@@ -45,7 +45,7 @@ gallons instead.
 which gives us the answer `837.81 gallons`.
 
 Notice that this time we abbreviated `feet` to `ft` and `gal` for `gallons`.   
-HL understands the full names and abbrevations for over a hundred kinds of units, 
+Filament understands the full names and abbrevations for over a hundred kinds of units, 
 and it can convert between any of them.  Here's a few more examples to try.
 
 Convert your height into centimeters. I'm 5 foot four inches so
@@ -83,30 +83,23 @@ Even professionals get this wrong some times.
 convert correctly between imperial and metric units. 
 
 
-### Superman
+## Superman
 
 Now lets try a more complex problem. In one of the Superman movies he flies so fast that the world turns backwards and reverses time. That got me thinking. Is that realistic? The earth is pretty big. How long would it really take him to fly around the world?
 
 We need some information first. How fast can Superman fly? Apparently the comics are pretty vague about his speed. Some say it's faster than light, some say it's infinite, some say it's just slighly slower than The Flash.  Since this is about the real world let's go with an older claim, that [Superman is faster than a speeding bullet](https://screenrant.com/superman-faster-speeding-bullet-confirmed/).  According to the internet, the fastest bullet ever made was was the [.220 Swift](https://en.wikipedia.org/wiki/.220_Swift) which can regularly exceed 4,000 feet per second. [The fastest recorded shot was at 4,665 ft/s](https://www.quora.com/Whats-the-fastest-bullet-in-the-world-What-makes-it-so-fast-How-are-they-made), so we'll go with that.
 
-Now wee need to know how big the earth is. The earth isn't perfectly spherical and of course it would depend on exactly which part of the earth superman flew, but [according to Wikipedia](https://en.wikipedia.org/wiki/Earth) the
-average (mean) radius of the Earth is *6,371.0* kilometers.
-
-Now we can divide these and convert to hours to see how long it would take.
-
-```tilament
- 6371.0km / 4000ft/s as hours
-```
-
-So pretty fast. In fact.
-
-Oh, wait, That's not right. We are using the radius of the earth, not the circumference.  We know the circumferce of a circle is 2\*pi\*radius. Let's try that again.
+Now wee need to know how big the earth is. The earth isn't perfectly spherical and of 
+course it would depend on exactly which part of the earth superman flew, but [according to Wikipedia](https://en.wikipedia.org/wiki/Earth) the
+average (mean) radius of the Earth is *6,371.0* kilometers. We also know the circumfrence of a circle 
+is `2 * pi * radius`. So the equation is
 
 ```tilament
-(6371.0 km * 3.14 * 2) / 4000ft/s as hours  
+(6371.0km * pi * 2) / 4000ft/s as hours  
 ```
 
-So still pretty fast. He could almost go three times around the earth in a single 24 hour day.
+Pretty fast. He could almost go three times around the earth in a single 24 hour day. But not 
+as fast as the movie said.
 
 
 Programming is both fun and useful. We can instruct computers to help us answer all sorts of interesting questions.  In the next section we'll learn about groups of numbers called lists, and how to do interesting math with them.
@@ -146,8 +139,10 @@ nums << [8,4,7,1]
 sum(nums) / length(nums)
 ```
 
+## Making Lists
+
 Sometimes you need to generate a list. Suppose you wanted to know the sum of every number from 0 to 100.
-Of course you *could* write out the numbers directly, but HL has a way to generate lists for you. It's called `range`.
+Of course you *could* write out the numbers directly, but Filament has a way to generate lists for you. It's called `range`.
 
 ```filament
 // make a list from 0 to 9
@@ -211,6 +206,8 @@ or add two lists together
 [1,2,3] + [4,5,6]
 ```
 
+## Math with Lists
+
 It might seem strange to do math on lists but it's actually quite useful. 
 Image you had a list of prices and you would like to offer a 20% discount.
 You can do that with a single multiplication.
@@ -241,7 +238,6 @@ V1 * V2 // dot product of vectors
 sqrt(sum(power(V1,2))) // magnitude of vector
 ```
 
-
 Lists let you find data too. you can search for items using select and a small function. lets find
 all of the primes up to 10000
 
@@ -252,10 +248,10 @@ select(range(100), where:is_prime)
 or all numbers evenly divisible by 5
 
 ```filament
-def good(x:?) {
+def div5(x:?) {
   x mod 5 = 0
 }
-select( range(100), where: good )
+select( range(100), where: div5 )
 ```
 
 ## charts
@@ -277,8 +273,8 @@ chart(range(10))
 ## plotting equations
 
 While you could use `range`, `map`, and `chart` to draw pictures of
-`x`, `power(x,2)`, `sin()` or other math equations. However, the
-`plot` function is a better choice.
+`x`, `power(x,2)`, `sin()` or other math equations, there is a much
+better way: using the `plot` function.
 
 A quadratic equation
 
