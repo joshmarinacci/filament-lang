@@ -184,14 +184,15 @@ async function mkdir(dir) {
 async function generate_canvas_images(doc, basedir, subdir) {
     await mkdir(path.join(basedir,subdir))
     // l("rendering all canvas images in doc",doc)
-    Promise.all(doc
+    return Promise.all(doc
         .filter(block => block.type === 'CODE' && is_canvas_result(block.result))
         .map(async(block,i) => {
-            const img = PImage.make(1000,500);
-            block.result.cb(img)
+            const img = PImage.make(500,500);
+            await block.result.cb(img)
             let fname = `output.${i}.png`
             block.src = path.join(subdir,fname)
             await PImage.encodePNGToStream(img,createWriteStream(path.join(basedir,subdir,fname)))
+            console.log('rendered', block.content, 'to',block.src)
         })).then(done => {
             console.log("fully done writing images")
         })
