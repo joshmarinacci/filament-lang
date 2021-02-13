@@ -86,4 +86,30 @@ describe('plots',() => {
         }`,"output/lissajou.png")
     })
 
+    it('polar circle', async () => {
+        await code_to_png(`{
+        def fun(theta:?) {
+            2
+        }
+        plot(polar:fun)
+        }`,"output/polarcirle.png")
+    })
+
+    it('polar spiral', async () => {
+        await code_to_png(`{
+        def fun(theta:?) {
+            0.25*theta
+        }
+        plot(polar:fun)
+        }`,"output/polarspiral.png")
+    })
+
+    it('heart', async() => {
+        await code_to_png(`{
+        def px3(t:?) { (16 * (sin(t)**3))/10 }
+        def py3(t:?) { (13 * cos(t) - 5 * cos (2*t) - 2 * cos(3*t) - cos(4*t))/10 }
+        plot(x:px3,y:py3)
+        }`,"output/heart.png")
+    })
+
 })

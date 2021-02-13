@@ -29,7 +29,29 @@ function calc_bounds(canvas) {
 
 function axes(ctx, b, zoom, origin) {
     ctx.save()
-    ctx.strokeStyle = '#888888'
+    ctx.strokeStyle = '#cccccc'
+    ctx.translate(b.cx,b.cy)
+    ctx.scale(zoom,zoom)
+    let top = b.h/zoom
+    let bottom = -b.h/zoom
+    let left = -b.w/zoom
+    let right = b.w/zoom
+
+    //grid lines
+    ctx.beginPath()
+    for(let i=left; i<right; i+=1) {
+        ctx.moveTo(i, top)
+        ctx.lineTo(i, bottom)
+    }
+    for(let i=bottom; i<top; i+=1) {
+        ctx.moveTo(left,i)
+        ctx.lineTo(right,i)
+    }
+    ctx.stroke()
+    ctx.restore()
+
+    //main axes
+    ctx.strokeStyle = 'black'
     ctx.beginPath()
     ctx.moveTo(b.x,b.cy)
     ctx.lineTo(b.x2,b.cy)
@@ -37,17 +59,6 @@ function axes(ctx, b, zoom, origin) {
     ctx.lineTo(b.cx,b.y2)
     ctx.stroke()
 
-    ctx.translate(b.cx,b.cy)
-    ctx.scale(zoom,zoom)
-    ctx.beginPath()
-    for(let i=-10; i<10; i+=1) {
-        ctx.moveTo(i,-0.25)
-        ctx.lineTo(i,+0.25)
-        ctx.moveTo(-0.25,i)
-        ctx.lineTo(+0.25,i)
-    }
-    ctx.stroke()
-    ctx.restore()
 }
 
 function background(ctx, bounds, zoom, origin) {
@@ -69,7 +80,7 @@ async function draw_y_to_x(ctx, b, zoom, origin, xfun) {
 function draw_plot(ctx, b, zoom, origin, vals) {
     ctx.save()
     ctx.translate(b.cx,b.cy)
-    ctx.scale(zoom,zoom)
+    ctx.scale(zoom,-zoom)
     ctx.strokeStyle = 'red'
     ctx.beginPath()
     vals.forEach(([x,y],i) => (i === 0)?ctx.moveTo(x,y) : ctx.lineTo(x,y))
@@ -78,8 +89,12 @@ function draw_plot(ctx, b, zoom, origin, vals) {
 }
 
 async function draw_x_to_y(ctx, b, zoom, origin, yfun) {
+    let top = b.h/zoom
+    let bottom = -b.h/zoom
+    let left = -b.w/zoom
+    let right = b.w/zoom
     let vals = []
-    for( let i=-10; i<10; i+=0.1) {
+    for( let i=left/2; i<right/2; i+=0.1) {
         let x = scalar(i)
         let y = await yfun.fun.apply(yfun,[x])
         vals.push([x.value,y.value])
@@ -100,6 +115,19 @@ async function draw_t_to_xy(ctx, b, zoom, origin, xfun, yfun) {
     return vals
 }
 
+async function draw_polar(ctx, b, zoom, origin, polar) {
+    let vals = []
+    for (let i = -Math.PI*2; i < Math.PI*2; i += 0.05) {
+        let theta = scalar(i)
+        let rho = await polar.fun.apply(polar, [theta])
+        let x = Math.sin(i)*rho.value
+        let y = Math.cos(i)*rho.value
+        vals.push([x,y])
+    }
+    draw_plot(ctx,b,zoom,origin,vals)
+    return vals
+}
+
 export const plot = new FilamentFunction('plot',
     {
         x:null,
@@ -111,7 +139,7 @@ export const plot = new FilamentFunction('plot',
             console.log("rendering plot",x,y,polar)
             let ctx = canvas.getContext('2d')
             let bounds = calc_bounds(canvas)
-            let zoom = 50
+            let zoom = 10
             let origin = bounds.center()
             background(ctx, bounds, zoom, origin)
             axes(ctx, bounds, zoom, origin)
@@ -119,6 +147,7 @@ export const plot = new FilamentFunction('plot',
             if (x && !y) return draw_y_to_x(ctx,bounds,zoom,origin,x)
             if (y && !x) return draw_x_to_y(ctx,bounds,zoom,origin,y)
             if (x &&  y) return draw_t_to_xy(ctx,bounds,zoom,origin,x,y)
+            if(polar) return draw_polar(ctx,bounds,zoom,origin,polar)
             // if (x && y) draw_t()
         })
     })
