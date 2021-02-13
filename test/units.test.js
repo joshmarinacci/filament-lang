@@ -43,7 +43,7 @@ describe('length',() => {
             ['4ft as meters',s(1.2192,'meter')],
             ['4ft as inch',s(4*12,'inch')],
             ['4ft',s( 4,'foot')],
-            // ['20000 leagues as km',s(20*1000*4,'kilometer')],
+            ['20000leagues as km',s(20*1000*4,'kilometer')],
         ])
     })
 
@@ -57,12 +57,20 @@ describe('length',() => {
             ['2*2ft',s(4,"feet")],
             ['4ft * 5ft',s( 20,'feet',2)],
             ['1ft * 2ft * 3ft',s( 6,'feet',3)],
+            ['1ft * 2ft',s(2,'feet',2)]
         ])
     })
+    it('cross unit multiply and divide',async() => {
+        await all_close_scalar([
+            ['1ft * 2ft',s(2,'feet',2)],
+            ['1ft * 2m',s(2*0.3048,'meter',2)],
+            ['4ft / 2m',s(0.6096,null,0)],
+        ])
+    })
+
     it('no units and dim', async() => {
         await all_close_scalar([
             ['4ft / 2ft',s(  2,null,0)],
-            // ['4ft/2m',s(0.6096,null,0)],
             //     // //['4ft/2gal',s(3,'none')],//should error
             //     ['4ft - 2gal')],//should error
         ])
@@ -207,7 +215,7 @@ describe("volume",()=>{
             ['3cups - 1cups',s(2,'cups')],
             ['3ft * 3ft * 3ft',s(27,'foot',3)],
             ['1ft * 2ft * 3ft', s(6,'feet',3)],
-            //['21 cuft',22,'foot',3)],
+            // ['21cuft',s(21,'foot',3)],
             // ['1ft^3',1,'foot',3)],
             //['1/2 cups',0.5,'cups')],
             //['3 cups + (1/2cups)',3.5,'cups')],
@@ -223,7 +231,7 @@ describe("volume",()=>{
             // ['3 cm^3',3,'cm',3)],
             // ['1000000 cm^3 as m^3',1,'m',3)],
             // [' 1m^3 as cm^3',1000000,'cm',3)],
-            // ['3 cm^3 as ml',3,'milliliter')],
+            // ['(1cm * 1cm * 1cm) as ml',s(1,'milliliter')],
         ])
     })
     it('conversions',async ()=>{
@@ -233,8 +241,8 @@ describe("volume",()=>{
             ['4cuft as gal', s(29.9221,'gal',1)],
             // ['4cuft', s(4,'feet',3)],
             //['4 cu ft', 4,'feet',3)],
-            // ['1m * 2m * 3m as liter', s(6000,'liter')],
-            // ['4ft * 5ft * 6ft as gallon',s(897.659,'gallon')],
+            ['(1m * 2m * 3m) as liter', s(6000,'liter')],
+            ['4ft * 5ft * 6ft as gallon',s(897.659,'gallon')],
             // ['4 cubic feet', s(4,'feet',3)],
             // ['4 ft^3', s(4,'feet',3)],
         ])
@@ -242,15 +250,21 @@ describe("volume",()=>{
 })
 describe('area',()=>{
     it('us',async ()=> {
-        await all([
+        await all_close_scalar([
             // ['9sqft',s(9,'foot',2)],
             ['8acres',s(8,'acre')],
             ['1000ac',s(1000,'acres')],
             // ['1000ac as sqm',s(1000*4046.8564224,'meters',2)],
+            ['3ft * 6ft',s(18,'foot',2)],
+            ['8ft * 8',s(64,'foot',1)],
+            ['8ft ** 2',s(64,'foot',1)],
         ])
     })
     it('metric',async ()=> {
-        await all([
+        await all_close_scalar([
+            ['1m * 2m as acre',s(0.000494211,'acre')],
+            // ['1km * 2km as acre',s(494.211,'acre')],
+            // ['1m * 2m as sqft',s(21.5278,'feet',2)],
         ])
     })
 
@@ -258,7 +272,6 @@ describe('area',()=>{
     //     await all([
     //         ["42 square miles",s(42,'mile',2)],
     //         ['8ft^2',s(8,'foot',2)],
-    //         ['(8ft)^2',s(64,'foot',1)],
     //         ["1 square miles as acres",s(640,"acre")],
     //         ["200ft * 300ft as acres",s(1.3774105,"acre")],
     //         ["42 mi^2",s(42,'mile',2)],
@@ -268,18 +281,13 @@ describe('area',()=>{
     //         //['10 sq m',s10,'meter',s2)],
     //         ['9ft * 9m',s(24.6888,'meter',2)],
     //         ['8m * 9ft',s(236.2204724,'foot',2)],
-    //         ['3ft * 6ft',s(18,'foot',2)],
     //         //['(3ft * 6ft) as sq mi',s6.4566e-7,'miles',s2)],
     //         //['40 acres as sq mi',s0.0625,'miles',s2)],
     //         //['25sqmi + 1000acres',s68796559.1808,'meters',s2)],
     //         ['10m^2',s(0,'meter',2)],
     //
-    //         ['1m * 2m as acre',s(0.000494211,'acre')],
-    //         ['1km * 2km as acre',s(494.211,'acre')],
-    //         ['1m * 2m as square feet',s(21.5278,'feet',2)],
     //         //['1m * 2m as sq ft',21.5278,'feet',2)],
     //         ['1m * 2m as ft^2' ,s(21.5278,'feet',2)],
-    //         ['1m * 2m as sqft' ,s(21.5278,'feet',2)],
     //         ['1m * 2m as square feet' ,s(21.5278,'feet',2)],
     //     ])
     // })

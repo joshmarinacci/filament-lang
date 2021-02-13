@@ -18,14 +18,14 @@ async function mkdir(dir) {
 }
 
 async function code_to_png(code, fname) {
-    console.log("parsing",code)
+    // console.log("parsing",code)
     await mkdir('output')
-    console.log("rendering to ",fname)
+    // console.log("rendering to ",fname)
     let ret = await eval_code(code)
     const img = PImage.make(500,500);
     await ret.cb(img)
     await PImage.encodePNGToStream(img,createWriteStream(fname))
-    console.log("done rendering")
+    // console.log("done rendering")
 
 }
 

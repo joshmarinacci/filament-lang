@@ -67,7 +67,8 @@ export const multiply = new FilamentFunction('multiply',{a:REQUIRED, b:REQUIRED}
             return scalar(b.value*a.value,b.unit)
         }
         if(is_scalar_with_unit(a) && is_scalar_with_unit(b)) {
-            return scalar(a.value*b.value,a.unit,a.dim+b.dim)
+            let conv = find_conversion(a,b)
+            if(conv) return scalar(a.value/conv.ratio*b.value,conv.to,a.dim+b.dim)
         }
     return binop(a,b,(a,b)=>a*b)
 })
@@ -80,12 +81,18 @@ export const divide = new FilamentFunction('divide',{a:REQUIRED, b:REQUIRED},
             return scalar(b.value/a.value,b.unit)
         }
         if(is_scalar_with_unit(a) && is_scalar_with_unit(b)) {
-            return scalar(a.value/b.value,a.unit,a.dim-b.dim)
+            let conv = find_conversion(a,b)
+            if(conv) return scalar(a.value/conv.ratio/b.value,conv.to,a.dim-b.dim)
         }
     return binop(a,b,(a,b)=>a/b)
 })
 export const power = new FilamentFunction('power',{a:REQUIRED, b:REQUIRED},
-    function (a,b) { return binop(a,b,(a,b)=>Math.pow(a,b)) })
+    function (a,b) {
+        if(is_scalar_with_unit(a) && is_scalar_without_unit(b)) {
+            return scalar(Math.pow(a.value,b.value),a.unit)
+        }
+    return binop(a,b,(a,b)=>Math.pow(a,b))
+})
 export const negate = new FilamentFunction('negate', {a:REQUIRED}, (a) =>unop(a,a=>-a))
 export const factorial = new FilamentFunction('factorial', {a:REQUIRED}, (a) => unop(a,(a)=>{
     if(a === 0 || a === 1) return 1

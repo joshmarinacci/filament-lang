@@ -136,7 +136,7 @@ export const plot = new FilamentFunction('plot',
     },
     function (x,y,polar) {
         return new CanvasResult((canvas)=> {
-            console.log("rendering plot",x,y,polar)
+            // console.log("rendering plot",x,y,polar)
             let ctx = canvas.getContext('2d')
             let bounds = calc_bounds(canvas)
             let zoom = 10
