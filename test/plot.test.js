@@ -54,6 +54,14 @@ describe('plots',() => {
         plot(y:fun)
         }`,"output/abs.png")
     })
+    it('quadratic', async() => {
+        await code_to_png(`{
+        def fun(x:?) {
+            x**2 - 3*x - 4
+        }
+        plot(y:fun)
+        }`,"output/quadratic.png")
+    })
 
     it('sine wave',async ()=> {
         await code_to_png(`{
