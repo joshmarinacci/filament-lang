@@ -187,7 +187,7 @@ async function generate_canvas_images(doc, basedir, subdir) {
     return Promise.all(doc
         .filter(block => block.type === 'CODE' && is_canvas_result(block.result))
         .map(async(block,i) => {
-            const img = PImage.make(500,500);
+            const img = PImage.make(1000,500);
             await block.result.cb(img)
             let fname = `output.${i}.png`
             block.src = path.join(subdir,fname)
@@ -213,7 +213,7 @@ result
     } else {
         if(block.result) {
             // console.log("code block is",block, block.result.toString())
-            code += `<p class="result"><code>${block.result.toString()}</code></p>`
+            code += `<div class="result"><code>${block.result.toString()}</code></div>`
             // console.log("final code is",code)
         } else {
             code += `<p><code>BROKEN OUTPUT</code></p>`

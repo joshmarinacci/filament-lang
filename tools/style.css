@@ -11,6 +11,13 @@ body {
     padding: 1rem;
     background-color: #fff6c7;
 }
+
+/* fix nested blocks */
+.filament-code .filament-code {
+    border: 0px;
+    padding:0;
+}
+
 .result {
     border: 1px solid #adadfd;
     padding: 1rem;
@@ -49,3 +56,4 @@ p code {
 .filament-code .literal {
     color: green;
 }
+

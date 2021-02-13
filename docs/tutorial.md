@@ -33,9 +33,12 @@ units we mean. Let's try that again with units:
 7feet * 4feet * 4feet
 ```
 
-Now we get `112 cuft`.  Cool. HL knows to convert the answer into cubic feet.  But what if we didn't want cubic feet. We are talking about voume and there are several different units that could represent volume. Let's ask HL to convert it into gallons instead.
+Now we get `112 cuft`.  Cool. Filament knows to convert the answer into cubic feet.  
+But what if we didn't want cubic feet. We are talking about volume and there are 
+several different units that could represent volume. Let's ask Filament to convert it into 
+gallons instead.
 
-```tfilament
+```filament
 7ft * 4ft * 4ft as gal
 ```
 
@@ -65,7 +68,7 @@ now() - date("Jan 1st, 2003") as seconds
 
 If you try to convert something that can't be converted, like area to volume, then Filament will let you know. Try this
 
-```tilament
+```filament
 7ft * 4ft as gal
 ```
 
@@ -74,7 +77,10 @@ results in
 Error. Cannot convert ft^2 to gallons.
 ``
 
-Units are very important. They help make sure our calculations are correct. Even professionals get this wrong some times. [NASA once lost a space probe worth over 100 million dollars](https://www.latimes.com/archives/la-xpm-1999-oct-01-mn-17288-story.html) because the software didn't convert correctly between imperial and metric units. 
+Units are very important. They help make sure our calculations are correct. 
+Even professionals get this wrong some times.
+[NASA once lost a space probe worth over 100 million dollars](https://www.latimes.com/archives/la-xpm-1999-oct-01-mn-17288-story.html) because the software didn't 
+convert correctly between imperial and metric units. 
 
 
 ### Superman
@@ -141,7 +147,7 @@ sum(nums) / length(nums)
 ```
 
 Sometimes you need to generate a list. Suppose you wanted to know the sum of every number from 0 to 100.
-Of course you *could* write out the numbers directly, but HL has a way to generate lists for you. It's called range.
+Of course you *could* write out the numbers directly, but HL has a way to generate lists for you. It's called `range`.
 
 ```filament
 // make a list from 0 to 9
@@ -192,7 +198,8 @@ And finally you can join two lists together
 join([4,2], [8,6])
 ```
 
-In addition to holding data, lists let you do things that you could do on a single number, but in bulk. You can add a number to a list
+In addition to holding data, lists let you do things that you could do on a single number, 
+but in bulk. You can add a single number to a list
 
 ```filament
 1 + [1,2,3]
@@ -253,7 +260,9 @@ select( range(100), where: good )
 
 ## charts
 
-One of the coolest things about lists is that you can *draw* them. Just send a list into the chart() function to see it as a bar chart. Suppose you had a list of heights of your friends.
+One of the coolest things about lists is that you can *draw* them.
+Just send a list into the `chart` function to see it as a bar chart.
+Suppose you had a list of heights of your friends.
 
 ```filament
 chart([88,64,75,59])
@@ -318,7 +327,7 @@ the editor will show a list of strings
 # charts from lists and datasets
 
 Even better than pulling in your own data, is working with curated datasets
-that have already been assembled.  HL comes with datsets for
+that have already been assembled.  Filament comes with datsets for
 
 * Periodic table of elements
 * Letters of the English Alphabet
