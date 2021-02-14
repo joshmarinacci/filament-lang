@@ -72,8 +72,7 @@ function l(...args) {
 }
 
 function parse_markdown_content(block) {
-    if(block.type !== 'P') return block
-    l("parsing content from block",block)
+    // l("parsing markdown inside block",block)
     let parser = {}
     parser.grammar = ohm.grammar(`
 MarkdownInner {
@@ -107,7 +106,12 @@ async function parse_markdown(raw_markdown) {
     // l('parsing raw markdown',raw_markdown)
     let blocks = parse_markdown_blocks(raw_markdown)
     // l("blocks are",blocks)
-    return blocks.map(block => parse_markdown_content(block))
+    return blocks.map(block => {
+        // l("type is",block.type)
+        if(block.type === 'P') return parse_markdown_content(block)
+        if(block.type === 'LI') return parse_markdown_content(block)
+        return block
+    })
 }
 
 async function eval_filament(doc) {
@@ -248,6 +252,23 @@ function render_paragraph_output(block) {
     }).join("") + "</p>"
 }
 
+function render_list_item(block) {
+    return '<li>' + block.content.map(run => {
+        if(run[0] === 'plain') return run[1]
+        if(run[0] === 'bold') return '<b>'+run[1]+'</b> '
+        if(run[0] === 'code') return '<code>'+run[1]+'</code> '
+        if(run[0] === 'link') {
+            if(run[3] === '!') {
+                return `<img src="${run[2]}" alt="${run[1]}"/> `
+            } else {
+                return `<a href="${run[2]}">${run[1]}</a> `
+            }
+        }
+        return run[1]
+    }).join("") + "</li>"
+}
+
+
 function render_html(doc) {
     // l('rendering html from doc',doc)
     const title = 'tutorial'
@@ -256,6 +277,7 @@ function render_html(doc) {
         if(block.type === 'H1') return `<h1>${block.content}</h1>`
         if(block.type === 'H2') return `<h2>${block.content}</h2>`
         if(block.type === 'H3') return `<h3>${block.content}</h3>`
+        if(block.type === 'LI') return render_list_item(block)
         if(block.type === 'P') return render_paragraph_output(block)
         if(block.type === 'CODE') return render_code_output(block)
         return "ERROR"
