@@ -49,7 +49,7 @@ async function eval_filament(doc) {
         // number: (v) => l,
         string: (_1, txt, _2) => strlit(txt.sourceString),
 
-        Block: (_1, statements, _2) => "<pre class='filament-code'><code>"+statements.hi().join("\n")+"\n</code></pre>\n",
+        Block: (_1, statements, _2) => ""+statements.hi().join("\n")+"\n\n",
         PipeOp_left:(next,_,first) => next.hi() + op('&lt;&lt;') + first.hi(),
         PipeOp_right:(first,_,next) => first.hi() + op("&gt;&gt;") + next.hi(),
         NonemptyListOf: (a, b, c) => [a.hi()].concat(c.hi()),
