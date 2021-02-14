@@ -16,10 +16,7 @@ export async function eval_code(code, custom_scope) {
     if (match.failed()) throw new Error("match failed")
     let ast = parser.ast(match)
     // console.log('ast',ast)
-    return Promise.resolve(ast.evalFilament(custom_scope)).catch(e => {
-        console.error(e)
-        return false
-    })
+    return Promise.resolve(ast.evalFilament(custom_scope));
 }
 
 export {
