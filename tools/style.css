@@ -1,3 +1,4 @@
+/*
 body {
     background-color: #f8f8f8;
     max-width: 40rem;
@@ -12,7 +13,6 @@ body {
     background-color: #fff6c7;
 }
 
-/* fix nested blocks */
 .filament-code .filament-code {
     border: 0px;
     padding:0;
@@ -43,7 +43,6 @@ p code {
 
 
 .filament-code {
-    /*border: 5px solid red;*/
     white-space: pre-line;
 }
 
@@ -74,3 +73,5 @@ table.output th {
     background-color: #ccc;
     color: black;
 }
+
+ */

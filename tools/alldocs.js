@@ -5,10 +5,10 @@ import {copy, for_each, init_pureimage, l, mkdir} from './util.js'
 
 const OUTDIR = 'output'
 const FILES = [
-    // 'docs/api.md',
-    // 'docs/intro.md',
-    // 'docs/spec.md',
-    // 'docs/tutorial.md',
+    'docs/api.md',
+    'docs/intro.md',
+    'docs/spec.md',
+    'docs/tutorial.md',
     'tools/test.md',
 ]
 

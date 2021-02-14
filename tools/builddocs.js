@@ -13,109 +13,14 @@
 
 
 import path from 'path'
-import {promises as fs, createWriteStream, mkdir as real_mkdir} from 'fs'
-import ohm from 'ohm-js'
+import {createWriteStream, promises as fs} from 'fs'
 import {Parser, strip_under} from '../src/parser.js'
-import {block, call, ident, is_canvas_result, list, named, scalar, Scope, string} from "../src/ast.js"
+import {is_canvas_result} from "../src/ast.js"
 import {make_standard_scope} from '../src/lang.js'
 import {default as PImage} from "pureimage"
-import {copy, mkdir} from './util.js'
+import {l, mkdir} from './util.js'
+import {parse_markdown} from './markdown.js'
 
-
-// import {chart, histogram, timeline} from '../src/lang/chart.js'
-
-const H1    = (content) => ({type:'H1', content})
-const H2    = (content) => ({type:'H2',content})
-const H3    = (content) => ({type:'H3',content})
-const P     = (content) => ({type:'P',content})
-const LI    = (content) => ({type:'LI',content})
-const code  = (language,content) => ({type:'CODE', language, content})
-
-function parse_markdown_blocks(str) {
-    let parser = {}
-    parser.grammar = ohm.grammar(`
-MarkdownOuter {
-  Doc = Block*
-  Block = h3 | h2 | h1 | bullet | code | para | blank
-  h3 = "###" rest
-  h2 = "##" rest
-  h1 = "#" rest
-  para = line+  //paragraph is just multiple consecutive lines
-  code = q rest (~q any)* q //anything between the \`\`\` markers
-  bullet = "* " line+
-  
-  
-  q = "\`\`\`"   // start and end code blocks
-  nl = "\\n"   // new line
-  blank = nl  // blank line has only newline
-  line = (~nl any)+ nl  // line has at least one letter
-  rest = (~nl any)* nl  // everything to the end of the line
-}
-    `)
-    parser.semantics = parser.grammar.createSemantics()
-    parser.semantics.addOperation('blocks',{
-        _terminal() { return this.sourceString },
-        h1:(_,b) => H1(b.blocks()),
-        h2:(_,b) => H2(b.blocks()),
-        h3:(_,b) => H3(b.blocks()),
-        code:(_,name,cod,_2) => code(name.blocks(),cod.blocks().join("")),
-        para: a=> P(a.sourceString),
-        bullet: (a,b) => LI(b.sourceString),
-        rest: (a,_) => a.blocks().join("")
-    })
-    let match = parser.grammar.match(str)
-    return parser.semantics(match).blocks()
-}
-
-function l(...args) {
-    console.log(...args)
-}
-
-function parse_markdown_content(block) {
-    // l("parsing markdown inside block",block)
-    let parser = {}
-    parser.grammar = ohm.grammar(`
-MarkdownInner {
-  Block = Para*
-  Para = link | bold | code | plain
-  plain = ( ~( "*" | "\`" | "[") any)+
-  bold = "*" (~"*" any)* "*"
-  code = "\`" (~"\`" any)* "\`"
-  link = "!"? "[" (~"]" any)* "]" "(" (~")" any)* ")"
-}
-    `)
-    parser.semantics = parser.grammar.createSemantics()
-    parser.semantics.addOperation('content',{
-        _terminal() { return this.sourceString },
-        plain(a) {return ['plain',a.content().join("")] },
-        bold(_1,a,_2) { return ['bold',a.content().join("")] },
-        code:(_1,a,_2) => ['code',a.content().join("")],
-        link:(img,_1,text,_2,_3,url,_4) => ['link',
-            text.content().join(""),
-            url.content().join(""),
-            img.content().join("")]
-    })
-    let match = parser.grammar.match(block.content)
-    if(match.failed()) {
-        l("match failed on block",block)
-    }
-    let res = parser.semantics(match).content()
-    // console.log("result of content is",res)
-    block.content = res
-    return block
-}
-
-async function parse_markdown(raw_markdown) {
-    // l('parsing raw markdown',raw_markdown)
-    let blocks = parse_markdown_blocks(raw_markdown)
-    // l("blocks are",blocks)
-    return blocks.map(block => {
-        // l("type is",block.type)
-        if(block.type === 'P') return parse_markdown_content(block)
-        if(block.type === 'LI') return parse_markdown_content(block)
-        return block
-    })
-}
 
 async function eval_filament(doc) {
 
@@ -180,7 +85,6 @@ async function eval_filament(doc) {
     })
 }
 
-
 async function generate_canvas_images(doc, basedir, subdir) {
     await mkdir(path.join(basedir,subdir))
     // l("rendering all canvas images in doc",doc)
@@ -199,42 +103,58 @@ async function generate_canvas_images(doc, basedir, subdir) {
         })
 }
 
-function render_code_output(block) {
-    // console.log("rendering code output for",block.result)
-    let code =`<pre class="code">
-  <code data-language="${block.language}">${block.content}</code>
-</pre>
-result
-`
+function BQ(code) {
+    return `<blockquote class="input">${code}</blockquote>`
+}
 
-    if(block.language === 'filament') {
-        code = block.highlight
-    }
-    if(block.src) {
-        code += `<img src="${block.src}" width="500" height="250">`
-    } else {
-        if(block.result) {
-            if(block.result.type === 'table') {
-                let header = Object.entries(block.result.schema.properties).map(prop => {
-                    return `<th>${prop[0]}</th>`
-                }).join("")
-                let rows = block.result.value.map(record => {
-                    let cols = Object.values(record).map(value => {
-                        return `<td>${value}</td>`
-                    })
-                    return `<tr>${cols.join("")}</tr>`
-                }).join("\n")
-                code += `<div class="wrapper"><table class="output">
+function RESULT(code) {
+    return `<blockquote class="output">${code}</blockquote>`
+}
+
+function render_result(result) {
+    if(result.type === 'table') {
+        let header = Object.entries(result.schema.properties).map(prop => {
+            return `<th>${prop[0]}</th>`
+        }).join("")
+        let rows = result.value.map(record => {
+            let cols = Object.values(record).map(value => {
+                return `<td>${value}</td>`
+            })
+            return `<tr>${cols.join("")}</tr>`
+        }).join("\n")
+        return `<div class="wrapper"><table class="output">
                     <thead><tr>${header}</tr></thead>
                     <tbody>${rows}</tbody>
                     </table></div>`
+    }
+    if(result.type === 'list') return RESULT(result.toString())
+    if(result.type === 'scalar') return RESULT(result.toString())
+    if(result.type === 'canvas-result') return ""
+    console.log("type is",result.type)
+    return RESULT('UNKNOWN')
+}
+
+function render_code_output(block) {
+    let code = ""
+    if(block.language === 'filament') {
+        code = BQ(block.highlight)
+    } else {
+        code = BQ(block.content)
+    }
+    if(block.src) {
+        code += `<img src="${block.src}" width="500" height="250">`
+    }
+    if(block.result) {
+        code += render_result(block.result)
+    }
+    /* else {
             } else {
                 code += `<div class="result"><code>${block.result.toString()}</code></div>`
             }
         } else {
             code += `<p><code>BROKEN OUTPUT</code></p>`
         }
-    }
+    }*/
     return code
 }
 
@@ -271,7 +191,6 @@ function render_list_item(block) {
     }).join("") + "</li>"
 }
 
-
 function render_html(doc) {
     // l('rendering html from doc',doc)
     const title = 'tutorial'
@@ -291,6 +210,13 @@ function render_html(doc) {
      <link rel="stylesheet" href="style.css">
      </head>
         <body>
+        <nav>
+        <h3>Filament</h3>
+        <a href="tutorial.html">tutorial</a>
+        <a href="intro.html">intro</a>
+        <a href="spec.html">spec</a>
+        <a href="api.html">api</a>
+    </nav>
         ${content}
         </body>
         </html>`

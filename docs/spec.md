@@ -1,5 +1,3 @@
-
-
 # Operators
 
 ## Boolean Operators
