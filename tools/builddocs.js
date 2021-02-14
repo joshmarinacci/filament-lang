@@ -96,6 +96,9 @@ MarkdownInner {
             img.content().join("")]
     })
     let match = parser.grammar.match(block.content)
+    if(match.failed()) {
+        l("match failed on block",block)
+    }
     let res = parser.semantics(match).content()
     // console.log("result of content is",res)
     block.content = res

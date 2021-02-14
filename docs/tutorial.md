@@ -326,8 +326,11 @@ Even better than pulling in your own data, is working with curated datasets
 that have already been assembled.  Filament comes with datsets for
 
 * Periodic table of elements
+  
 * Letters of the English Alphabet
+  
 * Planets of the solar system
+  
 * Countries of the world.
 
 When you load a dataset it will be shown as a table.
