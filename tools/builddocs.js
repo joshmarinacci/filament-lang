@@ -19,6 +19,7 @@ import {Parser, strip_under} from '../src/parser.js'
 import {block, call, ident, is_canvas_result, list, named, scalar, Scope, string} from "../src/ast.js"
 import {make_standard_scope} from '../src/lang.js'
 import {default as PImage} from "pureimage"
+import {copy, mkdir} from './util.js'
 
 
 // import {chart, histogram, timeline} from '../src/lang/chart.js'
@@ -27,6 +28,7 @@ const H1    = (content) => ({type:'H1', content})
 const H2    = (content) => ({type:'H2',content})
 const H3    = (content) => ({type:'H3',content})
 const P     = (content) => ({type:'P',content})
+const LI    = (content) => ({type:'LI',content})
 const code  = (language,content) => ({type:'CODE', language, content})
 
 function parse_markdown_blocks(str) {
@@ -34,12 +36,13 @@ function parse_markdown_blocks(str) {
     parser.grammar = ohm.grammar(`
 MarkdownOuter {
   Doc = Block*
-  Block = h3 | h2 | h1 | code | para | blank
+  Block = h3 | h2 | h1 | bullet | code | para | blank
   h3 = "###" rest
   h2 = "##" rest
   h1 = "#" rest
   para = line+  //paragraph is just multiple consecutive lines
   code = q rest (~q any)* q //anything between the \`\`\` markers
+  bullet = "* " line+
   
   
   q = "\`\`\`"   // start and end code blocks
@@ -57,6 +60,7 @@ MarkdownOuter {
         h3:(_,b) => H3(b.blocks()),
         code:(_,name,cod,_2) => code(name.blocks(),cod.blocks().join("")),
         para: a=> P(a.sourceString),
+        bullet: (a,b) => LI(b.sourceString),
         rest: (a,_) => a.blocks().join("")
     })
     let match = parser.grammar.match(str)
@@ -69,7 +73,7 @@ function l(...args) {
 
 function parse_markdown_content(block) {
     if(block.type !== 'P') return block
-    // l("parsing content from block",block)
+    l("parsing content from block",block)
     let parser = {}
     parser.grammar = ohm.grammar(`
 MarkdownInner {
@@ -169,14 +173,6 @@ async function eval_filament(doc) {
     })
 }
 
-async function mkdir(dir) {
-    return new Promise((res,rej)=>{
-        real_mkdir(dir,(err)=>{
-            console.log("made dir",dir)
-            res()
-        })
-    })
-}
 
 async function generate_canvas_images(doc, basedir, subdir) {
     await mkdir(path.join(basedir,subdir))
@@ -188,8 +184,9 @@ async function generate_canvas_images(doc, basedir, subdir) {
             await block.result.cb(img)
             let fname = `output.${i}.png`
             block.src = path.join(subdir,fname)
-            await PImage.encodePNGToStream(img,createWriteStream(path.join(basedir,subdir,fname)))
-            // console.log('rendered', block.content, 'to',block.src)
+            let imgpath = path.join(basedir,subdir,fname)
+            await PImage.encodePNGToStream(img,createWriteStream(imgpath))
+            l('rendered image',imgpath)
         })).then(done => {
             console.log("fully done writing images")
         })
@@ -275,22 +272,16 @@ function render_html(doc) {
     return template
 }
 
-async function copy(src, dst) {
-    console.log("copying",src,'to',dst)
-    let src_ref = await fs.readFile(src)
-    await fs.writeFile(dst,src_ref.toString())
-}
-
-async function convert_file(infile_path, outdir_path, outfile_name) {
-    await mkdir(outdir_path)
-    await copy("tools/style.css",path.join(outdir_path,'style.css'))
+export async function convert_file(infile_path, outdir_path, outfile_name) {
     let raw_markdown = (await fs.readFile(infile_path)).toString()
     let doc = await parse_markdown(raw_markdown+"\n")
     await eval_filament(doc)
     await generate_canvas_images(doc,outdir_path,'images')
     let html = render_html(doc)
     //console.log("final html is",html)
-    await fs.writeFile(path.join(outdir_path,outfile_name),html)
+    let outpath = path.join(outdir_path,outfile_name)
+    await fs.writeFile(outpath,html)
+    console.log("finished writing", outpath)
 }
 
 function processArgs(args) {
@@ -326,5 +317,5 @@ function run () {
             .catch(e => console.error(e))
     })
 }
-run()
+// run()
 
