@@ -123,6 +123,7 @@ Deferring for now.
 # Tables or lists of lists or multi-dimensional arrays
 
 I need to do more work on this. Follow APL's lead here about shape and rank. examples:
+
 * make a times table from 1 to 12
 * make a 16x16 grayscale image from random numbers
 * the same with random colors instead of grayscale
@@ -173,7 +174,7 @@ actually do something like show the 30 nearest volcanos?
 # Questionable
 
 * __IntegerDigits__: split number into list of single digits.  `IntegerDigits(4200)` = `[4,2,0,0]`
-* __count__: number of times element appears in the list. `count(list,'foo')`. Is this useful?`
+* __count__: number of times element appears in the list. `count(list,'foo')`. Is this useful?
 * __first__, __last__: return the first or last elements of the list. can't we use `take(data,n)`.
 * __rest__ return the list minus the first element
 * __part__: wolfram uses part for array element selection. is this easier than `data[n]` indexing?

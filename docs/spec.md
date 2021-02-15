@@ -72,7 +72,8 @@ to enter. They will also be shown in their unicode form in the "print ready" syn
 
 # identifiers
 
-Indentifiers can (currently) use
+Identifiers can (currently) use
+
 * alphanumeric `A-Za-z`
 * digits `0-9`
 * underscore `_`
@@ -120,6 +121,7 @@ may be referred to by position (indexed) or name (keyword).
 
 
 Consider the `chart` function.
+
 ```javascript
 function chart(
     List data=required, 
