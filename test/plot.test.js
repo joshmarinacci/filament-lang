@@ -29,6 +29,33 @@ async function code_to_png(code, fname) {
 
 }
 
+describe('min max ranges',() => {
+    it('y=x',async ()=> {
+        await code_to_png(`{
+        def fun(x:?) {
+            x
+        }
+        plot(y:fun, max:10)
+        }`,"output/yx_max.png")
+    })
+    it('y=x',async ()=> {
+        await code_to_png(`{
+        def fun(y:?) {
+            y+5
+        }
+        plot(x:fun, min:-50)
+        }`,"output/xy_min.png")
+    })
+    it('polar spiral', async () => {
+        await code_to_png(`{
+        def fun(theta:?) {
+            0.25*theta
+        }
+        plot(polar:fun, min:0, max:pi*32)
+        }`,"output/polarspiral_minmax.png")
+    })
+})
+
 describe('plots',() => {
     it('y=x',async ()=> {
         await code_to_png(`{
