@@ -17,6 +17,7 @@
 ## Math Operators
 
 * `+` add(a,b), addition
+  
 * `-` sub(a,b) subtraction
 * `*` mul(a,b) multiplication
 * `/` div(a,b) division

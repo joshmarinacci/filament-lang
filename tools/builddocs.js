@@ -202,6 +202,8 @@ function render_html(doc) {
         if(block.type === 'LI') return render_list_item(block)
         if(block.type === 'P') return render_paragraph_output(block)
         if(block.type === 'CODE') return render_code_output(block)
+        if(block.type === 'BLANK') return ""
+        l("block is",block)
         return "ERROR"
     }).join("\n")
     let template = `

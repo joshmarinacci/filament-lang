@@ -11,22 +11,23 @@ function parse_markdown_blocks(str) {
     let parser = {}
     parser.grammar = ohm.grammar(`
 MarkdownOuter {
-  Doc = Block*
-  Block = h3 | h2 | h1 | bullet | code | para | blank
+  doc = block+
+  block =  blank | h3 | h2 | h1 | bullet | code | para | endline
   h3 = "###" rest
   h2 = "##" rest
-  h1 = "#" rest
-  para = line+  //paragraph is just multiple consecutive lines
+  h1 = "#" rest  
+  para = line+ //paragraph is just multiple consecutive lines
+  bullet = "* " rest (~"*" ~blank rest)*
   code = q rest (~q any)* q //anything between the \`\`\` markers
-  bullet = "* " line+
-  
-  
   q = "\`\`\`"   // start and end code blocks
   nl = "\\n"   // new line
-  blank = nl  // blank line has only newline
+  sp = " "
+  blank = sp* nl  // blank line has only newline
+  endline = (~nl any)+ end
   line = (~nl any)+ nl  // line has at least one letter
   rest = (~nl any)* nl  // everything to the end of the line
 }
+
     `)
     parser.semantics = parser.grammar.createSemantics()
     parser.semantics.addOperation('blocks',{
@@ -36,7 +37,8 @@ MarkdownOuter {
         h3:(_,b) => H3(b.blocks()),
         code:(_,name,cod,_2) => code(name.blocks(),cod.blocks().join("")),
         para: a=> P(a.sourceString),
-        bullet: (a,b) => LI(b.sourceString),
+        blank: (a,b) => ({type:'BLANK'}),
+        bullet: (a,b,c) => LI(b.sourceString + c.sourceString),
         rest: (a,_) => a.blocks().join("")
     })
     let match = parser.grammar.match(str)
