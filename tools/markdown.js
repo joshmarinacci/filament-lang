@@ -50,9 +50,10 @@ function parse_markdown_content(block) {
     parser.grammar = ohm.grammar(`
 MarkdownInner {
   block = para*
-  para = link | bold | code | plain
-  plain = ( ~( "*" | "\`" | "[") any)+
+  para = link | bold | italic | code | plain
+  plain = ( ~( "*" | "\`" | "[" | "__") any)+
   bold = "*" (~"*" any)* "*"
+  italic = "__" (~"__" any)* "__"
   code = "\`" (~"\`" any)* "\`"
   link = "!"? "[" (~"]" any)* "]" "(" (~")" any)* ")"
 }
@@ -62,6 +63,7 @@ MarkdownInner {
         _terminal() { return this.sourceString },
         plain(a) {return ['plain',a.content().join("")] },
         bold(_1,a,_2) { return ['bold',a.content().join("")] },
+        italic(_1,a,_2) { return ['italic',a.content().join("")] },
         code:(_1,a,_2) => ['code',a.content().join("")],
         link:(img,_1,text,_2,_3,url,_4) => ['link',
             text.content().join(""),

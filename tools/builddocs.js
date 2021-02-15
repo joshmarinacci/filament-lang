@@ -147,22 +147,14 @@ function render_code_output(block) {
     if(block.result) {
         code += render_result(block.result)
     }
-    /* else {
-            } else {
-                code += `<div class="result"><code>${block.result.toString()}</code></div>`
-            }
-        } else {
-            code += `<p><code>BROKEN OUTPUT</code></p>`
-        }
-    }*/
     return code
 }
 
-function render_paragraph_output(block) {
-    // console.log("rendering block",block)
-    return '<p>' + block.content.map(run => {
+function render_block_content(block) {
+    return block.content.map(run => {
         if(run[0] === 'plain') return run[1]
         if(run[0] === 'bold') return '<b>'+run[1]+'</b> '
+        if(run[0] === 'italic') return '<i>'+run[1]+'</i> '
         if(run[0] === 'code') return '<code>'+run[1]+'</code> '
         if(run[0] === 'link') {
             if(run[3] === '!') {
@@ -172,23 +164,15 @@ function render_paragraph_output(block) {
             }
         }
         return run[1]
-    }).join("") + "</p>"
+    }).join("")
+}
+
+function render_paragraph_output(block) {
+    return '<p>' + render_block_content(block) +"</p>"
 }
 
 function render_list_item(block) {
-    return '<li>' + block.content.map(run => {
-        if(run[0] === 'plain') return run[1]
-        if(run[0] === 'bold') return '<b>'+run[1]+'</b> '
-        if(run[0] === 'code') return '<code>'+run[1]+'</code> '
-        if(run[0] === 'link') {
-            if(run[3] === '!') {
-                return `<img src="${run[2]}" alt="${run[1]}"/> `
-            } else {
-                return `<a href="${run[2]}">${run[1]}</a> `
-            }
-        }
-        return run[1]
-    }).join("") + "</li>"
+    return '<li>' +render_block_content(block)+ "</li>"
 }
 
 function render_html(doc) {

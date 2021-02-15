@@ -1,3 +1,5 @@
+* __sin__, __cos__, __tan__: the usual trig functions, in radians or degrees.
+
 * bullet1
   bullet2
   bullet3

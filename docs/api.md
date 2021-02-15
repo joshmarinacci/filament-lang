@@ -34,7 +34,7 @@ an internal BigNumber library. This allows it to perserve fractions when possibl
 * __pick__: take random elements from list `pick(data,5)` get five random elements
 * __reverse__: return a list with the order reversed  `reverse(data)`
 * __select__: select items from list using where: lambda function returning false. `select(data, where=(t)=>t.amount>0)`
-* __join__: concatentate two lists, returning a new list. is this needed?
+* __join__: concatenate two lists, returning a new list.
 * __length__: returns the length of the list
 * __sum__: adds all data points together
 
@@ -43,12 +43,12 @@ an internal BigNumber library. This allows it to perserve fractions when possibl
 # charts
 
 * __plot__: lot a list of numbers as a scatter plot. x is the index in the list. y is the value of each number. can also plot equations as lambdas.
-  * __type__: [point | line | number]
+  * __type__: `point | line | number`
     * point: draw each datum as a point
     * line: draw lines connecting all of the points
     * number: draw points on a number line
 * __chart__:
-  * __type__: [bar, pie, stacked?]
+* __type__: bar, pie, stacked?
   
 * __histogram__: draws a histogram of the data 
 
