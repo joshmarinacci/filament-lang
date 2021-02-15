@@ -143,7 +143,7 @@ describe('plots',() => {
         await code_to_png(`{
         def px3(t:?) { (16 * (sin(t)**3))/10 }
         def py3(t:?) { (13 * cos(t) - 5 * cos (2*t) - 2 * cos(3*t) - cos(4*t))/10 }
-        plot(x:px3,y:py3)
+        plot(x:px3,y:py3, zoom:80)
         }`,"output/heart.png")
     })
 

@@ -302,7 +302,7 @@ A polar Archimedes spiral
 def fun(theta:?) {
     0.25*theta
 }
-plot(polar:fun)
+plot(polar:fun, min:0, max:pi*32)
 ```
 
 

@@ -28,6 +28,7 @@ function calc_bounds(canvas) {
 }
 
 function axes(ctx, b, zoom, origin) {
+    zoom = zoom
     ctx.save()
     ctx.strokeStyle = '#cccccc'
     ctx.translate(b.cx,b.cy)
@@ -69,7 +70,7 @@ function background(ctx, bounds, zoom, origin) {
 function draw_plot(ctx, b, zoom, origin, vals) {
     ctx.save()
     ctx.translate(b.cx,b.cy)
-    ctx.scale(zoom,-zoom)
+    ctx.scale(zoom.value,-zoom.value)
     ctx.strokeStyle = 'red'
     ctx.beginPath()
     vals.forEach(([x,y],i) => (i === 0)?ctx.moveTo(x,y) : ctx.lineTo(x,y))
@@ -130,17 +131,17 @@ export const plot = new FilamentFunction('plot',
         y:null,
         polar:null,
         min:scalar(-10),
-        max:scalar(10)
+        max:scalar(10),
+        zoom: scalar(50),
     },
-    function (x,y,polar,min,max) {
+    function (x,y,polar,min,max,zoom) {
         return new CanvasResult((canvas)=> {
             // console.log("rendering plot",x,y,polar)
             let ctx = canvas.getContext('2d')
             let bounds = calc_bounds(canvas)
-            let zoom = 10
             let origin = bounds.center()
             background(ctx, bounds, zoom, origin)
-            axes(ctx, bounds, zoom, origin)
+            axes(ctx, bounds, zoom.value, origin)
             // if (polar) draw_polar()
             if (x && !y) return draw_y_to_x(ctx,bounds,zoom,origin,x,min,max)
             if (y && !x) return draw_x_to_y(ctx,bounds,zoom,origin,y,min,max)

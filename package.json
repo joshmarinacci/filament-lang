@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "mocha",
-    "docs": "node tools/builddocs.js --infile=docs/tutorial.md --outdir=output"
+    "docs": "node tools/alldocs"
   },
   "author": "joshua@marinacci.org",
   "license": "ISC",
