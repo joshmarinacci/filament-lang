@@ -86,7 +86,7 @@ describe('plots',() => {
         def fun(x:?) {
             x**2 - 3*x - 4
         }
-        plot(y:fun)
+        plot(y:fun, zoom:5)
         }`,"output/quadratic.png")
     })
 
