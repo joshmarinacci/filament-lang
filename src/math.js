@@ -1,7 +1,7 @@
 import {FilamentFunction, REQUIRED} from './parser.js'
 import {date, is_boolean, is_list, is_scalar, list, pack, scalar, time, unpack} from './ast.js'
 import {convert_unit, find_conversion, to_canonical_unit} from './units.js'
-import {parse as parse_date, getYear, getMonth, getDate, toDate, getHours, getMinutes, getSeconds, differenceInDays, differenceInSeconds} from "date-fns"
+import {parse as parse_date, getYear, getMonth, getDate, toDate, getHours, getMinutes, getSeconds, differenceInDays, differenceInSeconds, addSeconds} from "date-fns"
 
 function binop(a,b,cb) {
     // console.log("binop-ing",a,b)
@@ -33,6 +33,14 @@ export const add = new FilamentFunction('add',{a:REQUIRED, b:REQUIRED},
         // console.log('final conversion is',conv)
         if(conv) return scalar(a.value/conv.ratio + b.value, conv.to)
     }
+    if(is_time(a) && is_scalar_with_unit(b)) {
+        //convert b to seconds
+        let conv = find_conversion(b,scalar(0,'second',1))
+        if(!conv) throw new Error(`cannot convert ${b.unit} to seconds`)
+        let seconds = scalar(b.value/conv.ratio,conv.to)
+        let new_date = addSeconds(a.value,seconds.value)
+        return time(new_date)
+    }
 
     return binop(a,b, (a,b)=>a+b)
 })
@@ -52,6 +60,14 @@ export const subtract = new FilamentFunction('subtract',{a:REQUIRED, b:REQUIRED}
             console.log("subtracting scalar with unit",a,b)
             let seconds = differenceInSeconds(a.value,b.value)
             return scalar(seconds,'seconds',1)
+        }
+        if(is_time(a) && is_scalar_with_unit(b)) {
+            //convert b to seconds
+            let conv = find_conversion(b,scalar(0,'second',1))
+            if(!conv) throw new Error(`cannot convert ${b.unit} to seconds`)
+            let seconds = scalar(b.value/conv.ratio,conv.to)
+            let new_date = addSeconds(a.value,-seconds.value)
+            return time(new_date)
         }
 
     return binop(a,b,(a,b)=>a-b)

@@ -1,4 +1,5 @@
 import {FilamentFunction, strip_under} from './parser.js'
+import {isDate} from "date-fns"
 import {to_canonical_unit} from './units.js'
 
 class ASTNode {
@@ -156,8 +157,12 @@ class FTime extends ASTNode {
     constructor(hour,min,sec) {
         super()
         this.type = 'time'
-        this.value = new Date(0,0,0,hour,min,sec)
-        console.log("made",this.value,'from',hour,min,sec)
+        if(isDate(hour)) {
+            this.value = hour
+        } else {
+            this.value = new Date(0, 0, 0, hour, min, sec)
+        }
+        // console.log("made",this.value,'from',hour,min,sec)
     }
     toString() {
         return (""+this.value)
@@ -169,7 +174,7 @@ class FTime extends ASTNode {
         return this
     }
 }
-export const time = (y,m,d) => new FTime(y,m,d)
+export const time = (hr,min,sec) => new FTime(hr,min,sec)
 
 class FList extends ASTNode {
     constructor(arr) {
