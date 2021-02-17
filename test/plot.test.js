@@ -8,7 +8,6 @@ await setup()
 async function mkdir(dir) {
     return new Promise((res,rej)=>{
         real_mkdir(dir,(err)=>{
-            console.log("done making")
             if(err) {
                 // console.log(err)//return rej(err)
             }

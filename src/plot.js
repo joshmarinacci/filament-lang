@@ -33,6 +33,7 @@ function axes(ctx, b, zoom, origin) {
     ctx.strokeStyle = '#cccccc'
     ctx.translate(b.cx,b.cy)
     ctx.scale(zoom,zoom)
+    ctx.lineWidth = 2/zoom
     let top = b.h/zoom
     let bottom = -b.h/zoom
     let left = -b.w/zoom
@@ -71,6 +72,7 @@ function draw_plot(ctx, b, zoom, origin, vals) {
     ctx.save()
     ctx.translate(b.cx,b.cy)
     ctx.scale(zoom.value,-zoom.value)
+    ctx.lineWidth = 2/zoom
     ctx.strokeStyle = 'red'
     ctx.beginPath()
     vals.forEach(([x,y],i) => (i === 0)?ctx.moveTo(x,y) : ctx.lineTo(x,y))
