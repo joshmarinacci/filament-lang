@@ -110,6 +110,7 @@ class FString extends ASTNode {
         return this.value
     }
     evalFilament() {
+        console.log("string returning self")
         return this
     }
 }
@@ -132,6 +133,43 @@ class FBoolean extends ASTNode {
     }
 }
 export const boolean = v => new FBoolean(v)
+
+class FDate extends ASTNode {
+    constructor(year,month,day) {
+        super()
+        this.type = 'date'
+        this.value = new Date(year,month-1,day)
+    }
+    toString() {
+        return (""+this.value)
+    }
+    evalJS() {
+        return this.value
+    }
+    evalFilament() {
+        return this
+    }
+}
+export const date = (y,m,d) => new FDate(y,m,d)
+
+class FTime extends ASTNode {
+    constructor(hour,min,sec) {
+        super()
+        this.type = 'time'
+        this.value = new Date(0,0,0,hour,min,sec)
+        console.log("made",this.value,'from',hour,min,sec)
+    }
+    toString() {
+        return (""+this.value)
+    }
+    evalJS() {
+        return this.value
+    }
+    evalFilament() {
+        return this
+    }
+}
+export const time = (y,m,d) => new FTime(y,m,d)
 
 class FList extends ASTNode {
     constructor(arr) {
