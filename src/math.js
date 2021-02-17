@@ -1,6 +1,7 @@
 import {FilamentFunction, REQUIRED} from './parser.js'
-import {is_boolean, is_list, is_scalar, list, pack, scalar, unpack} from './ast.js'
+import {date, is_boolean, is_list, is_scalar, list, pack, scalar, time, unpack} from './ast.js'
 import {convert_unit, find_conversion, to_canonical_unit} from './units.js'
+import {parse as parse_date, getYear, getMonth, getDate, toDate, getHours, getMinutes, getSeconds, differenceInDays, differenceInSeconds, addSeconds} from "date-fns"
 
 function binop(a,b,cb) {
     // console.log("binop-ing",a,b)
@@ -32,6 +33,14 @@ export const add = new FilamentFunction('add',{a:REQUIRED, b:REQUIRED},
         // console.log('final conversion is',conv)
         if(conv) return scalar(a.value/conv.ratio + b.value, conv.to)
     }
+    if(is_time(a) && is_scalar_with_unit(b)) {
+        //convert b to seconds
+        let conv = find_conversion(b,scalar(0,'second',1))
+        if(!conv) throw new Error(`cannot convert ${b.unit} to seconds`)
+        let seconds = scalar(b.value/conv.ratio,conv.to)
+        let new_date = addSeconds(a.value,seconds.value)
+        return time(new_date)
+    }
 
     return binop(a,b, (a,b)=>a+b)
 })
@@ -42,6 +51,24 @@ export const subtract = new FilamentFunction('subtract',{a:REQUIRED, b:REQUIRED}
             let conv = find_conversion(a,b)
             if(conv) return scalar(a.value/conv.ratio - b.value, conv.to)
         }
+        if(is_date(a) && is_date(b)) {
+            console.log("subtracting scalar with unit",a,b)
+            let days = differenceInDays(a.value,b.value)
+            return scalar(days,'days',1)
+        }
+        if(is_time(a) && is_time(b)) {
+            console.log("subtracting scalar with unit",a,b)
+            let seconds = differenceInSeconds(a.value,b.value)
+            return scalar(seconds,'seconds',1)
+        }
+        if(is_time(a) && is_scalar_with_unit(b)) {
+            //convert b to seconds
+            let conv = find_conversion(b,scalar(0,'second',1))
+            if(!conv) throw new Error(`cannot convert ${b.unit} to seconds`)
+            let seconds = scalar(b.value/conv.ratio,conv.to)
+            let new_date = addSeconds(a.value,-seconds.value)
+            return time(new_date)
+        }
 
     return binop(a,b,(a,b)=>a-b)
 })
@@ -51,6 +78,14 @@ function is_scalar_with_unit(a) {
     if(is_scalar(a) && a.unit !== null) return true
     return false
 }
+
+function is_date(a) {
+    return a.type === 'date'
+}
+function is_time(a) {
+    return a.type === 'time'
+}
+
 
 function is_scalar_without_unit(a) {
     if(is_scalar(a) && (a.unit === null || a.unit === 'none') ) return true
@@ -140,4 +175,51 @@ export const is_prime = new FilamentFunction('is_prime', {n:REQUIRED},function(n
     for(let i = 2; i < num; i++)
         if(num % i === 0) return pack(false);
     return pack(num > 1);
+})
+
+export const date_cons = new FilamentFunction('date',{
+    input:null,
+    year:scalar(0),
+    month:scalar(0),
+    day:scalar(0),
+    format:null,
+},function(input,year,month,day,format){
+    console.log("making a date from",input,year,month,day)
+    if(input && format) {
+        let dt = parse_date(input,format,new Date())
+        return date(getYear(dt),getMonth(dt)+1,getDate(dt))
+    }
+    // if(input && !format) {
+    //     let dt = toDate(input)
+    //     return date(getYear(dt),getMonth(dt)+1,getDate(dt))
+    // }
+    if(year.value > 0 && month.value > 0 && day.value > 0) {
+        return date(unpack(year), unpack(month), unpack(day))
+    }
+
+    throw new Error(`cannot create date from args ${input} , ${year}, ${month},${day},${format}`)
+})
+
+export const time_cons = new FilamentFunction('time',{
+    input:null,
+    hour:scalar(0),
+    minute:scalar(0),
+    second:scalar(0),
+    format:null,
+},function(input,hour,minute,second,format){
+    console.log("making a time from",input,hour,minute,second,format)
+    if(input && format) {
+        let dt = parse_date(input,format,new Date())
+        console.log("parsed date",dt)
+        return time(getHours(dt), getMinutes(dt), getSeconds(dt))
+    }
+    // if(input && !format) {
+    //     let dt = toDate(input)
+    //     return date(getYear(dt),getMonth(dt)+1,getDate(dt))
+    // }
+    // if(hour.value > 0 && minput.value > 0 && second.value > 0) {
+    //     return date(unpack(hour), unpack(minute), unpack(second))
+    // }
+
+    throw new Error(`cannot create date from args ${input} , ${hour}, ${minute},${second},${format}`)
 })

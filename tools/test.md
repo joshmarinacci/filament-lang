@@ -1,21 +1,28 @@
-some *cool* text
+* __sin__, __cos__, __tan__: the usual trig functions, in radians or degrees.
 
-```filament
-data << [42,43,44,45]
-//comment and here
-42+8
-```
+* bullet1
+  bullet2
+  bullet3
 
+and more
+
+list item 1
 and then some more
 
+plain *italics* plain
+plain **bold** plain
+plain `code` plain
 
-A quadratic equation
-
-```filament
-
-def quad(x:?) {
-    x**2 - 3*x - 4
-}
-
-plot(y:quad)
+```langname
+some code inside
+and some more
 ```
+
+# header 1
+
+## header 2
+
+
+* list item 2
+
+* foo 3

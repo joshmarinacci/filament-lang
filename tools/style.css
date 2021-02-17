@@ -6,22 +6,38 @@ body {
     font-family: serif;
 }
 
-.code, .filament-code {
+p code {
+    border: 0px solid #ccc;
+    padding: 0.25em;
+    background-color: #eee;
+    border-radius: 0.25em;
+}
+
+blockquote {
+    margin: 1rem;
+    white-space: pre-line;
+    font-family: monospace;
+}
+
+blockquote.input {
     border: 1px solid #facaca;
     padding: 1rem;
     background-color: #fff6c7;
 }
-
-/* fix nested blocks */
-.filament-code .filament-code {
-    border: 0px;
-    padding:0;
-}
-
-.result {
+blockquote.output {
     border: 1px solid #adadfd;
     padding: 1rem;
     background-color: #e0fff2;
+}
+
+blockquote .id {
+    color: blue;
+}
+blockquote .operator {
+    color: red;
+}
+blockquote .literal {
+    color: green;
 }
 
 h1, h2, h3 {
@@ -30,31 +46,9 @@ h1, h2, h3 {
 }
 
 img {
-    padding: 1rem;
+    padding: 0rem;
+    margin: 1rem;
     border: 1px solid black;
-}
-
-p code {
-    border: 1px solid brown;
-    background-color: yellow;
-    padding: 0.25em;
-    border-radius: 0.5em;
-}
-
-
-.filament-code {
-    /*border: 5px solid red;*/
-    white-space: pre-line;
-}
-
-.filament-code .id {
-    color: blue;
-}
-.filament-code .operator {
-    color: red;
-}
-.filament-code .literal {
-    color: green;
 }
 
 div.wrapper {
@@ -74,3 +68,13 @@ table.output th {
     background-color: #ccc;
     color: black;
 }
+
+
+/*
+p code {
+    border: 1px solid brown;
+    background-color: yellow;
+    padding: 0.25em;
+    border-radius: 0.5em;
+}
+ */

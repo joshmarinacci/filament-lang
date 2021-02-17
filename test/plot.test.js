@@ -8,7 +8,6 @@ await setup()
 async function mkdir(dir) {
     return new Promise((res,rej)=>{
         real_mkdir(dir,(err)=>{
-            console.log("done making")
             if(err) {
                 // console.log(err)//return rej(err)
             }
@@ -28,6 +27,33 @@ async function code_to_png(code, fname) {
     // console.log("done rendering")
 
 }
+
+describe('min max ranges',() => {
+    it('y=x',async ()=> {
+        await code_to_png(`{
+        def fun(x:?) {
+            x
+        }
+        plot(y:fun, max:10)
+        }`,"output/yx_max.png")
+    })
+    it('y=x',async ()=> {
+        await code_to_png(`{
+        def fun(y:?) {
+            y+5
+        }
+        plot(x:fun, min:-50)
+        }`,"output/xy_min.png")
+    })
+    it('polar spiral', async () => {
+        await code_to_png(`{
+        def fun(theta:?) {
+            0.25*theta
+        }
+        plot(polar:fun, min:0, max:pi*32)
+        }`,"output/polarspiral_minmax.png")
+    })
+})
 
 describe('plots',() => {
     it('y=x',async ()=> {
@@ -59,7 +85,7 @@ describe('plots',() => {
         def fun(x:?) {
             x**2 - 3*x - 4
         }
-        plot(y:fun)
+        plot(y:fun, zoom:5)
         }`,"output/quadratic.png")
     })
 
@@ -116,7 +142,7 @@ describe('plots',() => {
         await code_to_png(`{
         def px3(t:?) { (16 * (sin(t)**3))/10 }
         def py3(t:?) { (13 * cos(t) - 5 * cos (2*t) - 2 * cos(3*t) - cos(4*t))/10 }
-        plot(x:px3,y:py3)
+        plot(x:px3,y:py3, zoom:80)
         }`,"output/heart.png")
     })
 

@@ -1,11 +1,11 @@
 {
   "name": "filament-lang",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "filament language",
   "main": "src/index.js",
   "scripts": {
     "test": "mocha",
-    "docs": "node tools/builddocs.js --infile=docs/tutorial.md --outdir=output"
+    "docs": "node tools/alldocs"
   },
   "author": "joshua@marinacci.org",
   "license": "ISC",

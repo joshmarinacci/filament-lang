@@ -8,28 +8,28 @@ export async function setup() {
     let grammar_source = (await fs.readFile(new URL('../src/filament.ohm', import.meta.url))).toString();
     await setup_parser(grammar_source)
 }
-export async function t(str, ans,scope) {
+export async function test_same(str, ans, scope) {
     let ret = await eval_code(str,scope)
-    // console.log(str,'became',ret)
-    // console.log('answer is',ans)
+    console.log(str,'became',ret)
+    console.log('answer is',ans)
     assert.deepStrictEqual(ret,ans)
     // assert.equal(ret.value,ans.value)
 }
 
 export async function all(args,scope) {
     return Promise.all(args.map(tx => {
-        return Promise.resolve(t(tx[0],tx[1],scope))
+        return Promise.resolve(test_same(tx[0],tx[1],scope))
     }))
 }
 
 // export const all_close_scalar = async (tests) => await tests.map(tt => ta(tt[0],tt[1]))
 export async function all_close_scalar(args) {
     return Promise.all(args.map(tx => {
-        return Promise.resolve(ta(tx[0],tx[1]))
+        return Promise.resolve(test_approx(tx[0],tx[1]))
     }))
 }
 
-export const ta = async (s,a) => {
+export const test_approx = async (s, a) => {
     return Promise.resolve(eval_code(s)).then(v=>{
         // console.log("testing",s ,'equals',a,'really is',v)
         assert(Math.abs(v.value - a.value) < 0.01);

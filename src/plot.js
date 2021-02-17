@@ -28,10 +28,12 @@ function calc_bounds(canvas) {
 }
 
 function axes(ctx, b, zoom, origin) {
+    zoom = zoom
     ctx.save()
     ctx.strokeStyle = '#cccccc'
     ctx.translate(b.cx,b.cy)
     ctx.scale(zoom,zoom)
+    ctx.lineWidth = 2/zoom
     let top = b.h/zoom
     let bottom = -b.h/zoom
     let left = -b.w/zoom
@@ -66,9 +68,21 @@ function background(ctx, bounds, zoom, origin) {
     ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h)
 }
 
-async function draw_y_to_x(ctx, b, zoom, origin, xfun) {
+function draw_plot(ctx, b, zoom, origin, vals) {
+    ctx.save()
+    ctx.translate(b.cx,b.cy)
+    ctx.scale(zoom.value,-zoom.value)
+    ctx.lineWidth = 2/zoom
+    ctx.strokeStyle = 'red'
+    ctx.beginPath()
+    vals.forEach(([x,y],i) => (i === 0)?ctx.moveTo(x,y) : ctx.lineTo(x,y))
+    ctx.stroke()
+    ctx.restore()
+}
+
+async function draw_y_to_x(ctx, b, zoom, origin, xfun,min,max) {
     let vals = []
-    for( let i=-10; i<10; i+=0.1) {
+    for( let i=min.value; i<max.value; i+=0.1) {
         let y = scalar(i)
         let x = await xfun.fun.apply(xfun,[y])
         vals.push([x.value,y.value])
@@ -77,24 +91,9 @@ async function draw_y_to_x(ctx, b, zoom, origin, xfun) {
     return vals
 }
 
-function draw_plot(ctx, b, zoom, origin, vals) {
-    ctx.save()
-    ctx.translate(b.cx,b.cy)
-    ctx.scale(zoom,-zoom)
-    ctx.strokeStyle = 'red'
-    ctx.beginPath()
-    vals.forEach(([x,y],i) => (i === 0)?ctx.moveTo(x,y) : ctx.lineTo(x,y))
-    ctx.stroke()
-    ctx.restore()
-}
-
-async function draw_x_to_y(ctx, b, zoom, origin, yfun) {
-    let top = b.h/zoom
-    let bottom = -b.h/zoom
-    let left = -b.w/zoom
-    let right = b.w/zoom
+async function draw_x_to_y(ctx, b, zoom, origin, yfun,min,max) {
     let vals = []
-    for( let i=left/2; i<right/2; i+=0.1) {
+    for( let i=min.value; i<max.value; i+=0.1) {
         let x = scalar(i)
         let y = await yfun.fun.apply(yfun,[x])
         vals.push([x.value,y.value])
@@ -103,9 +102,9 @@ async function draw_x_to_y(ctx, b, zoom, origin, yfun) {
     return vals
 }
 
-async function draw_t_to_xy(ctx, b, zoom, origin, xfun, yfun) {
+async function draw_t_to_xy(ctx, b, zoom, origin, xfun, yfun,min,max) {
     let vals = []
-    for (let i = -10; i < 10; i += 0.1) {
+    for (let i = min.value; i < max.value; i += 0.1) {
         let t = scalar(i)
         let x = await xfun.fun.apply(xfun, [t])
         let y = await yfun.fun.apply(yfun, [t])
@@ -115,9 +114,9 @@ async function draw_t_to_xy(ctx, b, zoom, origin, xfun, yfun) {
     return vals
 }
 
-async function draw_polar(ctx, b, zoom, origin, polar) {
+async function draw_polar(ctx, b, zoom, origin, polar, min,max) {
     let vals = []
-    for (let i = -Math.PI*2; i < Math.PI*2; i += 0.05) {
+    for (let i = min.value; i < max.value; i += 0.05) {
         let theta = scalar(i)
         let rho = await polar.fun.apply(polar, [theta])
         let x = Math.sin(i)*rho.value
@@ -133,21 +132,23 @@ export const plot = new FilamentFunction('plot',
         x:null,
         y:null,
         polar:null,
+        min:scalar(-10),
+        max:scalar(10),
+        zoom: scalar(50),
     },
-    function (x,y,polar) {
+    function (x,y,polar,min,max,zoom) {
         return new CanvasResult((canvas)=> {
             // console.log("rendering plot",x,y,polar)
             let ctx = canvas.getContext('2d')
             let bounds = calc_bounds(canvas)
-            let zoom = 10
             let origin = bounds.center()
             background(ctx, bounds, zoom, origin)
-            axes(ctx, bounds, zoom, origin)
+            axes(ctx, bounds, zoom.value, origin)
             // if (polar) draw_polar()
-            if (x && !y) return draw_y_to_x(ctx,bounds,zoom,origin,x)
-            if (y && !x) return draw_x_to_y(ctx,bounds,zoom,origin,y)
-            if (x &&  y) return draw_t_to_xy(ctx,bounds,zoom,origin,x,y)
-            if(polar) return draw_polar(ctx,bounds,zoom,origin,polar)
+            if (x && !y) return draw_y_to_x(ctx,bounds,zoom,origin,x,min,max)
+            if (y && !x) return draw_x_to_y(ctx,bounds,zoom,origin,y,min,max)
+            if (x &&  y) return draw_t_to_xy(ctx,bounds,zoom,origin,x,y,min,max)
+            if(polar) return draw_polar(ctx,bounds,zoom,origin,polar,min,max)
             // if (x && y) draw_t()
         })
     })
