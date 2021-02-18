@@ -56,7 +56,7 @@ describe('turtle basics',() => {
             turtle_right(144)
         }
         map(range(20),with:part)
-        // for(range(20),(i)-> {
+        // for(i in range(20)) {
         // do stuff here
         // })
         turtle_penup()
