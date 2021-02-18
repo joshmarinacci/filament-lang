@@ -1,5 +1,6 @@
 import {FilamentFunction, REQUIRED} from './parser.js'
 import {is_list, list, pack, scalar, unpack} from './ast.js'
+import {resolve_in_order} from './util.js'
 
 // * __range__: generate a list of numbers: `(max), (min,max), (min,max,step)`
 export const range = new FilamentFunction('range',
@@ -81,15 +82,8 @@ export const map = new FilamentFunction('map',{
     data:REQUIRED,
     with:REQUIRED,
 },function(data,cb) {
-    let proms = data._map((el)=>{
-        let ret = cb.fun.apply(cb,[el])
-        return Promise.resolve(ret).then((ret => {
-            return ret
-        }))
-    })
-    return Promise.all(proms).then(vals => {
-        return list(vals)
-    })
+    let proms = data._map((el,i)=> () => cb.fun.apply(cb,[el]))
+    return resolve_in_order(proms).then(vals => list(vals))
 })
 
 export const select = new FilamentFunction('select',{

@@ -7,12 +7,13 @@ import {Scope} from '../src/ast.js'
 import {make_standard_scope} from '../src/lang.js'
 import {
     turtle_done,
-    turtle_forward,
+    turtle_forward, turtle_left,
     turtle_pendown,
     turtle_penup,
     turtle_right,
     turtle_start
 } from '../src/turtle.js'
+import {FilamentFunctionWithScope, REQUIRED} from '../src/parser.js'
 
 await setup()
 
@@ -39,10 +40,48 @@ async function code_to_png(code, fname, scope) {
 
 }
 
+const print = new FilamentFunctionWithScope('print',
+    {
+        msg:REQUIRED
+    },
+    function (scope,msg) {
+        this.log(msg.toString())
+    }
+)
+
+
+describe("block ordering", ()=>{
+    let std_scope = make_standard_scope()
+    const test_scope = new Scope("test",std_scope)
+    test_scope.install(print)
+    it("test block order", async() => {
+        await eval_code(`
+        {
+          print("a")
+          print("b")
+          print("c")
+        }
+        `,test_scope)
+    })
+    it("map order",async() => {
+        await eval_code(`{
+        def fun(i:?) {
+            print("fun")
+            print(i)
+            i
+        } 
+        map(range(2),with:fun)
+        // fun(1)
+        // fun(2)
+        }`,test_scope)
+    })
+})
+
 describe('turtle basics',() => {
     let std_scope = make_standard_scope()
     const turtle_scope = new Scope('turtle',std_scope)
-    turtle_scope.install(turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_penup, turtle_done)
+    turtle_scope.install(turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_left, turtle_penup, turtle_done)
+    turtle_scope.install(print)
     it('make square',async ()=> {
         await code_to_png(`{
         turtle_start(0,0,0)
@@ -68,7 +107,7 @@ describe('turtle basics',() => {
             turtle_forward(i * 10)
             turtle_right(144)
         }
-        map(range(3),with:part)
+        map(range(21),with:part)
         turtle_penup()
         turtle_done()
         }`,'turtle_spiral_star.png', turtle_scope)
@@ -79,13 +118,15 @@ describe('turtle basics',() => {
         turtle_start(0,0,0)
         turtle_pendown()
         def polygon(n:?) {
-            angle = 360/n
+            angle << (360/n)
+            print(angle)
             def side() {
-                turtle_forward(20)
+                turtle_forward(100)
                 turtle_left(angle)
             }
             map(range(n), with:side)        
         }
+        polygon(7)
         turtle_penup()
         turtle_done()
         }`,'turtle_polygon.png',turtle_scope)
@@ -95,9 +136,9 @@ describe('turtle basics',() => {
 
     https://www.calormen.com/jslogo/#
 
-https://personal.utdallas.edu/~veerasam/logo/
+    https://personal.utdallas.edu/~veerasam/logo/
 
-http://logo.twentygototen.org/dZ1f62XY
+    http://logo.twentygototen.org/dZ1f62XY
 
 
     tree

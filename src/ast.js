@@ -112,7 +112,6 @@ class FString extends ASTNode {
         return this.value
     }
     evalFilament() {
-        console.log("string returning self")
         return this
     }
 }
@@ -456,9 +455,8 @@ class FBlock extends ASTNode{
     evalFilament(scope) {
         let  scope2 = scope.clone("block")
 
-        return resolve_in_order(this.statements.map(s => {
-            return ()=>s.evalFilament(scope2)
-        }))
+        return resolve_in_order(this.statements.map(s => ()=>s.evalFilament(scope2)))
+            .then(ret => ret.pop()) //return result of last statement
     }
 }
 

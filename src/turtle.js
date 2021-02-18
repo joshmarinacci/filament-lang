@@ -48,7 +48,7 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
         // console.log("done with the turtle. scope is",scope)
         let state = scope.lookup('!turtle_state')
         return new CanvasResult((canvas) => {
-            console.log('drawing the turtle with state',state.commands)
+            // console.log('drawing the turtle with state',state.commands)
             let ctx = canvas.getContext('2d')
             ctx.save()
             ctx.translate(canvas.width/2,canvas.height/2)
@@ -62,7 +62,7 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
             ctx.moveTo(x,y)
             // console.log('moved to',x,y)
             state.commands.forEach(cmd => {
-                console.log(cmd)
+                // console.log(cmd)
                 if(cmd[0] === 'f') {
                     let ra = toRad(a)
                     let dx = Math.cos(ra)
@@ -75,6 +75,9 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
                 if(cmd[0] === 'r') {
                     a += cmd[1]
                 }
+                if(cmd[0] === 'l') {
+                    a -= cmd[1]
+                }
             })
             ctx.stroke()
 
@@ -84,13 +87,13 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
 export const turtle_pendown = new FilamentFunctionWithScope('turtlependown',
     {},
     function (a,b) {
-        this.log("pen down")
+        // this.log("pen down")
     }
 )
 export const turtle_penup = new FilamentFunctionWithScope('turtlepenup',
     {},
     function (a,b) {
-        this.log("pen up")
+        // this.log("pen up")
     }
 )
 export const turtle_forward = new FilamentFunctionWithScope('turtleforward',
@@ -98,7 +101,7 @@ export const turtle_forward = new FilamentFunctionWithScope('turtleforward',
         distance:REQUIRED,
     },
     function (scope,n) {
-        this.log("forward",n)
+        // this.log("forward",n)
         let state = scope.lookup('!turtle_state')
         state.push_command(['f',n.value])
     }
@@ -108,9 +111,18 @@ export const turtle_right = new FilamentFunctionWithScope('turtleright',
         angle:REQUIRED
     },
     function (scope,a) {
-        this.log("right",a)
         let state = scope.lookup('!turtle_state')
         state.push_command(['r',a.value])
+    }
+)
+
+export const turtle_left = new FilamentFunctionWithScope('turtleleft',
+    {
+        angle:REQUIRED
+    },
+    function (scope,a) {
+        let state = scope.lookup('!turtle_state')
+        state.push_command(['l',a.value])
     }
 )
 
