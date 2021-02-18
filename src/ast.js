@@ -1,6 +1,7 @@
 import {FilamentFunction, strip_under} from './parser.js'
 import {isDate} from "date-fns"
 import {to_canonical_unit} from './units.js'
+import {resolve_in_order} from './util.js'
 
 class ASTNode {
     constructor() {
@@ -300,7 +301,7 @@ class FCall extends ASTNode {
         })
         return Promise.all(params2).then(params2 => {
             // this.log(`real final params for ${this.name}:`,params2)
-            let ret = fun.fun.apply(fun,params2)
+            let ret = fun.do_apply(scope,params2)//fun.apply(fun,params2)
             // this.log(`return value`,ret)
             return Promise.resolve(ret)
         })
@@ -453,22 +454,14 @@ class FBlock extends ASTNode{
         return res[res.length-1]
     }
     evalFilament(scope) {
-        // this.log("running the block")
         let  scope2 = scope.clone("block")
-        let p = Promise.resolve(); // Q() in q
 
-        this.statements.forEach(statement =>
-            p = p.then(() => {
-                // this.log("statement",statement)
-                return statement.evalFilament(scope2)
-            })
-        )
-        return p.then(res => {
-            return res
-        })
-
+        return resolve_in_order(this.statements.map(s => {
+            return ()=>s.evalFilament(scope2)
+        }))
     }
 }
+
 export const block = (sts) => new FBlock(sts)
 
 

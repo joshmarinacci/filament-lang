@@ -181,6 +181,15 @@ export class FilamentFunction {
             return this.fun.apply(this, params)
         })
     }
+    do_apply(scope,params) {
+        return this.fun.apply(this,params)
+    }
+}
+
+export class FilamentFunctionWithScope extends FilamentFunction {
+    do_apply(scope,params) {
+        return this.fun.apply(this,[scope].concat(params.slice()))
+    }
 }
 
 function parseBoolean(sourceString) {

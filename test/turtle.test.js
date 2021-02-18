@@ -3,6 +3,16 @@ import {default as path} from 'path'
 import {setup} from './common.js'
 import {eval_code} from '../src/index.js'
 import {default as PImage} from 'pureimage'
+import {Scope} from '../src/ast.js'
+import {make_standard_scope} from '../src/lang.js'
+import {
+    turtle_done,
+    turtle_forward,
+    turtle_pendown,
+    turtle_penup,
+    turtle_right,
+    turtle_start
+} from '../src/turtle.js'
 
 await setup()
 
@@ -17,11 +27,11 @@ async function mkdir(dir) {
     })
 }
 
-async function code_to_png(code, fname) {
+async function code_to_png(code, fname, scope) {
     // console.log("parsing",code)
     await mkdir('output_turtle')
     // console.log("rendering to ",fname)
-    let ret = await eval_code(code)
+    let ret = await eval_code(code, scope)
     const img = PImage.make(500,500);
     await ret.cb(img)
     await PImage.encodePNGToStream(img,createWriteStream(path.join('output_turtle',fname)))
@@ -30,21 +40,24 @@ async function code_to_png(code, fname) {
 }
 
 describe('turtle basics',() => {
+    let std_scope = make_standard_scope()
+    const turtle_scope = new Scope('turtle',std_scope)
+    turtle_scope.install(turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_penup, turtle_done)
     it('make square',async ()=> {
         await code_to_png(`{
         turtle_start(0,0,0)
         turtle_pendown()
-        turtle_forward(10)
+        turtle_forward(100)
         turtle_right(90)
-        turtle_forward(10)
+        turtle_forward(100)
         turtle_right(90)
-        turtle_forward(10)
+        turtle_forward(100)
         turtle_right(90)
-        turtle_forward(10)
+        turtle_forward(100)
         turtle_right(90)
         turtle_penup()
         turtle_done()
-        }`,"turtle_square.png")
+        }`,"turtle_square.png", turtle_scope)
     })
 
     it('makes spiral', async() => {
@@ -55,16 +68,13 @@ describe('turtle basics',() => {
             turtle_forward(i * 10)
             turtle_right(144)
         }
-        map(range(20),with:part)
-        // for(i in range(20)) {
-        // do stuff here
-        // })
+        map(range(3),with:part)
         turtle_penup()
         turtle_done()
-        }`,'turtle_spiral_star.png')
+        }`,'turtle_spiral_star.png', turtle_scope)
     })
 
-    it('makes spiral', async() => {
+    it('makes spiral 2', async() => {
         await code_to_png(`{
         turtle_start(0,0,0)
         turtle_pendown()
@@ -74,11 +84,11 @@ describe('turtle basics',() => {
                 turtle_forward(20)
                 turtle_left(angle)
             }
-            map(range(n) with:side)        
+            map(range(n), with:side)        
         }
         turtle_penup()
         turtle_done()
-        }`,'turtle_polygon.png')
+        }`,'turtle_polygon.png',turtle_scope)
     })
 
     /*
