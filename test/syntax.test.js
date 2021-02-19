@@ -169,8 +169,13 @@ describe('syntax',() => {
             foo << (x)->{x*2}
             foo(5)
             }`,s(10)],
+            [`{
+            foo << x->x*2
+            foo(5)
+            }`,s(10)],
             [`map([1,2],with:(x)->x*2)`,l(s(2),s(4))],
-            [`map([1,2],with:x->x*2)`,l(s(2),s(4))]
+            [`map([1,2],with:x->x*2)`,l(s(2),s(4))],
+            [`range(3) >> map(with:x->x*2)`,l(s(0),s(2),s(4))],
         ])
     })
     /*
@@ -220,19 +225,6 @@ conditonal value of the argument is tested for true or false to decide which one
 inside of a match. Also the argument can be a constant instead of an identifier, which is
 shorthand for (x:x=5) same as (5)
 
-if new fun call is lambda, then just assign it.
-
-my_fun << (x) -> 5
-my_fun << (x:?) -> 5
-my_fun << x -> 5
-x -> { 5 } >> my_fun
-
-my_fun << (x,y,z) -> {
-    print("cool stuff happens here")
-    return z
-}
-
-if arg is missing default value, then it is assumed to be ? for required.
 
 
 match(test:x,cases:[
