@@ -85,7 +85,8 @@ export class Parser {
             FundefExp: (def, name, _1, args, _2, block) => fundef(name.ast().name, args.ast(), block.ast()),
 
             //lambdas
-            LambdaExp: (_1, args, _2, _3, block) => lambda(args.ast(),block.ast()),
+            LambdaExp_full:  (_1, args, _2, _3, block) => lambda(args.ast(),block.ast()),
+            LambdaExp_short: (args, _3, block) => lambda([args.ast()],block.ast()),
 
             //conditionals
             IfExp_short: (_if, test, _then, a) => ifexp(test.ast(),a.ast()),
