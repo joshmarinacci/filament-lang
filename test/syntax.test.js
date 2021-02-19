@@ -141,7 +141,33 @@ describe('syntax',() => {
 
     it('if statement', async() => {
         await all([
-            [`if(4>2) { 4 } else { 2 }`,scalar(4)]
+            [`if(4>2) {4}`,scalar(4)],
+            [`if(4>2) {4} else {2}`,scalar(4)],
+            [`if(4<2) {4} else {2}`,scalar(2)],
+            [`if 4>2 then 4`,scalar(4)],
+            [`if 4<2 then 4 else 2`,scalar(4)],
+        ])
+    })
+    it('early return', async() => {
+        await all ([
+            [`{1 2}`,scalar(2)],
+            [`{return 1 2}`,scalar(1)],
+            [`{ 1 if true then return 2 3}`,scalar(2)],
+            [`{ 1 if false then return 2 3}`,scalar(3)],
+            [`{
+            def even(x) {
+                if x mod 2 = 0 return x
+                return 0
+            }
+            range(4) >> map(with:even)
+            `,list([s(0),s(0),s(2),s(0),s(4)])],
+            [`{
+            def even(x) {
+                if x mod 2 = 0 return x
+                return 0
+            }
+            range(4) >> select(where:even)
+            `,list([s(2),s(4)])]
         ])
     })
 })
