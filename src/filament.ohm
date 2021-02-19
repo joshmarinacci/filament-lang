@@ -29,6 +29,7 @@ Filament {
 
   HighOp
     = GroupExp
+    | IfExp
     | FundefExp
     | FuncallExp
     | UnExp
@@ -46,6 +47,10 @@ Filament {
 
   FundefExp = "def" ident "(" ListOf<DefArg,","> ")" Block
   DefArg = ident ":" ("?" | Exp)
+
+  IfExp
+    = "if" Exp "then" Block "else" Block --full
+    | "if" Exp "then" Block              --short
 
   List = "[" ListOf<Exp,","> "]"
 

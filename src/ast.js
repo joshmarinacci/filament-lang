@@ -439,6 +439,23 @@ class Identifier extends ASTNode {
 }
 export const ident = (n) => new Identifier(n)
 
+class IfExp extends ASTNode {
+    constructor(test,then_block,else_block) {
+        super();
+        this.test = test
+        this.then_block = then_block
+        this.else_block = else_block
+    }
+    async evalFilament(scope) {
+        let ans = await this.test.evalFilament(scope)
+        if(ans.value === true) {
+            return this.then_block.evalFilament(scope)
+        } else {
+            return this.else_block.evalFilament(scope)
+        }
+    }
+}
+export const ifexp = (cond,then_block,else_block) => new IfExp(cond,then_block,else_block)
 class FBlock extends ASTNode{
     constructor(sts) {
         super()
@@ -459,7 +476,6 @@ class FBlock extends ASTNode{
             .then(ret => ret.pop()) //return result of last statement
     }
 }
-
 export const block = (sts) => new FBlock(sts)
 
 

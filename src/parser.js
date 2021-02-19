@@ -4,7 +4,7 @@ import {
     boolean,
     call,
     fundef,
-    ident,
+    ident, ifexp,
     indexed,
     list,
     named,
@@ -82,6 +82,10 @@ export class Parser {
             FuncallExp: (ident, _1, args, _2) => call(ident.ast().name, args.ast()),
             DefArg: (a, _, c) => [a.ast().name, c.ast()],
             FundefExp: (def, name, _1, args, _2, block) => fundef(name.ast().name, args.ast(), block.ast()),
+
+            //conditionals
+            IfExp_short: (_if, test, _then, a) => ifexp(test.ast(),a.ast()),
+            IfExp_full:  (_if, test, _then, a, _else, b) => ifexp(test.ast(),a.ast(),b.ast()),
 
             Block: (_1, statements, _2) => block(statements.ast()),
         })
