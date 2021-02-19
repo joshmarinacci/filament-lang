@@ -47,7 +47,9 @@ Filament {
     | Exp           --indexed
 
   FundefExp = "def" ident "(" ListOf<DefArg,","> ")" Block
-  DefArg = ident ":" ("?" | Exp)
+  DefArg
+    = ident ":" ("?" | Exp)  --default
+    | ident                  --solo
 
   IfExp
     = "if" Exp "then" Block "else" Block --full

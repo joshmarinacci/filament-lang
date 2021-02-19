@@ -80,7 +80,8 @@ export class Parser {
             Arg_named: (a, _, c) => named(a.ast().name, c.ast()),
             Arg_indexed: a => indexed(a.ast()),
             FuncallExp: (ident, _1, args, _2) => call(ident.ast().name, args.ast()),
-            DefArg: (a, _, c) => [a.ast().name, c.ast()],
+            DefArg_default: (a, _, c) => [a.ast().name, c.ast()],
+            DefArg_solo:(a) => [a.ast().name],
             FundefExp: (def, name, _1, args, _2, block) => fundef(name.ast().name, args.ast(), block.ast()),
 
             //lambdas

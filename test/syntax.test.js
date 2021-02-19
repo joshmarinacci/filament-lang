@@ -66,6 +66,7 @@ describe('syntax',() => {
             ['{def double(x:?) { x*2} map([1,2,3],with:double)}', list([s(2), s(4), s(6)])],
             ['{def first_letter(v:?) { take(v,1)} map(["foo","bar"],with:first_letter)}', list([string("f"), string("b")])],
             //TODO: ['range(100, step:10) as jesse',list([string('ten'),string('4D'),'ten twenty thirty 4D fifty 6D 7D AD 9D'])]
+            ['{def foo(x) { x } foo(42)}', s42],
         ])
     })
 
