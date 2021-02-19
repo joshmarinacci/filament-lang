@@ -397,28 +397,17 @@ class Pipeline extends ASTNode {
         }
     }
     evalJS(scope) {
-        // this.log("first is",this.first)
         return Promise.resolve(this.first.evalJS(scope)).then(fval => {
             return this.next.evalJS_with_pipeline(scope,indexed(fval))
         })
     }
     async evalFilament(scope) {
-        // this.log(`evaluating ${this.direction} `, this.first, 'then',this.next)
-        return Promise.resolve(this.first.evalFilament(scope))
-            .then(val1 => {
-                // this.log("val1 is",val1)
-                // this.log("next is",this.next)
-                if(this.next.type === 'identifier') {
-                    // this.log("this is a variable assignment")
-                    return scope.set_var(this.next.name, val1)
-                } else {
-                    return this.next.evalFilament(scope, indexed(val1))
-                }
-            })
-            // .then(val2 => {
-            //     // this.log("second returned",val2)
-            //     return val2
-            // })
+        let val1 = await this.first.evalFilament(scope)
+        if(this.next.type === 'identifier') {
+            return scope.set_var(this.next.name,val1)
+        } else {
+            return this.next.evalFilament(scope,indexed(val1))
+        }
     }
 }
 export const pipeline_right = (a,b) => new Pipeline('right',a,b)
@@ -450,9 +439,9 @@ class IfExp extends ASTNode {
     async evalFilament(scope) {
         let ans = await this.test.evalFilament(scope)
         if(ans.value === true) {
-            return this.then_block.evalFilament(scope)
+            return await this.then_block.evalFilament(scope)
         } else {
-            return this.else_block.evalFilament(scope)
+            return await this.else_block.evalFilament(scope)
         }
     }
 }
@@ -475,26 +464,12 @@ class LambdaExp extends ASTNode {
     }
 
     async apply_function(scope, cb, params) {
-        // this.log('evaluating the lambda with args',this)
-        // this.log("params are",params)
-        // this.log("args are",this.params)
-        let scope2 = new Scope('lambda_apply_function',scope)
-        let args_values = this.params.map(async (arg,i) => {
-            // this.log("param def",arg)
-            let name = arg[0]
-            let value = params[i]
-            // this.log("final vals",name,value)
-            scope2.set_var(name,value)
-        })
-        args_values = await args_values
-        // this.log("final arg values are", args_values)
-        // this.log("final scope is",scope2)
-        let final_answer = await this.block.evalFilament(scope2)
-        // this.log("final answer", final_answer)
-        return final_answer
+        let scope2 = new Scope('lambda',scope)
+        this.params.forEach((arg,i) => scope2.set_var(arg[0],params[i]))
+        return await this.block.evalFilament(scope2)
     }
     async do_apply(scope, params) {
-        let scope2 = new Scope("lambda_do_apply",scope)
+        let scope2 = new Scope("lambda",scope)
         this.params.forEach((arg,i) => scope2.set_var(arg[0],params[i]))
         return await this.block.evalFilament(scope2)
     }
