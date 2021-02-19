@@ -150,6 +150,15 @@ describe('syntax',() => {
             [`4 + if(4<2) then {4} else {2}`,scalar(6)],
         ])
     })
+
+    it('lambda expressions', async () => {
+        await all([
+            [`map([1,2],with:()->{2})`,l(s(2),s(2))],
+            // [`map([1,2],with:(x)->{x*2})`,l([s(2),s(4)])],
+            // [`map([1,2],with:()->2)`,l([s(1),s(2)])],
+            // [`map([1,2],with:x->x*2)`,l([s(2),s(4)])],
+        ])
+    })
     // it('early return', async() => {
     //     await all ([
     //         [`{1 2}`,scalar(2)],

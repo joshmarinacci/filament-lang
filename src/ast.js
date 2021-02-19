@@ -442,6 +442,7 @@ export const ident = (n) => new Identifier(n)
 class IfExp extends ASTNode {
     constructor(test,then_block,else_block) {
         super();
+        this.type = 'if'
         this.test = test
         this.then_block = then_block
         this.else_block = else_block
@@ -456,6 +457,34 @@ class IfExp extends ASTNode {
     }
 }
 export const ifexp = (cond,then_block,else_block) => new IfExp(cond,then_block,else_block)
+
+class LambdaExp extends ASTNode {
+    constructor(args,block) {
+        super();
+        this.type = 'lambda'
+        this.args = args
+        this.block = block
+    }
+    toString() {
+        return `LAMBDA.toString() not implemented`
+    }
+    async evalFilament(scope) {
+        return this
+    }
+    async apply_function(scope,els) {
+        this.log('evaluating the lambda with args', els)
+        this.log("block is", this.block)
+        let args_values = this.args.map(async (arg) => {
+            return await arg
+        })
+        args_values = await args_values
+        this.log("final arg values are",args_values)
+        let final_answer = await this.block.evalFilament(scope)
+        this.log("final answer",final_answer)
+        return final_answer
+    }
+}
+export const lambda = (args,block) => new LambdaExp(args,block)
 class FBlock extends ASTNode{
     constructor(sts) {
         super()

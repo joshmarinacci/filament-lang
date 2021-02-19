@@ -1,4 +1,4 @@
-import {FilamentFunction, REQUIRED} from './parser.js'
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {is_list, list, pack, scalar, unpack} from './ast.js'
 import {resolve_in_order} from './util.js'
 
@@ -78,11 +78,17 @@ export const join = new FilamentFunction('join',{
 
 
 // * __map__:  convert every element in a list using a lambda function: `(list, lam)`
-export const map = new FilamentFunction('map',{
+export const map = new FilamentFunctionWithScope('map',{
     data:REQUIRED,
     with:REQUIRED,
-},function(data,cb) {
-    let proms = data._map((el,i)=> () => cb.fun.apply(cb,[el]))
+},function(scope, data,cb) {
+    let proms = data._map((el,i)=> () => {
+        if(cb.type === 'lambda') {
+            return cb.apply_function(scope,cb,[el])
+        } else {
+            return cb.fun.apply(cb, [el])
+        }
+    })
     return resolve_in_order(proms).then(vals => list(vals))
 })
 

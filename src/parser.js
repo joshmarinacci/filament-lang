@@ -5,7 +5,7 @@ import {
     call,
     fundef,
     ident, ifexp,
-    indexed,
+    indexed, lambda,
     list,
     named,
     pipeline_left,
@@ -82,6 +82,9 @@ export class Parser {
             FuncallExp: (ident, _1, args, _2) => call(ident.ast().name, args.ast()),
             DefArg: (a, _, c) => [a.ast().name, c.ast()],
             FundefExp: (def, name, _1, args, _2, block) => fundef(name.ast().name, args.ast(), block.ast()),
+
+            //lambdas
+            LambdaExp: (_1, args, _2, _3, block) => lambda(args.ast(),block.ast()),
 
             //conditionals
             IfExp_short: (_if, test, _then, a) => ifexp(test.ast(),a.ast()),

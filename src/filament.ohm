@@ -30,6 +30,7 @@ Filament {
   HighOp
     = GroupExp
     | IfExp
+    | LambdaExp
     | FundefExp
     | FuncallExp
     | UnExp
@@ -51,6 +52,9 @@ Filament {
   IfExp
     = "if" Exp "then" Block "else" Block --full
     | "if" Exp "then" Block              --short
+
+  LambdaExp
+    = "(" ListOf<Arg,","> ")" "->" Block
 
   List = "[" ListOf<Exp,","> "]"
 
