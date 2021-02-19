@@ -1,4 +1,4 @@
-import {FilamentFunction, REQUIRED, strip_under} from './parser.js'
+import {FilamentFunction, strip_under} from './parser.js'
 import {isDate} from "date-fns"
 import {to_canonical_unit} from './units.js'
 import {match_args_to_params} from './util.js'
@@ -162,7 +162,6 @@ class FTime extends ASTNode {
         } else {
             this.value = new Date(0, 0, 0, hour, min, sec)
         }
-        // console.log("made",this.value,'from',hour,min,sec)
     }
     toString() {
         return (""+this.value)
@@ -271,10 +270,7 @@ class FCall extends ASTNode {
     evalJS(scope) {
         if(!scope.lookup(this.name)) throw new Error(`function '${this.name}' not found`)
         let fun = scope.lookup(this.name)
-        return fun.apply_function(this.args).then(res => {
-            // this.log("result of evalJS",res)
-            return res
-        })
+        return fun.apply_function(this.args)
     }
     evalJS_with_pipeline(scope,prepend) {
         if(!scope.lookup(this.name)) throw new Error(`function '${this.name}' not found`)
@@ -283,26 +279,18 @@ class FCall extends ASTNode {
         return fun.apply_function(args)
     }
     async evalFilament(scope, prepend) {
-        // this.log(`ff evaluating "${this.name}" with args`,this.args)
         let fun = scope.lookup(this.name)
         if(!fun) throw new Error(`function '${this.name}' not found`)
-        // this.log(`real function ${this.name}`)
         let args = this.args.slice()
         if(prepend) args.unshift(prepend)
-        // this.log("args to match are",args)
         let params = match_args_to_params(args,fun.params,this.name)
-        // this.log("parms are",params)
         let params2 = params.map(a => {
             if(a === null || typeof a === 'undefined') return a
             if(typeof a === 'string') return a
-            // this.log("evaluating argument",a)
             return a.evalFilament(scope)
         })
         return Promise.all(params2).then(params2 => {
-            // this.log(`real final params for ${this.name}:`,params2)
-            let ret = fun.do_apply(scope,params2)
-            // this.log(`return value`,ret)
-            return Promise.resolve(ret)
+            return fun.do_apply(scope,params2)
         })
     }
 }
@@ -321,27 +309,12 @@ class FunctionDefintion extends ASTNode {
         return `def ${this.name}(${args.join(",")}) {${this.block.toString()}}`
     }
     async evalFilament(scope) {
-        // this.log("fun def returning self")
-        // this.log("function def args",this.args)
         let args = {}
-        this.args.forEach(arg => {
-            args[arg[0]] = arg[1]
-        })
-        // this.log("making function with args",args)
-        scope.install(new FilamentFunction(this.name,args,(...params)=>{
-            // this.log("inside the function", this.name,params)
+        this.args.forEach(arg => args[arg[0]] = arg[1]) // turn into a map
+        scope.install(new FilamentFunction(this.name,args,async (...params)=>{
             let scope2 = scope.clone(this.name)
-            this.args.forEach((arg,i) => {
-                // this.log("arg defs",arg)
-                let name = arg[0]
-                let value = params[i]
-                // this.log("final vals",name,value)
-                scope2.set_var(name,value)
-            })
-            return Promise.resolve(this.block.evalFilament(scope2)).then(v => {
-                // this.log("value of block is",v)
-                return v
-            })
+            this.args.forEach((arg,i) => scope2.set_var(arg[0],params[i]))
+            return await this.block.evalFilament(scope2)
         }))
         return this
     }
