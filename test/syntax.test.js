@@ -1,5 +1,5 @@
 import {all, b, l, s, setup} from "./common.js"
-import {list, scalar, string} from '../src/ast.js'
+import {boolean, list, scalar, string} from '../src/ast.js'
 import {make_standard_scope} from '../src/lang.js'
 import {FilamentFunction} from '../src/parser.js'
 
@@ -137,5 +137,11 @@ describe('syntax',() => {
             [`{ func() << func(2)
             func(4_0) }`,  s(40)],
         ],scope)
+    })
+
+    it('if statement', async() => {
+        await all([
+            [`if(4>2) { 4 } else { 2 }`,scalar(4)]
+        ])
     })
 })

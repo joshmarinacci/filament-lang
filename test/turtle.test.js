@@ -141,8 +141,8 @@ describe('turtle basics',() => {
     http://logo.twentygototen.org/dZ1f62XY
 
 
-    tree
-    to tree :size
+tree
+to tree :size
    if :size < 5 [forward :size back :size stop]
    forward :size/3
    left 30 tree :size*2/3 right 30
@@ -157,6 +157,50 @@ clearscreen
 tree 150
 
 
+match size {
+    size where size < 5 {
+        forward(size)
+        back(size)
+    }
+    _ {
+        everything else
+    }
+}
+
+if exp {
+ block
+} else {
+ block
+}
+
+if exp block else block
+
+
+def tree(size:?) {
+  if(size < 5) {
+     forward(size)
+     back(size)
+     return
+  }
+
+  turtle_forward(size/3)
+
+  turtle_left(30) tree(size*2/3)  turtle_right(30)
+
+  turtle_forward(size/6)
+
+  turtle_right(25) tree(size/2) turtle_left(25)
+
+  turtle_forward(size/3)
+
+  turtle_right(25) tree(size/2) turtle_left(25)
+
+  turtle_forward(size/6)
+  turtle_back(size)
+}
+
+tree(150)
+
 
 
 to fern :size :sign
@@ -170,6 +214,24 @@ to fern :size :sign
 end
 window clearscreen pu bk 150 pd
 fern 25 1
+
+if exp block
+
+def fern(size:?, sign:?) {
+    if size < 1 {
+        return false
+    } else {
+        forward(size)
+        right(70*sign)   fern(size*0.5, -sign)  left(70*sign)
+        forward(size)
+        left(70*sign)    fern(size*0.5, sign)   right(70*sign)
+        right(7*sign)    fern(size-1, sign)     left(7*sign)
+        back(size*2)
+        return true
+    }
+}
+
+fern(25,1)
 
 
 random rects
