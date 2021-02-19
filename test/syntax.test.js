@@ -172,28 +172,6 @@ describe('syntax',() => {
             [`map([1,2],with:(x)->x*2)`,l(s(2),s(4))],
         ])
     })
-    // it('early return', async() => {
-    //     await all ([
-    //         [`{1 2}`,scalar(2)],
-    //         [`{return 1 2}`,scalar(1)],
-    //         [`{ 1 if true then return 2 3}`,scalar(2)],
-    //         [`{ 1 if false then return 2 3}`,scalar(3)],
-    //         [`{
-    //         def even(x) {
-    //             if x mod 2 = 0 return x
-    //             return 0
-    //         }
-    //         range(4) >> map(with:even)
-    //         `,list([s(0),s(0),s(2),s(0),s(4)])],
-    //         [`{
-    //         def even(x) {
-    //             if x mod 2 = 0 return x
-    //             return 0
-    //         }
-    //         range(4) >> select(where:even)
-    //         `,list([s(2),s(4)])]
-    //     ])
-    // })
     /*
      match 1 {
         1: 1
