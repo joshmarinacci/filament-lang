@@ -14,6 +14,7 @@ import {
     string
 } from './ast.js'
 import {is_valid_unit, to_canonical_unit} from './units.js'
+import {match_args_to_params} from './util.js'
 
 export const REQUIRED = Symbol('REQUIRED')
 
@@ -137,41 +138,8 @@ export class FilamentFunction {
         console.log('###', this.name.toUpperCase(), ...args)
     }
 
-    match_args_to_params(args) {
-        let params = Object.entries(this.params).map(([key, value]) => {
-            // console.log("looking at",key,'=',value)
-            // console.log("remaining args",args)
-            //look for matching arg
-            let n1 = args.findIndex(a => a.type === 'named' && a.name === key)
-            if (n1 >= 0) {
-                // console.log("found named ", args[n1])
-                let arg = args[n1]
-                args.splice(n1, 1)
-                return arg.value
-            } else {
-                //grab the first indexed parameter we can find
-                // console.log("finding indexed")
-                let n = args.findIndex(a => a.type === 'indexed')
-                if (n >= 0) {
-                    // console.log("found", args[n])
-                    let arg = args[n]
-                    args.splice(n, 1)
-                    return arg.value
-                } else {
-                    // console.log("no indexed found")
-                    // console.log("checking for default",value)
-                    if (value === REQUIRED) throw new Error(`parameter ${key} is required in function ${this.name}`)
-                    return value
-                }
-            }
-        })
-        return params
-    }
-
     apply_function(args) {
-        // this.log("applying args",args)
-        // this.log("to the function",this.name)
-        let params = this.match_args_to_params(args)
+        let params = match_args_to_params(args,this.params,this.name)
         return this.apply_with_parameters(params)
     }
 

@@ -1,7 +1,7 @@
 import {FilamentFunction, REQUIRED, strip_under} from './parser.js'
 import {isDate} from "date-fns"
 import {to_canonical_unit} from './units.js'
-import {resolve_in_order} from './util.js'
+import {match_args_to_params} from './util.js'
 
 class ASTNode {
     constructor() {
@@ -290,7 +290,7 @@ class FCall extends ASTNode {
         let args = this.args.slice()
         if(prepend) args.unshift(prepend)
         // this.log("args to match are",args)
-        let params = fun.match_args_to_params(args)
+        let params = match_args_to_params(args,fun.params,this.name)
         // this.log("parms are",params)
         let params2 = params.map(a => {
             if(a === null || typeof a === 'undefined') return a
@@ -493,55 +493,10 @@ class LambdaExp extends ASTNode {
         // this.log("final answer", final_answer)
         return final_answer
     }
-
-    match_args_to_params(args) {
-        // this.log("matching args", args, 'to parameters',this.params)
-        let params = Object.entries(this.params).map(([key, value]) => {
-            // console.log("looking at",key,'=',value)
-            // console.log("remaining args",args)
-            //look for matching arg
-            let n1 = args.findIndex(a => a.type === 'named' && a.name === key)
-            if (n1 >= 0) {
-                // console.log("found named ", args[n1])
-                let arg = args[n1]
-                args.splice(n1, 1)
-                return arg.value
-            } else {
-                //grab the first indexed parameter we can find
-                // console.log("finding indexed")
-                let n = args.findIndex(a => a.type === 'indexed')
-                if (n >= 0) {
-                    // console.log("found", args[n])
-                    let arg = args[n]
-                    args.splice(n, 1)
-                    return arg.value
-                } else {
-                    // console.log("no indexed found")
-                    // console.log("checking for default",value)
-                    if (value === REQUIRED) throw new Error(`parameter ${key} is required in function ${this.name}`)
-                    return value
-                }
-            }
-        })
-        return params
-    }
-
     async do_apply(scope, params) {
-        // this.log("applying lambda body with scope and params",this)
         let scope2 = new Scope("lambda_do_apply",scope)
-        // this.log("params are",params)
-        // this.log("args are",this.params)
-        this.params.forEach((arg,i) => {
-            // this.log("param def",arg)
-            let name = arg[0]
-            let value = params[i]
-            // this.log("final vals",name,value)
-            scope2.set_var(name,value)
-        })
-
-        let answer = await this.block.evalFilament(scope2)
-        // console.log('result is', answer)
-        return answer
+        this.params.forEach((arg,i) => scope2.set_var(arg[0],params[i]))
+        return await this.block.evalFilament(scope2)
     }
 
 }
@@ -560,9 +515,12 @@ class FBlock extends ASTNode{
         return res[res.length-1]
     }
     async evalFilament(scope) {
-        let  scope2 = scope.clone("block")
-        return resolve_in_order(this.statements.map(s => ()=>s.evalFilament(scope2)))
-            .then(ret => ret.pop()) //return result of last statement
+        let scope2 = scope.clone("block")
+        let last = null
+        for(let s of this.statements) {
+            last = await s.evalFilament(scope2)
+        }
+        return last
     }
 }
 export const block = (sts) => new FBlock(sts)
