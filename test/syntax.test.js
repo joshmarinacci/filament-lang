@@ -165,6 +165,11 @@ describe('syntax',() => {
             [`map([1,2],with:()->{2})`,l(s(2),s(2))],
             [`map([1,2],with:(x:?)->{x*2})`,l(s(2),s(4))],
             [`map([1,2],with:(x:?)->x*2)`,l(s(2),s(4))],
+            [`{
+            foo << (x)->{x*2}
+            foo(5)
+            }`,s(10)],
+            [`map([1,2],with:(x)->x*2)`,l(s(2),s(4))],
         ])
     })
     // it('early return', async() => {

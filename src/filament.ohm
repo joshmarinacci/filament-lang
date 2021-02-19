@@ -28,9 +28,9 @@ Filament {
    | HighOp
 
   HighOp
-    = GroupExp
+    = LambdaExp
+    | GroupExp
     | IfExp
-    | LambdaExp
     | FundefExp
     | FuncallExp
     | UnExp
