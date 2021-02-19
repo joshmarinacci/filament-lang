@@ -9,7 +9,7 @@ class ASTNode {
     log() {
         console.log(`## AST Node ${this.type} ## `,...arguments)
     }
-    evalFilament() {
+    async evalFilament() {
         throw new Error(`ASTNode ${this.type}  hasn't implemented evalFilament`)
     }
 }
@@ -78,7 +78,7 @@ class FScalar extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -90,7 +90,7 @@ class FUnit extends ASTNode {
         this.type = 'unit'
         this.unit = u
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -111,7 +111,7 @@ class FString extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -129,7 +129,7 @@ class FBoolean extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -147,7 +147,7 @@ class FDate extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -170,7 +170,7 @@ class FTime extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -214,7 +214,7 @@ class FList extends ASTNode {
     evalJS() {
         return this.value.map(obj => obj.evalJS())
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -238,7 +238,7 @@ export class FTable extends ASTNode {
             }
         })
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
     _get_length() {
@@ -282,7 +282,7 @@ class FCall extends ASTNode {
         let args = [prepend].concat(this.args)
         return fun.apply_function(args)
     }
-    evalFilament(scope, prepend) {
+    async evalFilament(scope, prepend) {
         // this.log(`ff evaluating "${this.name}" with args`,this.args)
         let fun = scope.lookup(this.name)
         if(!fun) throw new Error(`function '${this.name}' not found`)
@@ -320,7 +320,7 @@ class FunctionDefintion extends ASTNode {
         let args = this.args.map(a => a[0].toString()+":"+a[1].toString())
         return `def ${this.name}(${args.join(",")}) {${this.block.toString()}}`
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         // this.log("fun def returning self")
         // this.log("function def args",this.args)
         let args = {}
@@ -357,7 +357,7 @@ class FIndexedArg extends ASTNode {
     toString() {
         return this.value.toString()
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         this.log("evaluating value",this.value)
         return this.value.evalFilament(scope)
     }
@@ -374,7 +374,7 @@ class FNamedArg extends ASTNode {
     toString() {
         return this.name.toString() + ":" + this.value.toString()
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         this.log("evaluating",this.value)
     }
 }
@@ -402,7 +402,7 @@ class Pipeline extends ASTNode {
             return this.next.evalJS_with_pipeline(scope,indexed(fval))
         })
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         // this.log(`evaluating ${this.direction} `, this.first, 'then',this.next)
         return Promise.resolve(this.first.evalFilament(scope))
             .then(val1 => {
@@ -433,7 +433,7 @@ class Identifier extends ASTNode {
     toString() {
         return this.name
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         return scope.lookup(this.name)
     }
 }
@@ -559,7 +559,7 @@ class FBlock extends ASTNode{
         let res = this.statements.map(s => s.evalJS(scope))
         return res[res.length-1]
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         let  scope2 = scope.clone("block")
         return resolve_in_order(this.statements.map(s => ()=>s.evalFilament(scope2)))
             .then(ret => ret.pop()) //return result of last statement
