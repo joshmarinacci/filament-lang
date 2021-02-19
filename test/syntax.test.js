@@ -170,4 +170,94 @@ describe('syntax',() => {
             `,list([s(2),s(4)])]
         ])
     })
+    /*
+     match 1 {
+        1: 1
+        2: 2
+        ?: 5
+     }
+     x << 5
+     match x {
+        (x when x<5)  -> 5
+        (x when x<10) -> 10
+        else          -> 20
+     }
+
+     range(10) >> map(with:(x)->{x*2})
+     range(10) >> map(with:(x)->x*2)
+     range(10) >> map(with:x->x*2)
+
+
+      match (x,y) {
+        (true,true) -> {print(true)}
+        (false, x when x > 6) ->
+        (false,x) -> {print(x)}
+        (false,x) -> print(x)
+        (?) -> {}
+      }
+
+lambda
+    ( args ) -> block
+    ( args ) -> exp
+    arg -> exp
+args
+    list_of(ident : exp)
+
+guarded lambda
+    (guarded arg)
+      match exp {
+        guarded_lambda
+        (x:x=2) -> foo
+        (x:x>5) -> foo
+        (x:x=5) -> foo
+      }
+
+the only difference between regular lambdas and guarded lambdas is that the
+conditonal value of the argument is tested for true or false to decide which one to use
+inside of a match. Also the argument can be a constant instead of an identifier, which is
+shorthand for (x:x=5) same as (5)
+
+if new fun call is lambda, then just assign it.
+
+my_fun << (x) -> 5
+my_fun << (x:?) -> 5
+my_fun << x -> 5
+x -> { 5 } >> my_fun
+
+my_fun << (x,y,z) -> {
+    print("cool stuff happens here")
+    return z
+}
+
+if arg is missing default value, then it is assumed to be ? for required.
+
+
+match(test:x,cases:[
+   case(when:5, then:(x)->x*2),
+   case(when:x->x=5, then:x -> x*2)
+   case(5, x->x*2)
+   case(6, x->x+3)
+])
+
+match(x,[
+    case(4, ()->print("forty")),
+    case(2, ()->print("two")),
+    case(x->x<42, x->x*2),
+    default: 88,
+])
+
+case is a tuple of a constant or function and a second constant or function
+if the first part is true, then it returns the second part
+if the first part is false, then it goes onto the next case until hitting the default
+
+match(x,
+    case: 0, ()->88,
+    case: 1, ()->99,
+    case: (x)->x<55, ()->100,
+)
+
+too many options. start with simple lambda and if exp then exp else exp and return exp
+implement match from these
+
+*/
 })
