@@ -143,20 +143,16 @@ export class FilamentFunction {
         return this.apply_with_parameters(params)
     }
 
-    apply_with_parameters(params) {
-        params = params.map(p => {
-            // console.log("parameter",p)
+    async apply_with_parameters(params) {
+        let ps = []
+        for (let p of params) {
             if (p && p.type === 'callsite') {
-                // console.log("must evaluate argument")
-                return Promise.resolve(p.apply())
+                ps.push(await p.apply())
+            } else {
+                ps.push(await p)
             }
-            return Promise.resolve(p)
-        })
-        // console.log("final params",params)
-        return Promise.all(params).then(params => {
-            // console.log("real final params",params)
-            return this.fun.apply(this, params)
-        })
+        }
+        return await this.fun.apply(this, ps)
     }
     do_apply(scope,params) {
         return this.fun.apply(this,params)
