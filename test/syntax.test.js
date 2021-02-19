@@ -204,12 +204,6 @@ describe('syntax',() => {
         (?) -> {}
       }
 
-lambda
-    ( args ) -> block
-    ( args ) -> exp
-    arg -> exp
-args
-    list_of(ident : exp)
 
 guarded lambda
     (guarded arg)
@@ -250,9 +244,6 @@ match(x,
     case: 1, ()->99,
     case: (x)->x<55, ()->100,
 )
-
-too many options. start with simple lambda and if exp then exp else exp and return exp
-implement match from these
 
 */
 })
