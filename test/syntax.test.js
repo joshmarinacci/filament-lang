@@ -163,7 +163,7 @@ describe('syntax',() => {
             }`,l(s(2),s(2))],
             [`map([1,2],with:()->{2})`,l(s(2),s(2))],
             [`map([1,2],with:(x:?)->{x*2})`,l(s(2),s(4))],
-            // [`map([1,2],with:x->x*2)`,l([s(2),s(4)])],
+            [`map([1,2],with:(x:?)->x*2)`,l(s(2),s(4))],
         ])
     })
     // it('early return', async() => {
