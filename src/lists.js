@@ -84,6 +84,7 @@ export const map = new FilamentFunctionWithScope('map',{
 },function(scope, data,cb) {
     let proms = data._map((el,i)=> () => {
         if(cb.type === 'lambda') {
+            // console.log("doing lambda",scope,cb,[el])
             return cb.apply_function(scope,cb,[el])
         } else {
             return cb.fun.apply(cb, [el])

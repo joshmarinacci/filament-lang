@@ -54,7 +54,7 @@ Filament {
     | "if" Exp "then" Block              --short
 
   LambdaExp
-    = "(" ListOf<Arg,","> ")" "->" Block
+    = "(" ListOf<DefArg,","> ")" "->" Block
 
   List = "[" ListOf<Exp,","> "]"
 
