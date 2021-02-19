@@ -14,30 +14,19 @@ import {
     turtle_start
 } from '../src/turtle.js'
 import {FilamentFunctionWithScope, REQUIRED} from '../src/parser.js'
+import {mkdir} from '../tools/util.js'
 
 await setup()
 
-async function mkdir(dir) {
-    return new Promise((res,rej)=>{
-        real_mkdir(dir,(err)=>{
-            if(err) {
-                // console.log(err)//return rej(err)
-            }
-            res()
-        })
-    })
-}
-
 async function code_to_png(code, fname, scope) {
     // console.log("parsing",code)
-    await mkdir('output_turtle')
+    await mkdir('output')
+    await mkdir('output/turtle')
     // console.log("rendering to ",fname)
     let ret = await eval_code(code, scope)
     const img = PImage.make(500,500);
     await ret.cb(img)
-    await PImage.encodePNGToStream(img,createWriteStream(path.join('output_turtle',fname)))
-    // console.log("done rendering")
-
+    await PImage.encodePNGToStream(img,createWriteStream(path.join('output','turtle',fname)))
 }
 
 const print = new FilamentFunctionWithScope('print',

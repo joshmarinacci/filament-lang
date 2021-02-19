@@ -9,3 +9,14 @@ export function resolve_in_order(proms) {
     })
     return pp.then(()=>rets)
 }
+
+async function mkdir(dir) {
+    return new Promise((res,rej)=>{
+        real_mkdir(dir,(err)=>{
+            if(err) {
+                // console.log(err)//return rej(err)
+            }
+            res()
+        })
+    })
+}
