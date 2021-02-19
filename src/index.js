@@ -17,7 +17,7 @@ export async function eval_code(code, custom_scope) {
     let ast = parser.ast(match)
     // console.log('ast',ast)
     // console.log("evaluating with scope",custom_scope)
-    return Promise.resolve(ast.evalFilament(custom_scope));
+    return await ast.evalFilament(custom_scope)
 }
 
 export {

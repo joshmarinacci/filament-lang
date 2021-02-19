@@ -96,14 +96,11 @@ export const map = new FilamentFunctionWithScope('map',{
 export const select = new FilamentFunction('select',{
     data:REQUIRED,
     where:REQUIRED,
-},function(data,where) {
-    let proms = data._map((el)=>{
-        return Promise.resolve(where.fun.apply(where,[el]))
-    })
-    return Promise.all(proms).then(vals => {
-        let real_vals = data._filter((v,i)=>unpack(vals[i]))
-        return list(real_vals)
-    })
+},async function(data,where) {
+    let vals = await Promise.all(data._map(async (el)=>{
+        return await where.fun.apply(where,[el])
+    }))
+    return list(data._filter((v,i)=>unpack(vals[i])))
 })
 
 // * __sort__: sort list returning a new list, by: property to use for sorting `sort(data by:"date")` (should we use `order` instead?)
@@ -142,8 +139,8 @@ export const sum = new FilamentFunction("sum",
     {
         data:REQUIRED,
     },
-    function(data) {
-        return Promise.resolve(scalar(data._reduce((a,b)=>unpack(a)+unpack(b))))
+    async function(data) {
+        return await scalar(data._reduce((a,b)=>unpack(a)+unpack(b)))
     }
 )
 

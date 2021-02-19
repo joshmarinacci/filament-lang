@@ -284,14 +284,12 @@ class FCall extends ASTNode {
         let args = this.args.slice()
         if(prepend) args.unshift(prepend)
         let params = match_args_to_params(args,fun.params,this.name)
-        let params2 = params.map(a => {
-            if(a === null || typeof a === 'undefined') return a
-            if(typeof a === 'string') return a
-            return a.evalFilament(scope)
-        })
-        return Promise.all(params2).then(params2 => {
-            return fun.do_apply(scope,params2)
-        })
+        let params2 = []
+        for(let a of params) {
+            if(a && a.evalFilament) a = await a.evalFilament(scope)
+            params2.push(a)
+        }
+        return await fun.do_apply(scope,params2)
     }
 }
 export const call = (name,args) => new FCall(name,args)
@@ -369,10 +367,9 @@ class Pipeline extends ASTNode {
             return this.next.toString() + "<<" + this.first.toString()
         }
     }
-    evalJS(scope) {
-        return Promise.resolve(this.first.evalJS(scope)).then(fval => {
-            return this.next.evalJS_with_pipeline(scope,indexed(fval))
-        })
+    async evalJS(scope) {
+        let fval = await this.first.evalJS(scope)
+        return this.next.evalJS_with_pipeline(scope,indexed(fval))
     }
     async evalFilament(scope) {
         let val1 = await this.first.evalFilament(scope)

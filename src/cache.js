@@ -29,16 +29,15 @@ class JoshCache {
 
 const CACHE = new JoshCache()
 
-export function cached_json_fetch(url) {
-    if(CACHE.contains(url)) {
-        if(!CACHE.is_outdated(url)) {
+export async function cached_json_fetch(url) {
+    if (CACHE.contains(url)) {
+        if (!CACHE.is_outdated(url)) {
             console.log("fetching from cache")
-            return Promise.resolve(CACHE.get(url))
+            return await CACHE.get(url)
         }
     }
-    console.log("really fetching",url)
-    return fetch(url).then(r => r.json()).then(json =>{
-        CACHE.put(url,json)
-        return json
-    })
+    console.log("really fetching", url)
+    let json = await fetch(url).then(r => r.json())
+    CACHE.put(url, json)
+    return json
 }
