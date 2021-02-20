@@ -89,6 +89,38 @@ make_image(width:100, height: 100, generate:(x,y) -> {
     n << random(min:0,max:1)
     [n,n,n]
 })
+
+load_image(src:'url') >> map(with:(c,x,y) -> {
+    [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
+}) 
+ make_color(c.r* 0.25, c.g * 0.25,c.b * 0.5)
+ // cross fade
+c1*0.5 + c2*0.5
+reduce(img1,img2, with:(ca,cb,x,y) {
+    
+})
+map(img1,with(color,x,y) -> {
+    color2 = get_pixel(img2,x,y)
+    return color*0.5 + color2*0.5
+}
+
+brightness << (c)     -> c[0]*0.24 + c[1]*0.24 + c[2]*0.5
+lerp       << (t,a,b) -> a * (1-t) + b * (t)
+
+white << [1,1,1]
+brown << [0.5,0.4,0.1]
+
+sepia << (c,x,y) -> {
+  b << brightness(c)
+  lerp(b,white,brown)
+}
+load_image(src:"url") >> map(with:sepia)  
+
+//mandlebrot will require loops
+//do we need a color datatype which is an array plus some accessors?
+need array access syntax.  
+    identifier [ index ]
+//simple raytracer will need loops and records / objects    
 ```
 
 
