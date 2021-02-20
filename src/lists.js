@@ -1,4 +1,4 @@
-import {FilamentFunction, REQUIRED} from './parser.js'
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {is_list, list, pack, scalar, unpack} from './ast.js'
 import {resolve_in_order} from './util.js'
 
@@ -78,25 +78,29 @@ export const join = new FilamentFunction('join',{
 
 
 // * __map__:  convert every element in a list using a lambda function: `(list, lam)`
-export const map = new FilamentFunction('map',{
+export const map = new FilamentFunctionWithScope('map',{
     data:REQUIRED,
     with:REQUIRED,
-},function(data,cb) {
-    let proms = data._map((el,i)=> () => cb.fun.apply(cb,[el]))
+},function(scope, data,cb) {
+    let proms = data._map((el,i)=> () => {
+        if(cb.type === 'lambda') {
+            // console.log("doing lambda",scope,cb,[el])
+            return cb.apply_function(scope,cb,[el])
+        } else {
+            return cb.fun.apply(cb, [el])
+        }
+    })
     return resolve_in_order(proms).then(vals => list(vals))
 })
 
 export const select = new FilamentFunction('select',{
     data:REQUIRED,
     where:REQUIRED,
-},function(data,where) {
-    let proms = data._map((el)=>{
-        return Promise.resolve(where.fun.apply(where,[el]))
-    })
-    return Promise.all(proms).then(vals => {
-        let real_vals = data._filter((v,i)=>unpack(vals[i]))
-        return list(real_vals)
-    })
+},async function(data,where) {
+    let vals = await Promise.all(data._map(async (el)=>{
+        return await where.fun.apply(where,[el])
+    }))
+    return list(data._filter((v,i)=>unpack(vals[i])))
 })
 
 // * __sort__: sort list returning a new list, by: property to use for sorting `sort(data by:"date")` (should we use `order` instead?)
@@ -135,8 +139,8 @@ export const sum = new FilamentFunction("sum",
     {
         data:REQUIRED,
     },
-    function(data) {
-        return Promise.resolve(scalar(data._reduce((a,b)=>unpack(a)+unpack(b))))
+    async function(data) {
+        return await scalar(data._reduce((a,b)=>unpack(a)+unpack(b)))
     }
 )
 

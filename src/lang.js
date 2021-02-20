@@ -47,11 +47,10 @@ export function make_standard_scope() {
 let scope = make_standard_scope()
 
 export async function real_eval2(code, src) {
-    return fetch(src).then(r => r.text()).then(txt => {
-        let parser = new Parser(scope, txt)
-        let m = parser.parse('{' + code + '}')
-        if (m.failed()) throw new Error("match failed on: " + code)
-        let ast = parser.ast(m)
-        return Promise.resolve(ast.evalFilament(scope))
-    })
+    let txt = await fetch(src).then(r => r.text())
+    let parser = new Parser(scope, txt)
+    let m = parser.parse('{' + code + '}')
+    if (m.failed()) throw new Error("match failed on: " + code)
+    let ast = parser.ast(m)
+    return await ast.evalFilament(scope)
 }

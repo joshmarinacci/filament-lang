@@ -4,8 +4,8 @@ import {
     boolean,
     call,
     fundef,
-    ident,
-    indexed,
+    ident, ifexp,
+    indexed, lambda,
     list,
     named,
     pipeline_left,
@@ -14,6 +14,7 @@ import {
     string
 } from './ast.js'
 import {is_valid_unit, to_canonical_unit} from './units.js'
+import {match_args_to_params} from './util.js'
 
 export const REQUIRED = Symbol('REQUIRED')
 
@@ -80,8 +81,17 @@ export class Parser {
             Arg_named: (a, _, c) => named(a.ast().name, c.ast()),
             Arg_indexed: a => indexed(a.ast()),
             FuncallExp: (ident, _1, args, _2) => call(ident.ast().name, args.ast()),
-            DefArg: (a, _, c) => [a.ast().name, c.ast()],
+            DefArg_default: (a, _, c) => [a.ast().name, c.ast()],
+            DefArg_solo:(a) => [a.ast().name],
             FundefExp: (def, name, _1, args, _2, block) => fundef(name.ast().name, args.ast(), block.ast()),
+
+            //lambdas
+            LambdaExp_full:  (_1, args, _2, _3, block) => lambda(args.ast(),block.ast()),
+            LambdaExp_short: (args, _3, block) => lambda([args.ast()],block.ast()),
+
+            //conditionals
+            IfExp_short: (_if, test, _then, a) => ifexp(test.ast(),a.ast()),
+            IfExp_full:  (_if, test, _then, a, _else, b) => ifexp(test.ast(),a.ast(),b.ast()),
 
             Block: (_1, statements, _2) => block(statements.ast()),
         })
@@ -128,58 +138,21 @@ export class FilamentFunction {
         console.log('###', this.name.toUpperCase(), ...args)
     }
 
-    match_args_to_params(args) {
-        let params = Object.entries(this.params).map(([key, value]) => {
-            // console.log("looking at",key,'=',value)
-            // console.log("remaining args",args)
-            //look for matching arg
-            let n1 = args.findIndex(a => a.type === 'named' && a.name === key)
-            if (n1 >= 0) {
-                // console.log("found named ", args[n1])
-                let arg = args[n1]
-                args.splice(n1, 1)
-                return arg.value
-            } else {
-                //grab the first indexed parameter we can find
-                // console.log("finding indexed")
-                let n = args.findIndex(a => a.type === 'indexed')
-                if (n >= 0) {
-                    // console.log("found", args[n])
-                    let arg = args[n]
-                    args.splice(n, 1)
-                    return arg.value
-                } else {
-                    // console.log("no indexed found")
-                    // console.log("checking for default",value)
-                    if (value === REQUIRED) throw new Error(`parameter ${key} is required in function ${this.name}`)
-                    return value
-                }
-            }
-        })
-        return params
-    }
-
     apply_function(args) {
-        // this.log("applying args",args)
-        // this.log("to the function",this.name)
-        let params = this.match_args_to_params(args)
+        let params = match_args_to_params(args,this.params,this.name)
         return this.apply_with_parameters(params)
     }
 
-    apply_with_parameters(params) {
-        params = params.map(p => {
-            // console.log("parameter",p)
+    async apply_with_parameters(params) {
+        let ps = []
+        for (let p of params) {
             if (p && p.type === 'callsite') {
-                // console.log("must evaluate argument")
-                return Promise.resolve(p.apply())
+                ps.push(await p.apply())
+            } else {
+                ps.push(await p)
             }
-            return Promise.resolve(p)
-        })
-        // console.log("final params",params)
-        return Promise.all(params).then(params => {
-            // console.log("real final params",params)
-            return this.fun.apply(this, params)
-        })
+        }
+        return await this.fun.apply(this, ps)
     }
     do_apply(scope,params) {
         return this.fun.apply(this,params)

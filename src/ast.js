@@ -1,7 +1,7 @@
 import {FilamentFunction, strip_under} from './parser.js'
 import {isDate} from "date-fns"
 import {to_canonical_unit} from './units.js'
-import {resolve_in_order} from './util.js'
+import {match_args_to_params} from './util.js'
 
 class ASTNode {
     constructor() {
@@ -9,7 +9,7 @@ class ASTNode {
     log() {
         console.log(`## AST Node ${this.type} ## `,...arguments)
     }
-    evalFilament() {
+    async evalFilament() {
         throw new Error(`ASTNode ${this.type}  hasn't implemented evalFilament`)
     }
 }
@@ -78,7 +78,7 @@ class FScalar extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -90,7 +90,7 @@ class FUnit extends ASTNode {
         this.type = 'unit'
         this.unit = u
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -111,7 +111,7 @@ class FString extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -129,7 +129,7 @@ class FBoolean extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -147,7 +147,7 @@ class FDate extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -162,7 +162,6 @@ class FTime extends ASTNode {
         } else {
             this.value = new Date(0, 0, 0, hour, min, sec)
         }
-        // console.log("made",this.value,'from',hour,min,sec)
     }
     toString() {
         return (""+this.value)
@@ -170,7 +169,7 @@ class FTime extends ASTNode {
     evalJS() {
         return this.value
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -214,7 +213,7 @@ class FList extends ASTNode {
     evalJS() {
         return this.value.map(obj => obj.evalJS())
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
 }
@@ -238,7 +237,7 @@ export class FTable extends ASTNode {
             }
         })
     }
-    evalFilament() {
+    async evalFilament() {
         return this
     }
     _get_length() {
@@ -271,10 +270,7 @@ class FCall extends ASTNode {
     evalJS(scope) {
         if(!scope.lookup(this.name)) throw new Error(`function '${this.name}' not found`)
         let fun = scope.lookup(this.name)
-        return fun.apply_function(this.args).then(res => {
-            // this.log("result of evalJS",res)
-            return res
-        })
+        return fun.apply_function(this.args)
     }
     evalJS_with_pipeline(scope,prepend) {
         if(!scope.lookup(this.name)) throw new Error(`function '${this.name}' not found`)
@@ -282,28 +278,18 @@ class FCall extends ASTNode {
         let args = [prepend].concat(this.args)
         return fun.apply_function(args)
     }
-    evalFilament(scope, prepend) {
-        // this.log(`ff evaluating "${this.name}" with args`,this.args)
+    async evalFilament(scope, prepend) {
         let fun = scope.lookup(this.name)
         if(!fun) throw new Error(`function '${this.name}' not found`)
-        // this.log(`real function ${this.name}`)
         let args = this.args.slice()
         if(prepend) args.unshift(prepend)
-        // this.log("args to match are",args)
-        let params = fun.match_args_to_params(args)
-        // this.log("parms are",params)
-        let params2 = params.map(a => {
-            if(a === null || typeof a === 'undefined') return a
-            if(typeof a === 'string') return a
-            // this.log("evaluating argument",a)
-            return a.evalFilament(scope)
-        })
-        return Promise.all(params2).then(params2 => {
-            // this.log(`real final params for ${this.name}:`,params2)
-            let ret = fun.do_apply(scope,params2)//fun.apply(fun,params2)
-            // this.log(`return value`,ret)
-            return Promise.resolve(ret)
-        })
+        let params = match_args_to_params(args,fun.params,this.name)
+        let params2 = []
+        for(let a of params) {
+            if(a && a.evalFilament) a = await a.evalFilament(scope)
+            params2.push(a)
+        }
+        return await fun.do_apply(scope,params2)
     }
 }
 export const call = (name,args) => new FCall(name,args)
@@ -320,28 +306,13 @@ class FunctionDefintion extends ASTNode {
         let args = this.args.map(a => a[0].toString()+":"+a[1].toString())
         return `def ${this.name}(${args.join(",")}) {${this.block.toString()}}`
     }
-    evalFilament(scope) {
-        // this.log("fun def returning self")
-        // this.log("function def args",this.args)
+    async evalFilament(scope) {
         let args = {}
-        this.args.forEach(arg => {
-            args[arg[0]] = arg[1]
-        })
-        // this.log("making function with args",args)
-        scope.install(new FilamentFunction(this.name,args,(...params)=>{
-            // this.log("inside the function", this.name,params)
+        this.args.forEach(arg => args[arg[0]] = arg[1]) // turn into a map
+        scope.install(new FilamentFunction(this.name,args,async (...params)=>{
             let scope2 = scope.clone(this.name)
-            this.args.forEach((arg,i) => {
-                // this.log("arg defs",arg)
-                let name = arg[0]
-                let value = params[i]
-                // this.log("final vals",name,value)
-                scope2.set_var(name,value)
-            })
-            return Promise.resolve(this.block.evalFilament(scope2)).then(v => {
-                // this.log("value of block is",v)
-                return v
-            })
+            this.args.forEach((arg,i) => scope2.set_var(arg[0],params[i]))
+            return await this.block.evalFilament(scope2)
         }))
         return this
     }
@@ -357,7 +328,7 @@ class FIndexedArg extends ASTNode {
     toString() {
         return this.value.toString()
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         this.log("evaluating value",this.value)
         return this.value.evalFilament(scope)
     }
@@ -374,7 +345,7 @@ class FNamedArg extends ASTNode {
     toString() {
         return this.name.toString() + ":" + this.value.toString()
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         this.log("evaluating",this.value)
     }
 }
@@ -396,29 +367,17 @@ class Pipeline extends ASTNode {
             return this.next.toString() + "<<" + this.first.toString()
         }
     }
-    evalJS(scope) {
-        // this.log("first is",this.first)
-        return Promise.resolve(this.first.evalJS(scope)).then(fval => {
-            return this.next.evalJS_with_pipeline(scope,indexed(fval))
-        })
+    async evalJS(scope) {
+        let fval = await this.first.evalJS(scope)
+        return this.next.evalJS_with_pipeline(scope,indexed(fval))
     }
-    evalFilament(scope) {
-        // this.log(`evaluating ${this.direction} `, this.first, 'then',this.next)
-        return Promise.resolve(this.first.evalFilament(scope))
-            .then(val1 => {
-                // this.log("val1 is",val1)
-                // this.log("next is",this.next)
-                if(this.next.type === 'identifier') {
-                    // this.log("this is a variable assignment")
-                    return scope.set_var(this.next.name, val1)
-                } else {
-                    return this.next.evalFilament(scope, indexed(val1))
-                }
-            })
-            // .then(val2 => {
-            //     // this.log("second returned",val2)
-            //     return val2
-            // })
+    async evalFilament(scope) {
+        let val1 = await this.first.evalFilament(scope)
+        if(this.next.type === 'identifier') {
+            return scope.set_var(this.next.name,val1)
+        } else {
+            return this.next.evalFilament(scope,indexed(val1))
+        }
     }
 }
 export const pipeline_right = (a,b) => new Pipeline('right',a,b)
@@ -433,12 +392,60 @@ class Identifier extends ASTNode {
     toString() {
         return this.name
     }
-    evalFilament(scope) {
+    async evalFilament(scope) {
         return scope.lookup(this.name)
     }
 }
 export const ident = (n) => new Identifier(n)
 
+class IfExp extends ASTNode {
+    constructor(test,then_block,else_block) {
+        super();
+        this.type = 'if'
+        this.test = test
+        this.then_block = then_block
+        this.else_block = else_block
+    }
+    async evalFilament(scope) {
+        let ans = await this.test.evalFilament(scope)
+        if(ans.value === true) {
+            return await this.then_block.evalFilament(scope)
+        } else {
+            return await this.else_block.evalFilament(scope)
+        }
+    }
+}
+export const ifexp = (cond,then_block,else_block) => new IfExp(cond,then_block,else_block)
+
+class LambdaExp extends ASTNode {
+    constructor(params, block) {
+        super();
+        this.type = 'lambda'
+        this.params = params
+        this.block = block
+    }
+
+    toString() {
+        return `LAMBDA.toString() not implemented`
+    }
+
+    async evalFilament(scope) {
+        return this
+    }
+
+    async apply_function(scope, cb, params) {
+        let scope2 = new Scope('lambda',scope)
+        this.params.forEach((arg,i) => scope2.set_var(arg[0],params[i]))
+        return await this.block.evalFilament(scope2)
+    }
+    async do_apply(scope, params) {
+        let scope2 = new Scope("lambda",scope)
+        this.params.forEach((arg,i) => scope2.set_var(arg[0],params[i]))
+        return await this.block.evalFilament(scope2)
+    }
+
+}
+export const lambda = (args,block) => new LambdaExp(args,block)
 class FBlock extends ASTNode{
     constructor(sts) {
         super()
@@ -452,14 +459,15 @@ class FBlock extends ASTNode{
         let res = this.statements.map(s => s.evalJS(scope))
         return res[res.length-1]
     }
-    evalFilament(scope) {
-        let  scope2 = scope.clone("block")
-
-        return resolve_in_order(this.statements.map(s => ()=>s.evalFilament(scope2)))
-            .then(ret => ret.pop()) //return result of last statement
+    async evalFilament(scope) {
+        let scope2 = scope.clone("block")
+        let last = null
+        for(let s of this.statements) {
+            last = await s.evalFilament(scope2)
+        }
+        return last
     }
 }
-
 export const block = (sts) => new FBlock(sts)
 
 

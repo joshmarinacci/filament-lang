@@ -66,6 +66,7 @@ describe('syntax',() => {
             ['{def double(x:?) { x*2} map([1,2,3],with:double)}', list([s(2), s(4), s(6)])],
             ['{def first_letter(v:?) { take(v,1)} map(["foo","bar"],with:first_letter)}', list([string("f"), string("b")])],
             //TODO: ['range(100, step:10) as jesse',list([string('ten'),string('4D'),'ten twenty thirty 4D fifty 6D 7D AD 9D'])]
+            ['{def foo(x) { x } foo(42)}', s42],
         ])
     })
 
@@ -139,35 +140,42 @@ describe('syntax',() => {
         ],scope)
     })
 
+    // if statement returns the value of the evaluated block
     it('if statement', async() => {
         await all([
-            [`if(4>2) {4}`,scalar(4)],
-            [`if(4>2) {4} else {2}`,scalar(4)],
-            [`if(4<2) {4} else {2}`,scalar(2)],
-            [`if 4>2 then 4`,scalar(4)],
-            [`if 4<2 then 4 else 2`,scalar(4)],
+            [`if(4>2) then {4}`,scalar(4)],
+            [`if(4>2) then {4} else {2}`,scalar(4)],
+            [`if(4<2) then {4} else {2}`,scalar(2)],
+            [`if 4>2 then {4}`,scalar(4)],
+            [`if 4<2 then {4} else {2}`,scalar(2)],
+            [`4 + if(4<2) then {4} else {2}`,scalar(6)],
         ])
     })
-    it('early return', async() => {
-        await all ([
-            [`{1 2}`,scalar(2)],
-            [`{return 1 2}`,scalar(1)],
-            [`{ 1 if true then return 2 3}`,scalar(2)],
-            [`{ 1 if false then return 2 3}`,scalar(3)],
+
+    it('lambda expressions', async () => {
+        await all([
             [`{
-            def even(x) {
-                if x mod 2 = 0 return x
-                return 0
-            }
-            range(4) >> map(with:even)
-            `,list([s(0),s(0),s(2),s(0),s(4)])],
+            foo << (x:?)->{x*2}
+            foo(5)
+            }`,s(10)],
             [`{
-            def even(x) {
-                if x mod 2 = 0 return x
-                return 0
-            }
-            range(4) >> select(where:even)
-            `,list([s(2),s(4)])]
+            foo << ()->{2}
+            map([1,2],with:foo)
+            }`,l(s(2),s(2))],
+            [`map([1,2],with:()->{2})`,l(s(2),s(2))],
+            [`map([1,2],with:(x:?)->{x*2})`,l(s(2),s(4))],
+            [`map([1,2],with:(x:?)->x*2)`,l(s(2),s(4))],
+            [`{
+            foo << (x)->{x*2}
+            foo(5)
+            }`,s(10)],
+            [`{
+            foo << x->x*2
+            foo(5)
+            }`,s(10)],
+            [`map([1,2],with:(x)->x*2)`,l(s(2),s(4))],
+            [`map([1,2],with:x->x*2)`,l(s(2),s(4))],
+            [`range(3) >> map(with:x->x*2)`,l(s(0),s(2),s(4))],
         ])
     })
     /*
@@ -196,12 +204,6 @@ describe('syntax',() => {
         (?) -> {}
       }
 
-lambda
-    ( args ) -> block
-    ( args ) -> exp
-    arg -> exp
-args
-    list_of(ident : exp)
 
 guarded lambda
     (guarded arg)
@@ -217,19 +219,6 @@ conditonal value of the argument is tested for true or false to decide which one
 inside of a match. Also the argument can be a constant instead of an identifier, which is
 shorthand for (x:x=5) same as (5)
 
-if new fun call is lambda, then just assign it.
-
-my_fun << (x) -> 5
-my_fun << (x:?) -> 5
-my_fun << x -> 5
-x -> { 5 } >> my_fun
-
-my_fun << (x,y,z) -> {
-    print("cool stuff happens here")
-    return z
-}
-
-if arg is missing default value, then it is assumed to be ? for required.
 
 
 match(test:x,cases:[
@@ -255,9 +244,6 @@ match(x,
     case: 1, ()->99,
     case: (x)->x<55, ()->100,
 )
-
-too many options. start with simple lambda and if exp then exp else exp and return exp
-implement match from these
 
 */
 })
