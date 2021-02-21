@@ -2,3 +2,6 @@
 /node_modules
 /test-umd/dist
 filament-lang-*.tgz
+/tools
+/test
+/output
