@@ -1,6 +1,6 @@
 {
   "name": "filament-lang",
-  "version": "0.1.8",
+  "version": "0.3.0",
   "description": "filament language",
   "browser": "dist/filament.js",
   "main": "src/index.js",
