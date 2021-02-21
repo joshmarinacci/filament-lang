@@ -227,7 +227,7 @@ export const time_cons = new FilamentFunction('time',{
 
 export const random = new FilamentFunction('random',
     {
-        max:REQUIRED,
+        max:scalar(1),
         min:scalar(0),
         count:scalar(1)
     },

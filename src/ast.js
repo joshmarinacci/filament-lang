@@ -213,8 +213,13 @@ class FList extends ASTNode {
     evalJS() {
         return this.value.map(obj => obj.evalJS())
     }
-    async evalFilament() {
-        return this
+    async evalFilament(scope) {
+        let final = []
+        for(let i=0; i<this.value.length; i++) {
+            let v = await this.value[i].evalFilament(scope)
+            final.push(v)
+        }
+        return new FList(final)
     }
 }
 export const list = arr => new FList(arr)

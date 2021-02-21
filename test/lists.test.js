@@ -94,4 +94,9 @@ describe('lists',() => {
         ])
     })
 
+    it("makes list with function calls", async () => {
+        await all([
+            ['[1*2,3*4]',l(s(2),s(12))],
+        ])
+    })
 })

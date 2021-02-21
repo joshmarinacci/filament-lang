@@ -68,30 +68,32 @@ describe('image',() => {
             'load_image.png',scope)
     });
 
+    it('white noise', async () => {
+        await code_to_png(`{
+            rando << () -> { 5 }
+            make_image(width:100, height: 100)
+            >> mapimage(with:(x,y,color) -> {
+                n << random(min:0,max:1)
+                [n,n,n]
+            })
+        }`,'whitenoise.png',scope)
+    });
+
 })
 
 
-
+/*
 describe('array indexing',() => {
     let std_scope = make_standard_scope()
     const scope = new Scope('image', std_scope)
     scope.install(make_image, map_image, load_image)
 
-    it('white noise', async () => {
-        await code_to_png(`
-            make_image(width:10, height: 10) 
-            >> mapimage(with:(x,y,color) -> {
-                n << random(min:0,max:1)
-                [n,n,n]
-            })
-        `,'whitenoise.png',scope)
-    });
 
     it('load image to grayscale', async () => {
         await code_to_png(`
             load_image(src:'url') >> mapimage(with:(x,y,color) -> {
                 [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
-            }) 
+            })
         `,'load_image.png',scope)
     });
 
@@ -108,7 +110,7 @@ mapimage(img1,with(color,x,y) -> {
         await code_to_png(`
             load_image(src:'url') >> mapimage(with:(color,x,y) -> {
                 [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
-            }) 
+            })
         `,'load_image.png',scope)
     });
     it('sepia', async () => {
@@ -121,7 +123,9 @@ mapimage(img1,with(color,x,y) -> {
               b << brightness(c)
               lerp(b,white,brown)
             }
-            load_image(src:"url") >> mapimage(with:sepia)  
+            load_image(src:"url") >> mapimage(with:sepia)
         `,'sepia.png',scope)
     });
 })
+
+ */

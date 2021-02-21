@@ -10,8 +10,8 @@ export async function setup() {
 }
 export async function test_same(str, ans, scope) {
     let ret = await eval_code(str,scope)
-    console.log(str,'became',ret)
-    console.log('answer is',ans)
+    // console.log(str,'became',ret)
+    // console.log('answer is',ans)
     assert.deepStrictEqual(ret,ans)
     // assert.equal(ret.value,ans.value)
 }
