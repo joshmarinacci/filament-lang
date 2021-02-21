@@ -125,3 +125,49 @@ need array access syntax.
 
 
 
+## Contributing to Filament
+
+### Building a browser-compatible UMD module
+
+The Filament source code may be bundled into an application via tools such as Webpack, using an `import` or `require` statement. This mechanism should work in both the browser and NodeJS environments.
+
+In addition, it is possible to create a UMD module suitable for use in a browser-side HTML page. This module may be included via a `<script>` tag, or (untested at this time) may be used in a NodeJS environment via `require` or `import`.
+
+To create the UMD module, use the following:
+
+```
+npm run build-umd
+```
+
+This will create a `dist/` directory and generate the following files in that directory:
+
+- `dist/filament.js`
+- `dist/filament.ohm`
+
+*Note that `filament.ohm` is copied verbatim from `src/filament.ohm`, because Filament relies upon this file being available at runtime. In some future version, `filament.ohm` may be bundled into `filament.js` for convenience.*
+
+### Testing the built UMD module
+
+An HTTP server is necessary to serve the contents of this repository. There are many to choose from, but for the purposes of this document, we will use [http-server](https://github.com/http-party/http-server#readme), which is installed as a development dependency via `package.json`.
+
+After building the UMD module via `npm run build-umd`, the following command will serve up the content of the `test-umd/` directory:
+
+```
+npm run test-umd
+```
+
+You can then point your web browser at `http://127.0.0.1:8080` to see `test/index.html`.
+
+
+### Publishing a new version to NPMJS
+
+The following instructions are primarily for reference and for use by the primary Filament package author when preparing to publish a new version.
+
+- Update version number in `package.json`
+- Ensure that Mocha tests run successfully `npm run test`
+- Build UMD module via `npm run build-umd`
+- Ensure that browser-side UMD tests run successfully `npm run test-umd` and connecting to `http://127.0.0.1:8080`.
+- Generate documentation via `npm run docs`
+- Use `npm pack --dry-run` to view what files would end up in the published package. Adjust `.npmignore` if there are files listed that should not be published.
+
+
