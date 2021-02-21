@@ -52,8 +52,8 @@ Filament {
     | ident                  --solo
 
   IfExp
-    = "if" Exp "then" Block "else" Block --full
-    | "if" Exp "then" Block              --short
+    = "if" Exp "then" Exp "else" Exp --full
+    | "if" Exp "then" Exp            --short
 
   LambdaExp
     = DefArg "->" Exp --short

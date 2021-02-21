@@ -149,6 +149,8 @@ describe('syntax',() => {
             [`if 4>2 then {4}`,scalar(4)],
             [`if 4<2 then {4} else {2}`,scalar(2)],
             [`4 + if(4<2) then {4} else {2}`,scalar(6)],
+            [`if 4>2 then 4`,scalar(4)],
+            [`if 4<2 then 4 else 2`,scalar(2)],
         ])
     })
 
