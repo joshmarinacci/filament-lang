@@ -18,7 +18,7 @@ import {
     not,
     notequal,
     or,
-    power,
+    power, random,
     sin,
     subtract,
     tan, time_cons
@@ -33,7 +33,7 @@ import {plot} from './plot.js'
 
 export function make_standard_scope() {
     let scope = new Scope("lang")
-    scope.install(add, subtract, multiply, divide, power, negate, mod, factorial, is_prime)
+    scope.install(add, subtract, multiply, divide, power, negate, mod, factorial, is_prime, random)
     scope.install(abs, sin, cos, tan)
     scope.install(lessthan, greaterthan, equal, notequal, lessthanorequal, greaterthanorequal, or, and, not)
     scope.install(range, length, take, drop, join, reverse, map, sort, sum, get_field, select)

@@ -223,3 +223,14 @@ export const time_cons = new FilamentFunction('time',{
 
     throw new Error(`cannot create date from args ${input} , ${hour}, ${minute},${second},${format}`)
 })
+
+
+export const random = new FilamentFunction('random',
+    {
+        max:REQUIRED,
+        min:scalar(0),
+        count:scalar(1)
+    },
+    function(max,min,count) {
+        return scalar(Math.random())
+    })
