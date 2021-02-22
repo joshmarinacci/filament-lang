@@ -127,10 +127,15 @@ export class Parser {
 }
 
 export class FilamentFunction {
-    constructor(name, params, fun) {
+    constructor(name, params, fun, opts) {
+        this.type = 'native-function'
         this.name = strip_under(name.toLowerCase())
         this.params = params
         this.fun = fun
+        this.summary = ""
+        if(opts) {
+            if(opts.summary) this.summary = opts.summary
+        }
     }
 
     log() {

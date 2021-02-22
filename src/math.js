@@ -43,7 +43,9 @@ export const add = new FilamentFunction('add',{a:REQUIRED, b:REQUIRED},
     }
 
     return binop(a,b, (a,b)=>a+b)
-})
+},{
+    summary:'add numbers and lists'
+    })
 export const subtract = new FilamentFunction('subtract',{a:REQUIRED, b:REQUIRED},
     function (a,b) {
         if(is_scalar_with_unit(a) && is_scalar_without_unit(b)) throw new Error(`cannot subtract incompatible units ${a.toString()} and ${b.toString()}`)
@@ -71,7 +73,9 @@ export const subtract = new FilamentFunction('subtract',{a:REQUIRED, b:REQUIRED}
         }
 
     return binop(a,b,(a,b)=>a-b)
-})
+},{
+    summary:'subtract numbers and lists'
+    })
 
 function is_scalar_with_unit(a) {
     if(a.unit === 'none') return false
@@ -106,7 +110,9 @@ export const multiply = new FilamentFunction('multiply',{a:REQUIRED, b:REQUIRED}
             if(conv) return scalar(a.value/conv.ratio*b.value,conv.to,a.dim+b.dim)
         }
     return binop(a,b,(a,b)=>a*b)
-})
+},{
+    summary:'multiply numbers and lists'
+    })
 export const divide = new FilamentFunction('divide',{a:REQUIRED, b:REQUIRED},
     function (a,b) {
         if(is_scalar_with_unit(a) && is_scalar_without_unit(b)) {
