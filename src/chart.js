@@ -2,6 +2,20 @@ import {compareAsc, compareDesc, parse as parseDate, eachYearOfInterval, differe
 import {FilamentFunction, REQUIRED} from './parser.js'
 import {CanvasResult, is_string, string, unpack} from './ast.js'
 
+class Bounds {
+    constructor(x, y, w, h) {
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+        this.x2 = this.x + this.w
+        this.y2 = this.y+this.h
+    }
+    inset(n) {
+        return new Bounds(this.x+n,this.y+n,this.w-n*2,this.h-n*2)
+    }
+
+}
 
 function draw_legend(ctx, canvas, data, x_label, y_label) {
     let font_height = 20
@@ -55,16 +69,10 @@ export const chart = new FilamentFunction('chart',
 
         let x_label = 'index'
         let y_label = 'value'
-        // if(!x_label) x_label = x?x:x_label
-        // if(!x_label) x_label = 'index'
-        // if(!y_label) y_label = y?y:y_label
-        // if(!y_label) y_label = 'value'
-        // ctx.scale(1,-1)
-        // ctx.translate(0,-canvas.height)
-        // draw_border(ctx, canvas)
+        let canvas_bounds = new Bounds(0,0,canvas.width,canvas.height)
         if(type.value === 'bar') {
-            draw_bars(ctx,canvas,data,x_label,y)
-            draw_legend(ctx,canvas,data,x_label,y_label)
+            draw_bars(ctx,canvas_bounds,data,x_label,y)
+            // draw_legend(ctx,canvas_bounds,data,x_label,y_label)
         }
         if(type.value === 'scatter') {
             draw_scatter(ctx,canvas,data,x,y)
@@ -72,7 +80,9 @@ export const chart = new FilamentFunction('chart',
         }
         ctx.restore()
     })
-})
+},{
+    summary:'simple bar and scatter charts'
+    })
 
 function clear(ctx,canvas) {
     ctx.fillStyle = 'white'
@@ -87,36 +97,43 @@ function draw_border(ctx, canvas) {
     ctx.strokeRect(3,3,canvas.width-6,canvas.height-6)
 }
 
-function draw_bars(ctx, canvas, data, x_label, y) {
-    let edge_gap = 25
+const COLORS = ['red','green','blue','yellow','magenta','cyan']
+
+function draw_bars(ctx, bounds, data, x_label, y) {
+
     let bar_gap = 10
-    const bar_width = (canvas.width - edge_gap*2)/data._get_length()
+    let font_size = 30
+    bounds = bounds.inset(20)
+    const bar_width = bounds.w/data._get_length()
     let get_y = (datum) => datum
     if(typeof y === 'function') get_y = y
     if(is_string(y)) get_y = (d,i) => data._get_field_from(y,d,i)
-    // console.log("data is",data)
-    let values = data._map(get_y)
-    // console.log("values are",values)
 
+    let values = data._map(get_y)
     let max_val = max(values)
-    // console.log("max is",max_val)
-    let scale = (canvas.height-edge_gap*2)/max_val
-    // console.log("scale is",scale)
+
+    // ctx.fillStyle = 'darkgray'
+    // ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h)
 
     data._forEach((datu,i)=>{
-        let value = get_y(datu,i)
         let label = i+""
         if(x_label !== 'index') label = datu[x_label]
+        ctx.fillStyle = 'black'
+        ctx.font = `${font_size}px sans-serif`
+        ctx.fillText(label,bounds.x+bar_width*i+bar_width/2, bounds.y2)
+    })
+    // make the bottom 30px shorter
+    bounds = new Bounds(bounds.x,bounds.y,bounds.w,bounds.h-font_size)
 
-        ctx.fillStyle = 'aqua'
+    let scale = (bounds.h)/max_val
+    data._forEach((datu,i)=>{
+        let value = get_y(datu,i)
+        ctx.fillStyle = COLORS[i%COLORS.length]
         ctx.fillRect(
-            edge_gap+bar_width*i,
-            canvas.height-value*scale - edge_gap,
+            bounds.x+bar_width*i,
+            bounds.y2-value*scale,
             bar_width-bar_gap,
             value*scale)
-        ctx.fillStyle = 'black'
-        ctx.font = '30px sans-serif'
-        ctx.fillText(label,edge_gap+bar_width*i, canvas.height-edge_gap + 15)
     })
 }
 
