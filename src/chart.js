@@ -1,6 +1,6 @@
 import {compareAsc, compareDesc, parse as parseDate, eachYearOfInterval, differenceInYears, format as formatDate} from 'date-fns'
 import {FilamentFunction, REQUIRED} from './parser.js'
-import {CanvasResult, is_string, string, unpack} from './ast.js'
+import {CanvasResult, is_string, scalar, string, unpack} from './ast.js'
 
 class Bounds {
     constructor(x, y, w, h) {
@@ -44,27 +44,49 @@ function fill_bounds(ctx, b, red) {
     ctx.fillRect(b.x,b.y,b.w,b.h)
 }
 
-function draw_scatter(ctx, bounds, data, x, y) {
+function draw_scatter(ctx, bounds, data, x, y, size, name) {
+    let font_size = 20
+    let default_radius = 10
+
     let x_values = data._map((d,i) => data._get_field_from(x,d,i))
-    let y_values = data._map((d,i) => data._get_field_from(y,d,i))
     let max_x = max(x_values)
-    let max_y = max(y_values)
     let x_scale = bounds.w/max_x
+
+    let y_values = data._map((d,i) => data._get_field_from(y,d,i))
+    let max_y = max(y_values)
     let y_scale = bounds.h/max_y
 
-    let radius = 10
+    let s_values = null
+    let max_s = default_radius
+    if(size) {
+        s_values = data._map((d,i) => data._get_field_from(size,d,i).value)
+        max_s = max(s_values)
+    }
+    let s_scale = 100/max_s
 
-    // fill_bounds(ctx,bounds,'red')
+    let n_values = null
+    if(name) {
+        n_values = data._map((d, i) => data._get_field_from(name, d, i))
+    }
 
     data._forEach((datum,i) => {
-        let vx = x_values[i] * x_scale
-        let vy = y_values[i] * y_scale
-        ctx.fillStyle = 'green'
+        let vx = x_values[i] * x_scale + bounds.x
+        let vy = bounds.h - (y_values[i] * y_scale) + bounds.y
+        let vs = default_radius
+        if(size) vs = s_values[i] * s_scale
+        ctx.fillStyle = '#ccffcc'
         ctx.beginPath()
-        ctx.arc(bounds.x + vx,
-                bounds.y + bounds.h-vy,
-                radius, 0, Math.PI*2)
+        ctx.arc(vx, vy, vs, 0, Math.PI*2)
         ctx.fill()
+        ctx.strokeStyle = 'black'
+        ctx.stroke()
+        if(name) {
+            let vn = n_values[i]
+            ctx.fillStyle = 'black'
+            ctx.font = `${font_size}px sans-serif`
+            let w = ctx.measureText(vn + "").width
+            ctx.fillText(vn + "", vx - w / 2, vy)
+        }
     })
 
     ctx.strokeStyle = 'black'
@@ -83,9 +105,10 @@ export const chart = new FilamentFunction('chart',
         y:null,
         ylabel:null,
         type:string('bar'),
+        size: null,
+        name:null
     },
-    function (data, x, xlabel, y, ylabel, type) {
-    // this.log("running the chart with data",data,xlabel,ylabel)
+    function (data, x, xlabel, y, ylabel, type, size, name) {
     return new CanvasResult((canvas)=>{
         let ctx = canvas.getContext('2d')
         ctx.save()
@@ -111,7 +134,7 @@ export const chart = new FilamentFunction('chart',
             bounds = bounds.inset(20)
             //shift down by 50px to make room for the legend
             bounds = new Bounds(bounds.x,bounds.y+50,bounds.w,bounds.h-50)
-            draw_scatter(ctx,bounds,data,x,y)
+            draw_scatter(ctx,bounds,data,x,y,size, name)
             draw_legend(ctx,bounds,data,x_label,y_label)
         }
         ctx.restore()

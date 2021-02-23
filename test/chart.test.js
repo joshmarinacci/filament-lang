@@ -23,7 +23,7 @@ async function code_to_png(code, fname, scope) {
     await mkdir('output/chart')
     // console.log("rendering to ",fname)
     let ret = await eval_code(code, scope)
-    const img = PImage.make(500,500);
+    const img = PImage.make(1000,1000);
     await ret.cb(img)
     await PImage.encodePNGToStream(img,createWriteStream(path.join('output','chart',fname)))
 }
@@ -41,7 +41,10 @@ describe("charts", ()=>{
         planets << dataset('planets')
         chart(planets, type:'scatter', 
                   x:'orbital_radius',
-                  y:'mean_radius')
+                  y:'mean_radius'
+                  //size:'mean_radius'
+                  // name:'name'
+                  )
                   }`,"planets.png", std_scope)
     })
 })
