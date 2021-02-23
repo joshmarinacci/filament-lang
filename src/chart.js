@@ -39,22 +39,40 @@ function draw_legend(ctx, bounds, data, x_label, y_label) {
 const max = (data) => data.reduce((a,b)=> unpack(a)>unpack(b)?a:b)
 
 
-function draw_scatter(ctx, canvas, data, x, y) {
+function fill_bounds(ctx, b, red) {
+    ctx.fillStyle = red
+    ctx.fillRect(b.x,b.y,b.w,b.h)
+}
+
+function draw_scatter(ctx, bounds, data, x, y) {
     let x_values = data._map((d,i) => data._get_field_from(x,d,i))
     let y_values = data._map((d,i) => data._get_field_from(y,d,i))
     let max_x = max(x_values)
     let max_y = max(y_values)
-    let x_scale = canvas.width/max_x
-    let y_scale = canvas.height/max_y
+    let x_scale = bounds.w/max_x
+    let y_scale = bounds.h/max_y
+
+    let radius = 10
+
+    // fill_bounds(ctx,bounds,'red')
 
     data._forEach((datum,i) => {
-        let vx = x_values[i]
-        let vy = y_values[i]
-        ctx.fillStyle = 'black'
+        let vx = x_values[i] * x_scale
+        let vy = y_values[i] * y_scale
+        ctx.fillStyle = 'green'
         ctx.beginPath()
-        ctx.arc(vx*x_scale,canvas.height-vy*y_scale,2, 0, Math.PI*2)
+        ctx.arc(bounds.x + vx,
+                bounds.y + bounds.h-vy,
+                radius, 0, Math.PI*2)
         ctx.fill()
     })
+
+    ctx.strokeStyle = 'black'
+    ctx.beginPath()
+    ctx.moveTo(bounds.x,bounds.y)
+    ctx.lineTo(bounds.x,bounds.y2)
+    ctx.lineTo(bounds.x2,bounds.y2)
+    ctx.stroke()
 }
 
 export const chart = new FilamentFunction('chart',
@@ -67,7 +85,7 @@ export const chart = new FilamentFunction('chart',
         type:string('bar'),
     },
     function (data, x, xlabel, y, ylabel, type) {
-    this.log("running the chart with data",data,xlabel,ylabel)
+    // this.log("running the chart with data",data,xlabel,ylabel)
     return new CanvasResult((canvas)=>{
         let ctx = canvas.getContext('2d')
         ctx.save()
@@ -82,14 +100,19 @@ export const chart = new FilamentFunction('chart',
         if(y && y.type === 'string') y_label = y.value
         if(ylabel) y_label = ylabel.value
 
-        let canvas_bounds = new Bounds(0,0,canvas.width,canvas.height)
+        let bounds = new Bounds(0,0,canvas.width,canvas.height)
         if(type.value === 'bar') {
-            draw_bars(ctx,canvas_bounds,data,x_label,y)
-            draw_legend(ctx,canvas_bounds,data,x_label,y_label)
+            // 20px padding on all sides
+            bounds = bounds.inset(20)
+            draw_bars(ctx,bounds,data,x_label,y)
+            draw_legend(ctx,bounds,data,x_label,y_label)
         }
         if(type.value === 'scatter') {
-            draw_scatter(ctx,canvas,data,x,y)
-            draw_legend(ctx,canvas,data,x_label,y_label)
+            bounds = bounds.inset(20)
+            //shift down by 50px to make room for the legend
+            bounds = new Bounds(bounds.x,bounds.y+50,bounds.w,bounds.h-50)
+            draw_scatter(ctx,bounds,data,x,y)
+            draw_legend(ctx,bounds,data,x_label,y_label)
         }
         ctx.restore()
     })
@@ -113,8 +136,6 @@ function draw_border(ctx, canvas) {
 const COLORS = ['red','green','blue','yellow','magenta','cyan']
 
 function draw_bars(ctx, bounds, data, x_label, y) {
-    // 20px padding on all sides
-    bounds = bounds.inset(20)
 
     let bar_gap = 10
     let font_size = 20

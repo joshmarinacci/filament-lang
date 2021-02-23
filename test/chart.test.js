@@ -37,9 +37,11 @@ describe("charts", ()=>{
         await code_to_png(`chart(dataset('alphabet'), x_label:'letter', y:'syllables')`,"alphabet.png", std_scope)
     })
     it("scatter", async() => {
-        await code_to_png(`planets << dataset('planets')
-chart(planets, type:'scatter', 
+        await code_to_png(`{
+        planets << dataset('planets')
+        chart(planets, type:'scatter', 
                   x:'orbital_radius',
-                  y:'mean_radius')`,"planets.png", std_scope)
+                  y:'mean_radius')
+                  }`,"planets.png", std_scope)
     })
 })
