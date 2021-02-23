@@ -3,7 +3,7 @@
 
 Welcome to Filament, a humanist programming language. Computers are amazing. They can calculate incredible things 
 super fast. They can answer questions and draw graphics. However, computers are actually very dumb. All they do is 
-simple arithmetic. What makes them amazing is that they can do it *super duper fast*.  To do smart things humans 
+simple arithmetic. What makes them amazing is that they can do it *super duper fast*. To do smart things humans 
 have to teach them.  This is called programming. Anyone can program, including you!
 
 
@@ -11,11 +11,11 @@ have to teach them.  This is called programming. Anyone can program, including y
 
 Filament understands arithmetic. Try typing in a math question like `2+2` then press the 'run' 
 button (or type control-return on your keyboard). Filament will show you the answer: `4`.  
-Now try dividing 4 by 2 or multiplying 3 by 5. Type in `4/2`. Run it. Then type `3 * 5`  
+Now try dividing 4 by 2 or multiplying 3 by 5. Type in `4/2`. Run it. Then type `3 * 5`.  
 Filament uses `/` to mean division and `*` for multiplication.
 
 Filament understands longer math equations too. For example, imagine you have a 
-refridgerator box that is 7 feet tall by 4 feet wide by 4 feet deep. You could find out the volume of 
+refrigerator box that is 7 feet tall by 4 feet wide by 4 feet deep. You could find out the volume of 
 the box by multiplying all of the sides.
 
 ```filament
@@ -66,16 +66,16 @@ Calculate your age in seconds.
 now() - date("Jan 1st, 2003") as seconds
 ```
 
-If you try to convert something that can't be converted, like area to volume, then Filament will let you know. Try this
+If you try to convert something that can't be converted, like area to volume, then Filament will let you know. Try this:
 
 ```filament
 7ft * 4ft as gal
 ```
 
 results in
-``
+```
 Error. Cannot convert ft^2 to gallons.
-``
+```
 
 Units are very important. They help make sure our calculations are correct. 
 Even professionals get this wrong some times.
@@ -91,7 +91,7 @@ We need some information first. How fast can Superman fly? Apparently the comics
 
 Now wee need to know how big the earth is. The earth isn't perfectly spherical and of 
 course it would depend on exactly which part of the earth superman flew, but [according to Wikipedia](https://en.wikipedia.org/wiki/Earth) the
-average (mean) radius of the Earth is *6,371.0* kilometers. We also know the circumfrence of a circle 
+average (mean) radius of the Earth is *6,371.0* kilometers. We also know the circumfernce of a circle 
 is `2 * pi * radius`. So the equation is
 
 ```tilament
@@ -173,11 +173,15 @@ range(10_000)
 // [0, 1, 2, 3 .... 99_999_998, 99_999_999]
 ```
 
-Lists are very useful for lots of things, but sometimes you get more numbers than you need. Suppose you wanted all the numbers from from 0 to 20 minus then just the first three. Use take(list,3). Want just the last three use take(list,-3)
+Lists are very useful for lots of things, but sometimes you get more numbers than you need. Suppose you wanted all the numbers from from 0 to 20 minus the first three. Use take(list,3). Want just the last three use take(list,-3)
 
 ```filament
 list << range(10)  // [0,1,2,3,4,5,6,7,8,9]
 take(list, 3)         // [0,1,2]
+```
+
+```filament
+list << range(10)  // [0,1,2,3,4,5,6,7,8,9]
 take(list, -3)        // [7,8,9]
 ```
 You can also remove items from a list with drop
@@ -238,8 +242,8 @@ V1 * V2 // dot product of vectors
 sqrt(sum(power(V1,2))) // magnitude of vector
 ```
 
-Lists let you find data too. you can search for items using select and a small function. lets find
-all of the primes up to 10000
+Lists let you find data too. you can search for items using select and a small function. Let's find
+all of the prime numbers up to 10000
 
 ```filament
 select(range(100), where:is_prime)
@@ -254,7 +258,7 @@ def div5(x:?) {
 select( range(100), where: div5 )
 ```
 
-## charts
+## Charts
 
 One of the coolest things about lists is that you can *draw* them.
 Just send a list into the `chart` function to see it as a bar chart.
@@ -270,7 +274,7 @@ or just draw the numbers from 0 to 9
 chart(range(10))
 ```
 
-## plotting equations
+## Plotting equations
 
 While you could use `range`, `map`, and `chart` to draw pictures of
 `x`, `power(x,2)`, `sin()` or other math equations, there is a much
@@ -320,10 +324,10 @@ the editor will show a list of strings
 *screenshot*
 
 
-# charts from lists and datasets
+# Charts from lists and datasets
 
 Even better than pulling in your own data, is working with curated datasets
-that have already been assembled.  Filament comes with datsets for
+that have already been assembled.  Filament comes with datasets for
 
 * Periodic table of elements
 * Letters of the English Alphabet  
@@ -366,7 +370,7 @@ chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius')
 
 Here's a fun one. Let's see which letters have one syllable vs two.
 
-```ilament
+```filament
 chart(dataset('letters'), y_value:'syllables')
 ```
 
