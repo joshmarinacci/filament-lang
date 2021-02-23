@@ -47,8 +47,14 @@ export const load_image = new FilamentFunctionWithScope('loadimage',
         "src": REQUIRED
     },
     async function (scope, src) {
-        let img = await fetch(src.value)
-            .then(r => PImage.decodePNGFromStream(r.body))
-        return img
+        let url = src.value
+        return await fetch(url)
+            .then(r => {
+                if(url.toLowerCase().endsWith(".jpg")) {
+                    return PImage.decodeJPEGFromStream(r.body)
+                } else {
+                    return PImage.decodePNGFromStream(r.body)
+                }
+            })
     }
 )

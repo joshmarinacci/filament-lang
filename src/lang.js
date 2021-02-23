@@ -30,6 +30,7 @@ import {dataset, stockhistory} from './dataset.js'
 import {Parser} from './parser.js'
 import {scalar, Scope} from './ast.js'
 import {plot} from './plot.js'
+import {load_image, make_image, map_image} from './image.js'
 
 export function make_standard_scope() {
     let scope = new Scope("lang")
@@ -41,6 +42,8 @@ export function make_standard_scope() {
     scope.install(date_cons, time_cons)
     scope.install(dataset, chart, timeline, histogram, plot, stockhistory)
     scope.set_var('pi', scalar(Math.PI))
+
+    scope.install(make_image, map_image, load_image)
     return scope
 }
 

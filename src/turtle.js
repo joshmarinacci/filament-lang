@@ -11,7 +11,7 @@
  */
 
 
-import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
+import {FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {CanvasResult, scalar} from './ast.js'
 
 class TurtleState {
