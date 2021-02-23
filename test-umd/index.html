@@ -48,9 +48,7 @@
 
     <script>
     (async function() { // async function expression used as an IIFE
-      const resp = await fetch('dist/filament.ohm');
-      const grammarSource = await resp.text();
-      await Filament.setup_parser(grammarSource)
+      await Filament.setup_parser()
       const canvas = document.getElementById('canvas');
 
       const heartCode = `

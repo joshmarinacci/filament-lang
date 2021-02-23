@@ -1,6 +1,8 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
+import {string} from "rollup-plugin-string";
+
 
 // https://rollupjs.org/guide/en/#configuration-files
 export default {
@@ -25,5 +27,8 @@ export default {
       browser: true,  // Default: false
     }),
     commonjs(),
+    string({
+      include:"**/*.ohm"
+    })
   ]
 };
