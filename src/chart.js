@@ -100,10 +100,11 @@ function draw_border(ctx, canvas) {
 const COLORS = ['red','green','blue','yellow','magenta','cyan']
 
 function draw_bars(ctx, bounds, data, x_label, y) {
+    // 20px padding on all sides
+    bounds = bounds.inset(20)
 
     let bar_gap = 10
-    let font_size = 30
-    bounds = bounds.inset(20)
+    let font_size = 20
     const bar_width = bounds.w/data._get_length()
     let get_y = (datum) => datum
     if(typeof y === 'function') get_y = y
@@ -120,7 +121,11 @@ function draw_bars(ctx, bounds, data, x_label, y) {
         if(x_label !== 'index') label = datu[x_label]
         ctx.fillStyle = 'black'
         ctx.font = `${font_size}px sans-serif`
-        ctx.fillText(label,bounds.x+bar_width*i+bar_width/2, bounds.y2)
+        let xoff = (bar_width-bar_gap)/2
+        let measure = ctx.measureText(label)
+        xoff -= measure.width/2
+        ctx.fillText(label,bounds.x+bar_width*i + xoff, bounds.y2)
+        ctx.fillRect(bounds.x+bar_width*i+xoff, bounds.y2-20,measure.width,5)
     })
     // make the bottom 30px shorter
     bounds = new Bounds(bounds.x,bounds.y,bounds.w,bounds.h-font_size)
