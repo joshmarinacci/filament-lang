@@ -68,6 +68,12 @@ describe('image',() => {
             'load_image.png',scope)
     });
 
+    it("load jpg", async() => {
+        await code_to_png(`load_image(
+        src:'https://www.fillmurray.com/640/360')`,
+            'load_kitten.png',scope )
+    })
+
     it('white noise', async () => {
         await code_to_png(`{
             rando << () -> { 5 }

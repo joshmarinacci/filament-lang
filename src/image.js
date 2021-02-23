@@ -50,11 +50,11 @@ export const load_image = new FilamentFunctionWithScope('loadimage',
         let url = src.value
         return await fetch(url)
             .then(r => {
-                if(url.toLowerCase().endsWith(".jpg")) {
-                    return PImage.decodeJPEGFromStream(r.body)
-                } else {
-                    return PImage.decodePNGFromStream(r.body)
-                }
+                console.log("type",r.type,'status',r.statusText,r.status,r.ok)
+                console.log(Array.from(r.headers.entries()))
+                // console.log("headers",r.headers,r.headers.get('Content-Type'))
+                if(r.headers.get('Content-Type') === 'image/jpeg') return PImage.decodeJPEGFromStream(r.body)
+                if(r.headers.get('Content-Type') === 'image/png') return PImage.decodePNGFromStream(r.body)
             })
     }
 )
