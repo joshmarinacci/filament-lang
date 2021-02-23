@@ -1,15 +1,13 @@
 import {Parser} from './parser.js'
 import {make_standard_scope} from './lang.js'
-import source from "./filament.ohm"
+// import source from "./filament.ohm"
 
 let scope
 let parser
 
 export async function setup_parser(grammar_source) {
     scope = make_standard_scope()
-    console.log("source is",source)
-    console.log("passed in source is",grammar_source)
-    if(!grammar_source) {
+    if(!grammar_source && typeof source !== 'undefined') {
         grammar_source = source
     }
     parser = new Parser(scope, grammar_source)
