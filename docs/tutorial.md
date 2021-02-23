@@ -91,7 +91,7 @@ We need some information first. How fast can Superman fly? Apparently the comics
 
 Now wee need to know how big the earth is. The earth isn't perfectly spherical and of 
 course it would depend on exactly which part of the earth superman flew, but [according to Wikipedia](https://en.wikipedia.org/wiki/Earth) the
-average (mean) radius of the Earth is *6,371.0* kilometers. We also know the circumfernce of a circle 
+average (mean) radius of the Earth is *6,371.0* kilometers. We also know the circumference of a circle 
 is `2 * pi * radius`. So the equation is
 
 ```tilament
