@@ -93,12 +93,16 @@ export const map = new FilamentFunctionWithScope('map',{
     return resolve_in_order(proms).then(vals => list(vals))
 })
 
-export const select = new FilamentFunction('select',{
+export const select = new FilamentFunctionWithScope('select',{
     data:REQUIRED,
     where:REQUIRED,
-},async function(data,where) {
+},async function(scope,data,where) {
     let vals = await Promise.all(data._map(async (el)=>{
-        return await where.fun.apply(where,[el])
+        if(where.type === 'lambda') {
+            return await where.apply_function(scope,where,[el])
+        } else {
+            return await where.fun.apply(where, [el])
+        }
     }))
     return list(data._filter((v,i)=>unpack(vals[i])))
 })

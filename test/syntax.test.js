@@ -43,17 +43,6 @@ describe('syntax',() => {
     //     ])
     // })
     //
-    // test('conditionals', async () => {
-    //     await all([
-    //         [`if true { 42 }`,'if(true, {42},{})'],
-    //         [`if _false { 42 }`,'if(false,{42},{})'],
-    //         [`if true { 42 } else { 24 }`,'if(true,{42},{24})'],
-    //         [`value << if true {42} else {24}`,'if(true,{42},{24}) >> value'],
-    //         [`if true {42} else {24} >> value`,'if(true,{42},{24}) >> value'],
-    //         [`if true {42} >> value func()`,'if(true,{42}) >> value\nfunc()'],
-    //         [`if true {func() 42} func()`,'if(true,{func()\n42},{})\nfunc()'],
-    //     ])
-    // })
 
     it('function definitions', async () => {
         let s42 = s(42)

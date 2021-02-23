@@ -67,8 +67,8 @@ describe('lists',() => {
     it('map a list', async() => {
         await all([
             [`{   def double(x:?) { x*2 }   map([1,2,3],double) }`,list([s(2),s(4),s(6)])],
-            // ['map(range(3),x=>x*2)',list([0,2,4])],
-            // ['map(range(3), (x)=>add(x,5))',list([5,6,7])],
+            ['map(range(3),with:x->x*2)',l(s(0),s(2),s(4))],
+            ['map(range(3), with:(x)->add(x,5))',l(s(5),s(6),s(7))],
         ])
     })
 
@@ -84,6 +84,7 @@ describe('lists',() => {
     it('select from a list', async ()=>{
         await all([
             [`{   def gr1(x:?) { x>1 }    select([1,2,3], where:gr1)     }`,list([s(2),s(3)])],
+            [`select([1,2,3], where:(x)->(x>1))`,list([s(2),s(3)])],
         ])
     })
     //
