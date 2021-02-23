@@ -14,18 +14,25 @@ class Bounds {
     inset(n) {
         return new Bounds(this.x+n,this.y+n,this.w-n*2,this.h-n*2)
     }
+    expand(n) {
+        return this.inset(-n)
+    }
 
 }
 
-function draw_legend(ctx, canvas, data, x_label, y_label) {
+function draw_legend(ctx, bounds, data, x_label, y_label) {
     let font_height = 20
-    ctx.fillStyle = 'black'
     ctx.font = `${font_height}px sans-serif`
     let legend =`${x_label} vs ${y_label}`
     let metrics = ctx.measureText(legend)
 
-    let xx = (canvas.width-metrics.width)/2
+    let xx = (bounds.w-metrics.width)/2
     let yy = font_height
+    let txt_bounds = new Bounds(xx,yy-font_height,metrics.width,font_height)
+    txt_bounds = txt_bounds.expand(10)
+    ctx.fillStyle = '#cccccc'
+    ctx.fillRect(txt_bounds.x,txt_bounds.y,txt_bounds.w, txt_bounds.h)
+    ctx.fillStyle = 'black'
     ctx.fillText(legend,xx,yy)
 }
 
@@ -54,13 +61,13 @@ export const chart = new FilamentFunction('chart',
     {
         data:REQUIRED,
         x:null,
-        // x_label:null,
+        xlabel:null,
         y:null,
-        // y_label:null,
+        ylabel:null,
         type:string('bar'),
     },
-    function (data, x, y, type) {
-    // this.log("running the chart with data",data,'y is',y)
+    function (data, x, xlabel, y, ylabel, type) {
+    this.log("running the chart with data",data,xlabel,ylabel)
     return new CanvasResult((canvas)=>{
         let ctx = canvas.getContext('2d')
         ctx.save()
@@ -68,11 +75,17 @@ export const chart = new FilamentFunction('chart',
         if(data.data && data.data.items) data = data.data.items
 
         let x_label = 'index'
+        if(x && x.type === 'string') x_label = x.value
+        if(xlabel) x_label = xlabel.value
+
         let y_label = 'value'
+        if(y && y.type === 'string') y_label = y.value
+        if(ylabel) y_label = ylabel.value
+
         let canvas_bounds = new Bounds(0,0,canvas.width,canvas.height)
         if(type.value === 'bar') {
             draw_bars(ctx,canvas_bounds,data,x_label,y)
-            // draw_legend(ctx,canvas_bounds,data,x_label,y_label)
+            draw_legend(ctx,canvas_bounds,data,x_label,y_label)
         }
         if(type.value === 'scatter') {
             draw_scatter(ctx,canvas,data,x,y)
@@ -125,7 +138,7 @@ function draw_bars(ctx, bounds, data, x_label, y) {
         let measure = ctx.measureText(label)
         xoff -= measure.width/2
         ctx.fillText(label,bounds.x+bar_width*i + xoff, bounds.y2)
-        ctx.fillRect(bounds.x+bar_width*i+xoff, bounds.y2-20,measure.width,5)
+        // ctx.fillRect(bounds.x+bar_width*i+xoff, bounds.y2-20,measure.width,5)
     })
     // make the bottom 30px shorter
     bounds = new Bounds(bounds.x,bounds.y,bounds.w,bounds.h-font_size)
