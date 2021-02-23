@@ -14,30 +14,48 @@ export const make_image = new FilamentFunctionWithScope('makeimage',
     }
 )
 
+function get_pixel_as_array(image_data, x, y) {
+    let n = (image_data.width*y + x)*4
+    let px = [
+        image_data.data[n+0],
+        image_data.data[n+1],
+        image_data.data[n+2]
+    ]
+    return px
+}
+
+function set_pixel_as_array(image_data, x, y, vals) {
+    let n = (image_data.width*y + x)*4
+    image_data.data[n+0] = vals[0]*255
+    image_data.data[n+1] = vals[1]*255
+    image_data.data[n+2] = vals[2]*255
+    image_data.data[n+3] = 255
+}
+
 export const map_image = new FilamentFunctionWithScope('mapimage',
     {
         "image": REQUIRED,
         "with": REQUIRED
     },
     async function (scope, image, _with) {
+        let ctx = image.getContext('2d')
+        let image_data = ctx.getImageData(0,0,image.width,image.height)
         for (let x = 0; x < image.width; x++) {
             for (let y = 0; y < image.height; y++) {
                 if (_with.type === 'lambda') {
                     let sx = scalar(x)
                     let sy = scalar(y)
-                    let px = image.getPixelRGBA_separate(x, y)
+                    let px = get_pixel_as_array(image_data,x,y)
                     let color = list([scalar(px[0]), scalar(px[1]), scalar(px[2])])
                     let ret = await _with.apply_function(scope, _with, [sx, sy, color])
                     let vals = ret.value.map(s => s.value)
-                    image.setPixelRGBA_i(x, y, vals[0] * 255,
-                        vals[1] * 255,
-                        vals[2] * 255,
-                        255)
+                    set_pixel_as_array(image_data,x,y,vals)
                 } else {
                     // return cb.fun.apply(cb, [el])
                 }
             }
         }
+        ctx.putImageData(image_data,0,0)
         return image
     }
 )
