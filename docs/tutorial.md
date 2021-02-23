@@ -370,7 +370,8 @@ chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius')
 
 Here's a fun one. Let's see which letters have one syllable vs two.
 
-```filament
+```ilament
+//TODO: this is broken when doing builddocs
 chart(dataset('letters'), y_value:'syllables')
 ```
 
