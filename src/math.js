@@ -190,7 +190,7 @@ export const date_cons = new FilamentFunction('date',{
     day:scalar(0),
     format:null,
 },function(input,year,month,day,format){
-    console.log("making a date from",input,year,month,day)
+    // console.log("making a date from",input,year,month,day)
     if(input && format) {
         let dt = parse_date(input,format,new Date())
         return date(getYear(dt),getMonth(dt)+1,getDate(dt))
@@ -213,10 +213,10 @@ export const time_cons = new FilamentFunction('time',{
     second:scalar(0),
     format:null,
 },function(input,hour,minute,second,format){
-    console.log("making a time from",input,hour,minute,second,format)
+    // console.log("making a time from",input,hour,minute,second,format)
     if(input && format) {
         let dt = parse_date(input,format,new Date())
-        console.log("parsed date",dt)
+        // console.log("parsed date",dt)
         return time(getHours(dt), getMinutes(dt), getSeconds(dt))
     }
     // if(input && !format) {

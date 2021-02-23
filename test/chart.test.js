@@ -41,9 +41,9 @@ describe("charts", ()=>{
         planets << dataset('planets')
         chart(planets, type:'scatter', 
                   x:'orbital_radius',
-                  y:'mean_radius'
-                  //size:'mean_radius'
-                  // name:'name'
+                  y:'mean_radius',
+                  size:'mean_radius',
+                   name:'name'
                   )
                   }`,"planets.png", std_scope)
     })
