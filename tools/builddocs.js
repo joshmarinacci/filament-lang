@@ -231,13 +231,17 @@ function render_html(toc, doc) {
      </head>
         <body>
         <nav>
+            <div class="nav-contents">
             <h3>Filament</h3>
+            <p>
             <a href="tutorial.html">tutorial</a>
             <a href="intro.html">intro</a>
             <a href="spec.html">spec</a>
             <a href="api.html">api</a>
+            </p>
+            ${toc_html}
+        </div>
         </nav>
-        <nav>${toc_html}</nav>
         <main>
         ${content}
         </main>
