@@ -112,6 +112,17 @@ function RESULT(code) {
     return `<blockquote class="output">${code}</blockquote>`
 }
 
+const render_array = (ar) => ar.map(v => v.toString()).join(", ")
+function render_list(result) {
+    if(result.value.length > 50) {
+        let l1 = result.value.slice(0,25)
+        let l2 = result.value.slice(-25)
+        return RESULT("[" + render_array(l1) + " ... " + render_array(l2) +"]")
+    } else {
+        return RESULT(result.value.map(v => v.toString()).join(", "))
+    }
+}
+
 function render_result(result) {
     if(result.type === 'table') {
         let header = Object.entries(result.schema.properties).map(prop => {
@@ -128,7 +139,7 @@ function render_result(result) {
                     <tbody>${rows}</tbody>
                     </table></div>`
     }
-    if(result.type === 'list') return RESULT(result.toString())
+    if(result.type === 'list') return render_list(result)
     if(result.type === 'scalar') return RESULT(result.toString())
     if(result.type === 'canvas-result') return ""
     console.log("type is",result.type)
@@ -198,13 +209,15 @@ function render_html(doc) {
      </head>
         <body>
         <nav>
-        <h3>Filament</h3>
-        <a href="tutorial.html">tutorial</a>
-        <a href="intro.html">intro</a>
-        <a href="spec.html">spec</a>
-        <a href="api.html">api</a>
-    </nav>
+            <h3>Filament</h3>
+            <a href="tutorial.html">tutorial</a>
+            <a href="intro.html">intro</a>
+            <a href="spec.html">spec</a>
+            <a href="api.html">api</a>
+        </nav>
+        <main>
         ${content}
+        </main>
         </body>
         </html>`
     return template

@@ -18,6 +18,10 @@ some code inside
 and some more
 ```
 
+```filament
+range(10000)
+```
+
 # header 1
 
 ## header 2
