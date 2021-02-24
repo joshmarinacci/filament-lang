@@ -301,30 +301,20 @@ better way: using the `plot` function.
 A quadratic equation
 
 ```filament
-
-def quad(x:?) {
-    x**2 - 3*x - 4
-}
-
-plot(y:quad)
+plot(y: (x) -> (x**2 - 3*x -4))
 ```
 
 Sine wave
 
 ```filament
-def fun(theta:?) {
-    sin(theta*2)
-}
-plot(y:fun)
+plot(y: theta -> sin(theta*2))
 ```
 
 A polar Archimedes spiral
 
 ```filament
-def fun(theta:?) {
-    0.25*theta
-}
-plot(polar:fun, min:0, max:pi*32)
+spiral << theta -> 0.25*theta
+plot(polar:spiral, min:0, max:pi*32)
 ```
 
 

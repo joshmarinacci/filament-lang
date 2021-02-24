@@ -1,6 +1,6 @@
 import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {is_list, list, pack, scalar, unpack} from './ast.js'
-import {resolve_in_order} from './util.js'
+import {apply_fun, resolve_in_order} from './util.js'
 
 // * __range__: generate a list of numbers: `(max), (min,max), (min,max,step)`
 export const range = new FilamentFunction('range',
@@ -82,13 +82,8 @@ export const map = new FilamentFunctionWithScope('map',{
     data:REQUIRED,
     with:REQUIRED,
 },function(scope, data,cb) {
-    let proms = data._map((el,i)=> () => {
-        if(cb.type === 'lambda') {
-            // console.log("doing lambda",scope,cb,[el])
-            return cb.apply_function(scope,cb,[el])
-        } else {
-            return cb.fun.apply(cb, [el])
-        }
+    let proms = data._map((el,i)=> async () => {
+        return await apply_fun(scope, cb, [el])
     })
     return resolve_in_order(proms).then(vals => list(vals))
 })

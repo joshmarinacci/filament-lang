@@ -1,5 +1,6 @@
-import {FilamentFunction, REQUIRED} from './parser.js'
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {CanvasResult, is_string, scalar, string, unpack} from './ast.js'
+import {apply_fun} from './util.js'
 
 class Point {
     constructor(cx, cy) {
@@ -80,45 +81,45 @@ function draw_plot(ctx, b, zoom, origin, vals) {
     ctx.restore()
 }
 
-async function draw_y_to_x(ctx, b, zoom, origin, xfun,min,max) {
+async function draw_y_to_x(scope, ctx, b, zoom, origin, xfun,min,max) {
     let vals = []
     for( let i=min.value; i<max.value; i+=0.1) {
         let y = scalar(i)
-        let x = await xfun.fun.apply(xfun,[y])
+        let x = await apply_fun(scope,xfun,[y])
         vals.push([x.value,y.value])
     }
     draw_plot(ctx,b,zoom,origin,vals)
     return vals
 }
 
-async function draw_x_to_y(ctx, b, zoom, origin, yfun,min,max) {
+async function draw_x_to_y(scope, ctx, b, zoom, origin, yfun,min,max) {
     let vals = []
     for( let i=min.value; i<max.value; i+=0.1) {
         let x = scalar(i)
-        let y = await yfun.fun.apply(yfun,[x])
+        let y = await apply_fun(scope,yfun,[x])
         vals.push([x.value,y.value])
     }
     draw_plot(ctx,b,zoom,origin,vals)
     return vals
 }
 
-async function draw_t_to_xy(ctx, b, zoom, origin, xfun, yfun,min,max) {
+async function draw_t_to_xy(scope, ctx, b, zoom, origin, xfun, yfun,min,max) {
     let vals = []
     for (let i = min.value; i < max.value; i += 0.1) {
         let t = scalar(i)
-        let x = await xfun.fun.apply(xfun, [t])
-        let y = await yfun.fun.apply(yfun, [t])
+        let x = await apply_fun(scope,xfun,[t])
+        let y = await apply_fun(scope,yfun, [t])
         vals.push([x.value, y.value])
     }
     draw_plot(ctx,b,zoom,origin,vals)
     return vals
 }
 
-async function draw_polar(ctx, b, zoom, origin, polar, min,max) {
+async function draw_polar(scope, ctx, b, zoom, origin, polar, min,max) {
     let vals = []
     for (let i = min.value; i < max.value; i += 0.05) {
         let theta = scalar(i)
-        let rho = await polar.fun.apply(polar, [theta])
+        let rho = await apply_fun(scope, polar, [theta])
         let x = Math.sin(i)*rho.value
         let y = Math.cos(i)*rho.value
         vals.push([x,y])
@@ -127,7 +128,7 @@ async function draw_polar(ctx, b, zoom, origin, polar, min,max) {
     return vals
 }
 
-export const plot = new FilamentFunction('plot',
+export const plot = new FilamentFunctionWithScope('plot',
     {
         x:null,
         y:null,
@@ -136,7 +137,7 @@ export const plot = new FilamentFunction('plot',
         max:scalar(10),
         zoom: scalar(50),
     },
-    function (x,y,polar,min,max,zoom) {
+    function (scope,x,y,polar,min,max,zoom) {
         return new CanvasResult((canvas)=> {
             // console.log("rendering plot",x,y,polar)
             let ctx = canvas.getContext('2d')
@@ -145,10 +146,10 @@ export const plot = new FilamentFunction('plot',
             background(ctx, bounds, zoom, origin)
             axes(ctx, bounds, zoom.value, origin)
             // if (polar) draw_polar()
-            if (x && !y) return draw_y_to_x(ctx,bounds,zoom,origin,x,min,max)
-            if (y && !x) return draw_x_to_y(ctx,bounds,zoom,origin,y,min,max)
-            if (x &&  y) return draw_t_to_xy(ctx,bounds,zoom,origin,x,y,min,max)
-            if(polar) return draw_polar(ctx,bounds,zoom,origin,polar,min,max)
+            if (x && !y) return draw_y_to_x(scope,ctx,bounds,zoom,origin,x,min,max)
+            if (y && !x) return draw_x_to_y(scope,ctx,bounds,zoom,origin,y,min,max)
+            if (x &&  y) return draw_t_to_xy(scope,ctx,bounds,zoom,origin,x,y,min,max)
+            if(polar) return draw_polar(scope,ctx,bounds,zoom,origin,polar,min,max)
             // if (x && y) draw_t()
         })
     })

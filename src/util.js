@@ -44,3 +44,12 @@ export function match_args_to_params(args,old_params,name) {
         }
     })
 }
+
+
+export async function apply_fun(scope,obj, args) {
+    if(obj.type === 'lambda') {
+        return obj.apply_function(scope,obj,args)
+    } else {
+        return obj.fun.apply(obj, args)
+    }
+}
