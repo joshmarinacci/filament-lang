@@ -242,6 +242,8 @@ V1 * V2 // dot product of vectors
 sqrt(sum(power(V1,2))) // magnitude of vector
 ```
 
+## Filtering and Mapping Lists
+
 Lists let you search for data too. You can find items using select and a small function. Let's find
 all of the prime numbers up to 10000
 
@@ -258,8 +260,24 @@ def div5(x:?) {
 select( range(100), where: div5 )
 ```
 
-## Charts
+And one of the best parts about lists is that they can
+hold more than numbers. You can work with
+lists of strings, numbers, booleans.  Consider this simple list of people.
 
+```filament
+friends << ["Bart", "homer","Ned"]
+```
+
+or a list of booleans
+
+```filament
+[true,false,true]
+```
+
+
+# Drawing Data
+
+## Bar Charts
 One of the coolest things about lists is that you can *draw* them.
 Just send a list into the `chart` function to see it as a bar chart.
 Suppose you had a list of heights of your friends.
@@ -310,21 +328,6 @@ plot(polar:fun, min:0, max:pi*32)
 ```
 
 
-
-
-And one of the best parts about lists is that they can 
-hold more than numbers. You can work with
-lists of strings, numbers, booleans.  Consider this simple list of people.
-
-```filament
-friends << ["Bart", "homer","Ned"]
-```
-
-or a list of booleans
-
-```filament
-[true,false,true]
-```
 
 # Charts from lists and datasets
 
@@ -386,5 +389,118 @@ b2 << take(buildings,5)
 chart(b2, y:'height', x_label:'name')
 ```
 
+
+# Random Numbers
+
+Filament can generate random numbers for you. Now you might wonder why this is useful. It turns out 
+random numnbers are *incredibly* useful for all sorts of things, from drawing graphics to simulations,
+and of course they are heavily used in video games.
+
+To make a random number just call `random`
+
+```filament
+random()
+```
+
+Every time you run this function it will return a different number.
+
+By default the number will always be between 0 and 1, but you can choose a different `max` and `min` if you want.
+Suppose you want twenty random numbers between 5 and 10 you could do this:
+
+```filament
+range(20) >> map(with: n-> random(min:5,max:10))
+```
+
+Mapping a range is an easy way to create a list, then call random on each one to make the final numbers. 
+However, making random numbers is so common you can just call `random` directly using `count`.
+
+```filament
+random(min:5, max:10, count:20)
+```
+
+## Random Colors
+
+Now let's use it to make some random colors.  
+First I want to give [Martin Ankerl](https://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/) credit
+for his original article on making pretty random colors. Thanks Martin.
+
+In Filament, colors are made using a list of three numbers, each from 0 to 1. They represent the
+red, green, and blue (RGB) parts of the color.  Thus `[0,1,0]` would be pure green and `[1,1,1]` is
+pure white.
+
+Let's make 20 randomly colored squares.
+
+```tilament
+make_square << () {
+    rect( width: 20, 
+        height: 20, 
+        fill_color: [random(),random(),random()]
+    )
+}
+range(20) >> map(with:make_square) >> row() >> draw()
+```
+
+Hmm. Those are pretty ugly. Some colors are too dark. Some are too similar. The problem
+is that we are using the RGB color space. We don't have a way to make the colors more similar easily.
+However, there is another color space we can use called HSV for Hue Saturation and Value.
+This way we can have a single number for the hue (the 'color'), and keep the saturation and value
+fixed. Then we can convert them back to RGB to draw them.
+
+Have `HSV_TO_RGB` function. Takes h,  s, v in 0-1 range, returns RGB in 0-1 range.
+
+```tilament
+make_square << () {
+    color << [random(), 80%, 90%]
+    rect( width: 20, 
+        height: 20, 
+        fill_color: HSV_TO_RGB(color)
+    )
+}
+range(20) >> map(with:make_square) >> row() >> draw()
+```
+In the code above we choose a random hue but keep the saturation at 0.8 (sort of pastel like)
+and the brightness almost at 100%.
+
+Let's try that again with different S and V values
+
+Generate again but keep s=0.5 and v=0.95
+
+```tilament
+make_square << () {
+    color << [random(), 80%, 90%]
+    rect( width: 20, 
+        height: 20, 
+        fill_color: HSV_TO_RGB(color)
+    )
+}
+range(20) >> map(with:make_square) >> row() >> draw()
+```
+
+better.
+
+However, it's still pretty random. You'll notice that sometimes the colors clump together. Instead
+we'd like to have them distributed evenly across the hue. There's a clever trick we can use with the
+golden ratio.Start with a random number then add the GR to it. Each time we wrap it back around at 1.
+This works because the hue is like a circle. When you go far enough to the right edge it wraps back around.
+Thanks to the golden ratio it will keep looping around and always pick a new hue value distant from
+the previous ones.
+
+Instead let’s make it evenly distributed across the hue using golden ratio. Start with a random number then add golden_ratio_conjugate for each time through and wrap at 1. Requires a real loop, not a map or reduce. Or needs a global variable the lambda references.
+Show another 20. Looks good.
+
+```tilament
+h << random()
+make_square << () {
+    h << ((h + GR) mod 1)
+    color << [h, 80%, 90%]
+    rect( width: 20, height: 20, fill_color: HSV_TO_RGB(color) )
+}
+range(20) >> map(with:make_square) >> row() >> draw()
+```
+
+
+Show it a few times with different saturations and values.
+
+There we go. That looks great!
 
 
