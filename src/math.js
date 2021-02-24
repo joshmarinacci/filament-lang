@@ -183,6 +183,14 @@ export const is_prime = new FilamentFunction('is_prime', {n:REQUIRED},function(n
     return pack(num > 1);
 })
 
+export const today = new FilamentFunction('today',{
+
+},function() {
+    let today = Date.now()
+    return date(getYear(today),getMonth(today),getDate(today))
+},{
+    summary:'get the current date'
+})
 export const date_cons = new FilamentFunction('date',{
     input:null,
     year:scalar(0),
@@ -240,3 +248,14 @@ export const random = new FilamentFunction('random',
     function(max,min,count) {
         return scalar(Math.random())
     })
+
+export const floor = new FilamentFunction('floor',{
+    value:REQUIRED,
+},function(value) {
+    return pack(Math.floor(unpack(value)))
+})
+export const ceiling = new FilamentFunction('ceiling',{
+    value:REQUIRED,
+},function(value) {
+    return pack(Math.ceil(unpack(value)))
+})

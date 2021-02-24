@@ -1,12 +1,12 @@
 import {
     abs,
     add,
-    and,
+    and, ceiling,
     convertunit,
     cos, date_cons,
     divide,
     equal,
-    factorial,
+    factorial, floor,
     greaterthan,
     greaterthanorequal,
     is_prime,
@@ -21,7 +21,7 @@ import {
     power, random,
     sin,
     subtract,
-    tan, time_cons
+    tan, time_cons, today
 } from './math.js'
 import {drop, get_field, join, length, map, range, reverse, select, sort, sum, take} from './lists.js'
 import {chart, histogram, timeline} from './chart.js'
@@ -39,7 +39,8 @@ export function make_standard_scope() {
     scope.install(lessthan, greaterthan, equal, notequal, lessthanorequal, greaterthanorequal, or, and, not)
     scope.install(range, length, take, drop, join, reverse, map, sort, sum, get_field, select)
     scope.install(convertunit)
-    scope.install(date_cons, time_cons)
+    scope.install(floor, ceiling)
+    scope.install(date_cons, time_cons, today)
     scope.install(dataset, chart, timeline, histogram, plot, stockhistory)
     scope.set_var('pi', scalar(Math.PI))
 
