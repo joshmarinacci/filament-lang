@@ -208,7 +208,7 @@ class FList extends ASTNode {
     }
 
     toString() {
-        return `[${this.value.join(",")}]`
+        return `[${this.value.join(", ")}]`
     }
     evalJS() {
         return this.value.map(obj => obj.evalJS())
