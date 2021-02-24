@@ -25,6 +25,7 @@ nav {
 /* block styles */
 h1, h2, h3 {
     font-family: 'Libre Baskerville', serif;
+    margin-top: 2rem;
 }
 p {
 }

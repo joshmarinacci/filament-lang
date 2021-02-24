@@ -187,14 +187,34 @@ function render_list_item(block) {
     return '<li>' +render_block_content(block)+ "</li>"
 }
 
-function render_html(doc) {
+function generate_toc(doc) {
+    let toc = {
+        type:'toc',
+        content:[]
+    }
+    doc.map(block => {
+        if(block.type === 'H1') toc.content.push(block)
+        if(block.type === 'H2') toc.content.push(block)
+        if(block.type === 'H3') toc.content.push(block)
+    })
+    return toc
+}
+
+function gen_slug(str) {
+    return str.replaceAll(" ","_")
+}
+
+function render_html(toc, doc) {
     // l('rendering html from doc',doc)
+    let toc_html = `<ul>${toc.content.map(v => {
+        return `<li><a href='#${gen_slug(v.content)}'>${v.content}</a></li>`
+    }).join("")}</ul>`
     const title = 'tutorial'
     const content = doc.map(block => {
         // l("block is",block)
-        if(block.type === 'H1') return `<h1>${block.content}</h1>`
-        if(block.type === 'H2') return `<h2>${block.content}</h2>`
-        if(block.type === 'H3') return `<h3>${block.content}</h3>`
+        if(block.type === 'H1') return `<h1><a name="${gen_slug(block.content)}">${block.content}</a></h1>`
+        if(block.type === 'H2') return `<h2><a name="${gen_slug(block.content)}">${block.content}</a></h2>`
+        if(block.type === 'H3') return `<h3><a name="${gen_slug(block.content)}">${block.content}</a></h3>`
         if(block.type === 'LI') return render_list_item(block)
         if(block.type === 'P') return render_paragraph_output(block)
         if(block.type === 'CODE') return render_code_output(block)
@@ -215,6 +235,7 @@ function render_html(doc) {
             <a href="spec.html">spec</a>
             <a href="api.html">api</a>
         </nav>
+        <nav>${toc_html}</nav>
         <main>
         ${content}
         </main>
@@ -226,9 +247,10 @@ function render_html(doc) {
 export async function convert_file(infile_path, outdir_path, outfile_name) {
     let raw_markdown = (await fs.readFile(infile_path)).toString()
     let doc = await parse_markdown(raw_markdown+"\n")
+    let toc = generate_toc(doc)
     await eval_filament(doc)
     await generate_canvas_images(doc,outdir_path,'images')
-    let html = render_html(doc)
+    let html = render_html(toc,doc)
     //console.log("final html is",html)
     let outpath = path.join(outdir_path,outfile_name)
     await fs.writeFile(outpath,html)
