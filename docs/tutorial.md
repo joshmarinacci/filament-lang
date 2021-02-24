@@ -167,10 +167,9 @@ Remember that range will start at the minmum and go to one less than the max. So
 
 Filament can handle big lists. If you ask for range(0,10_000_000) it will show the the first few and then ... before the last few.
 
-```tilament
+```filament
 //you can use underscores to separate digits. they will be stripped out before calculations
 range(10_000)
-// [0, 1, 2, 3 .... 99_999_998, 99_999_999]
 ```
 
 Lists are very useful for lots of things, but sometimes you get more numbers than you need. Suppose you wanted all the numbers from from 0 to 20 minus the first three. Use take(list,3). Want just the last three use take(list,-3)
