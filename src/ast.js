@@ -72,8 +72,11 @@ class FScalar extends ASTNode {
         }
     }
     toString() {
-        if(this.unit) return (""+this.value+' '+this.unit)
-        return (""+this.value)
+        let v = ""
+        if(Number.isInteger(this.value))  v += this.value
+        if(!Number.isInteger(this.value)) v += this.value.toFixed(3)
+        if(this.unit) v += " "+this.unit
+        return v
     }
     evalJS() {
         return this.value
