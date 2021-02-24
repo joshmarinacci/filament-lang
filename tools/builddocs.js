@@ -206,11 +206,44 @@ function gen_slug(str) {
     return str.replaceAll(" ","_")
 }
 
+function render_toc_tree(root) {
+    let childs = ""
+    if(root.content.length > 0) {
+        childs = "<ul>"+root.content.map(child => {
+            return `<li>${render_toc_tree(child)}</li>`
+        }).join("\n") + "</ul>"
+    }
+    return `<a href="#${gen_slug(root.title)}">${root.title}</a>${childs}`
+}
+
+function render_toc(toc) {
+    // console.log("toc",toc)
+    let stack = []
+    toc.content.map(v => {
+        console.log("type is",v.type,v)
+        if(v.type === 'H1') {
+            stack.push({title:v.content,content:[]})
+        }
+        if(v.type === 'H2') {
+            let top = stack[stack.length-1]
+            top.content.push({title:v.content,content:[]})
+        }
+        if(v.type === 'H3') {
+            let top = stack[stack.length-1]
+            top = top.content[top.content.length-1]
+            top.content.push({title:v.content,content:[]})
+        }
+    })
+    return render_toc_tree({title:"Tutorial",content:stack})
+
+    // let toc_html = `<ul>${toc.content.map(v => {
+    //     return `<li><a href='#${gen_slug(v.content)}'>${v.content}</a></li>`
+    // }).join("")}</ul>`
+}
+
 function render_html(toc, doc) {
     // l('rendering html from doc',doc)
-    let toc_html = `<ul>${toc.content.map(v => {
-        return `<li><a href='#${gen_slug(v.content)}'>${v.content}</a></li>`
-    }).join("")}</ul>`
+    let toc_html = render_toc(toc)
     const title = 'tutorial'
     const content = doc.map(block => {
         // l("block is",block)
