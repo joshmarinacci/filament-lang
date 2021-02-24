@@ -311,17 +311,19 @@ plot(polar:fun, min:0, max:pi*32)
 
 
 
-And one of the best parts about lists is that they can hold more than numbers. You can work with
+And one of the best parts about lists is that they can 
+hold more than numbers. You can work with
 lists of strings, numbers, booleans.  Consider this simple list of people.
 
-```javascript
+```filament
 friends << ["Bart", "homer","Ned"]
 ```
 
-the editor will show a list of strings
+or a list of booleans
 
-*screenshot*
-
+```filament
+[true,false,true]
+```
 
 # Charts from lists and datasets
 
