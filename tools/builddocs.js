@@ -220,7 +220,6 @@ function render_toc(toc) {
     // console.log("toc",toc)
     let stack = []
     toc.content.map(v => {
-        console.log("type is",v.type,v)
         if(v.type === 'H1') {
             stack.push({title:v.content,content:[]})
         }

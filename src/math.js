@@ -249,7 +249,20 @@ export const random = new FilamentFunction('random',
         count:scalar(1)
     },
     function(max,min,count) {
-        return scalar(Math.random())
+        max = unpack(max)
+        min = unpack(min)
+        count = unpack(count)
+        const make = () => scalar(min+Math.random()*(max-min))
+
+        if(count > 1) {
+            let arr = []
+            for(let i=0; i<count; i++) {
+                arr.push(make())
+            }
+            return list(arr)
+        } else {
+            return make()
+        }
     })
 
 export const floor = new FilamentFunction('floor',{
