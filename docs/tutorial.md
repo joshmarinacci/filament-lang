@@ -504,3 +504,60 @@ Show it a few times with different saturations and values.
 There we go. That looks great!
 
 
+
+
+
+## Turtle Graphics
+
+Based on this tutorial. *link*
+
+Image a turtle walking around. Starts at the center.
+
+Move forward 100. See what it looks like. Should show turtle on screen.
+
+Now turn right and move again. See L shape.
+
+Now make a square by doing it 4 times.
+
+This is annoying, so let’s make a function called square which draws it for us in a loop (use range and map)
+
+### Shapes
+
+Now make a function to draw a hexagon.
+
+Now make an N-gon, pass in sides and size
+
+Do it with 100 and see it looks like a circle.
+
+Draw n gon, rotate slightly, draw again.  Repeat 50  times.
+
+### Colors
+
+Now switch color on each time.
+
+Draw a leaf shape, loop to make a flower.
+
+
+
+
+## Histograms
+
+### States of the US
+
+states << dataset('states')
+def first_letter (state:?) {
+take(get_field(state,'name'), 1)
+}
+states << map(states, first_letter)
+histogram(states)
+
+
+### First letter
+
+Statehood date by year by decade
+
+states << dataset('states')
+map(states, state -> {
+get_field(state,'statehood_date')
+}) >> dates
+histogram(dates)
