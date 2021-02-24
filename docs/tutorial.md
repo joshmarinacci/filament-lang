@@ -230,18 +230,19 @@ july  << [67, 45, 77, 98]
 july - april
 ```
 
-doing math with lists is also great for working with vectors.
+Doing math with lists is also great for working with vectors. You can add them,
+multiply as the dot product, and calculate the magnitude.
 
-```javascript
-V1 = [0,0,5]
-V2 = [1,0,1]
+```filament
+V1 << [0,0,5]
+V2 << [1,0,1]
 
 V1 + V2 // add vectors
 V1 * V2 // dot product of vectors
 sqrt(sum(power(V1,2))) // magnitude of vector
 ```
 
-Lists let you find data too. you can search for items using select and a small function. Let's find
+Lists let you search for data too. You can find items using select and a small function. Let's find
 all of the prime numbers up to 10000
 
 ```filament
@@ -267,7 +268,7 @@ Suppose you had a list of heights of your friends.
 chart([88,64,75,59])
 ```
 
-or just draw the numbers from 0 to 9
+or just want to draw the numbers from 0 to 9.
 
 ```filament
 chart(range(10))

@@ -19,7 +19,7 @@ import {
     notequal,
     or,
     power, random,
-    sin,
+    sin, sqrt,
     subtract,
     tan, time_cons, today
 } from './math.js'
@@ -34,7 +34,7 @@ import {load_image, make_image, map_image} from './image.js'
 
 export function make_standard_scope() {
     let scope = new Scope("lang")
-    scope.install(add, subtract, multiply, divide, power, negate, mod, factorial, is_prime, random)
+    scope.install(add, subtract, multiply, divide, power, sqrt, negate, mod, factorial, is_prime, random)
     scope.install(abs, sin, cos, tan)
     scope.install(lessthan, greaterthan, equal, notequal, lessthanorequal, greaterthanorequal, or, and, not)
     scope.install(range, length, take, drop, join, reverse, map, sort, sum, get_field, select)

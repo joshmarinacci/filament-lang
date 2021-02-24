@@ -1,4 +1,4 @@
-import {FilamentFunction, REQUIRED} from './parser.js'
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {date, is_boolean, is_list, is_scalar, list, pack, scalar, time, unpack} from './ast.js'
 import {convert_unit, find_conversion, to_canonical_unit} from './units.js'
 import {parse as parse_date, getYear, getMonth, getDate, toDate, getHours, getMinutes, getSeconds, differenceInDays, differenceInSeconds, addSeconds} from "date-fns"
@@ -133,6 +133,9 @@ export const power = new FilamentFunction('power',{a:REQUIRED, b:REQUIRED},
             return scalar(Math.pow(a.value,b.value),a.unit)
         }
     return binop(a,b,(a,b)=>Math.pow(a,b))
+})
+export const sqrt = new FilamentFunctionWithScope('sqrt',{a:REQUIRED},function(scope,a) {
+    return unop(a,(a)=>Math.sqrt(a))
 })
 export const negate = new FilamentFunction('negate', {a:REQUIRED}, (a) =>unop(a,a=>-a))
 export const factorial = new FilamentFunction('factorial', {a:REQUIRED}, (a) => unop(a,(a)=>{
