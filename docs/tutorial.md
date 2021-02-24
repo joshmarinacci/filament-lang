@@ -62,8 +62,8 @@ Some kitchen math:
 
 Calculate your age in seconds.
 
-```tfilament
-now() - date("Jan 1st, 2003") as seconds
+```filament
+today() - date(month:1, day:15, year:2003) as seconds
 ```
 
 If you try to convert something that can't be converted, like area to volume, then Filament will let you know. Try this:

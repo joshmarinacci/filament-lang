@@ -38,6 +38,7 @@ describe('min max ranges',() => {
         await all([
             ['time("8pm",format:"hhaa") - time("2am",format:"hhaa") as hours',s(18,'hour',1)],
             ['time("3am",format:"hhaa") + 2hours',time(5,0,0)],
+            ['floor(today() - date(year:1975, month:8, day:31) as years)',s(45)],
         ])
     })
 })
