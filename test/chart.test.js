@@ -25,7 +25,9 @@ async function code_to_png(code, fname, scope) {
     let ret = await eval_code(code, scope)
     const img = PImage.make(1000,1000);
     await ret.cb(img)
-    await PImage.encodePNGToStream(img,createWriteStream(path.join('output','chart',fname)))
+    let pth = path.join('output','chart',fname)
+    await PImage.encodePNGToStream(img,createWriteStream(pth))
+    console.log("wrote",pth)
 }
 
 describe("charts", ()=>{
@@ -46,5 +48,15 @@ describe("charts", ()=>{
                    name:'name'
                   )
                   }`,"planets.png", std_scope)
+    })
+    it('states names',async() => {
+        await code_to_png(`{
+        states << dataset('states')
+        first_letter << (state:?) -> take(get_field(state,'name'), 1)
+        
+        states << map(states, first_letter)
+        histogram(states)
+    }
+        `,'statenames.png',std_scope)
     })
 })

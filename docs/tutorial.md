@@ -319,7 +319,7 @@ plot(polar:spiral, min:0, max:pi*32)
 
 
 
-# Charts from lists and datasets
+## Charts Datasets
 
 Even better than pulling in your own data, is working with curated datasets
 that have already been assembled.  Filament comes with datasets for
@@ -378,6 +378,31 @@ buildings << dataset('tallest_buildings')
 b2 << take(buildings,5) 
 chart(b2, y:'height', x_label:'name')
 ```
+
+
+
+
+## Histograms
+
+
+```filament
+states << dataset('states')
+first_letter << (state:?) -> take(get_field(state,'name'), 1)
+
+states << map(states, first_letter)
+histogram(states)
+```
+
+
+
+Statehood date by year by decade
+
+states << dataset('states')
+map(states, state -> {
+get_field(state,'statehood_date')
+}) >> dates
+histogram(dates)
+
 
 
 # Random Numbers
@@ -530,24 +555,3 @@ Draw a leaf shape, loop to make a flower.
 
 
 
-## Histograms
-
-### States of the US
-
-states << dataset('states')
-def first_letter (state:?) {
-take(get_field(state,'name'), 1)
-}
-states << map(states, first_letter)
-histogram(states)
-
-
-### First letter
-
-Statehood date by year by decade
-
-states << dataset('states')
-map(states, state -> {
-get_field(state,'statehood_date')
-}) >> dates
-histogram(dates)

@@ -199,6 +199,14 @@ function draw_bars(ctx, bounds, data, x_label, y) {
     })
 }
 
+function draw_centered_text(ctx, font_size, name, x, y) {
+    ctx.fillStyle = 'black'
+    ctx.font = `${font_size}px sans-serif`
+    let measure1 = ctx.measureText(name)
+    let xoff1 = measure1.width/2
+    ctx.fillText(name,x - xoff1, y)
+}
+
 export const histogram = new FilamentFunction('histogram',{
     data:REQUIRED
 }, function(data) {
@@ -206,6 +214,7 @@ export const histogram = new FilamentFunction('histogram',{
     //draw a barchart using frequency for height
     //use the key for the name
     return new CanvasResult((canvas)=>{
+        let font_size = 20
         let ctx = canvas.getContext('2d')
         ctx.save()
         clear(ctx,canvas)
@@ -215,22 +224,18 @@ export const histogram = new FilamentFunction('histogram',{
             if(!freqs[letter]) freqs[letter] = 0
             freqs[letter] += 1
         })
-        console.log(freqs)
         let entries = Object.entries(freqs)
         let w = canvas.width / entries.length
         let max_y = max(entries.map(pair => pair[1]))
         let hh = canvas.height/max_y
         entries.forEach((pair,i) => {
             const [name,count] = pair
-            // console.log(name,count)
-            ctx.fillStyle = 'aqua'
+            ctx.fillStyle = COLORS[i%COLORS.length]
             let x = i*w
             let y = canvas.height - hh*count
             ctx.fillRect(x,y,w-5,hh*count)
-            ctx.fillStyle = 'black'
-            ctx.font = '10px sans-serif'
-            ctx.fillText(name,i*w+5, canvas.height-20)
-            ctx.fillText(count+"",i*w+5, canvas.height-10)
+            draw_centered_text(ctx,font_size,name,i*w+w/2, canvas.height-30)
+            draw_centered_text(ctx,font_size,count+"",i*w+w/2, canvas.height-10)
         })
         ctx.restore()
     })
