@@ -397,11 +397,27 @@ histogram(states)
 
 Statehood date by year by decade
 
+```filament
 states << dataset('states')
-map(states, state -> {
-get_field(state,'statehood_date')
-}) >> dates
-histogram(dates)
+get_year << state -> {
+    field << get_field(state, 'statehood_date')
+    dt << date(field, format:"MMMM dd, yyyy")
+    get_field(dt,'year')
+}
+years << map(states, with:get_year)
+histogram(years, bucket:10)            
+```
+
+```tilament
+dataset('states') 
+    >> map(with: st -> {
+           get_field(st,'statehood_date')
+           >> date(format:'MMMM dd, yyyy')
+           >> get_field('year')        
+    })
+    >> histogram(bucket:10)
+    
+```
 
 
 

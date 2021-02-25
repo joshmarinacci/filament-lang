@@ -59,4 +59,14 @@ describe("charts", ()=>{
     }
         `,'statenames.png',std_scope)
     })
+
+    it('states years',async ()=>{
+        await code_to_png([
+            `{
+            states << dataset('states')
+years << map(states, state ->  get_field(date(get_field(state,'statehood_date'),format:"MMMM dd, yyyy"),'year'))
+histogram(years, bucket:10)            
+            }`
+        ],'statedates_decade.png',std_scope)
+    })
 })

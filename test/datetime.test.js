@@ -1,5 +1,6 @@
 import {all, s, setup} from './common.js'
-import {date, time} from '../src/ast.js'
+import {date, pack, scalar, time, unpack} from '../src/ast.js'
+import {FilamentFunction, REQUIRED} from '../src/parser.js'
 
 await setup()
 
@@ -39,6 +40,11 @@ describe('min max ranges',() => {
             ['time("8pm",format:"hhaa") - time("2am",format:"hhaa") as hours',s(18,'hour',1)],
             ['time("3am",format:"hhaa") + 2hours',time(5,0,0)],
             ['floor(today() - date(year:1975, month:8, day:31) as years)',s(45)],
+        ])
+    })
+    it("date parts", async () => {
+        await all([
+            [`date(month:12, day:25, year:2021) >> get_field('year')`,scalar(2021)],
         ])
     })
 })

@@ -83,7 +83,7 @@ function is_scalar_with_unit(a) {
     return false
 }
 
-function is_date(a) {
+export function is_date(a) {
     return a.type === 'date'
 }
 function is_time(a) {

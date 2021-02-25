@@ -1,6 +1,8 @@
 import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {is_list, list, pack, scalar, unpack} from './ast.js'
 import {apply_fun, resolve_in_order} from './util.js'
+import {is_date} from './math.js'
+import {getYear} from 'date-fns'
 
 // * __range__: generate a list of numbers: `(max), (min,max), (min,max,step)`
 export const range = new FilamentFunction('range',
@@ -158,5 +160,11 @@ export const get_field = new FilamentFunction("get_field",{
     data:REQUIRED,
     field:REQUIRED
 },(data,field)=>{
+    if(is_date(data)) {
+        let f = unpack(field)
+        if(f === 'year') {
+            return scalar(getYear(unpack(data).value))
+        }
+    }
     return pack(data[unpack(field)])
 })

@@ -1,6 +1,6 @@
 import {compareAsc, compareDesc, parse as parseDate, eachYearOfInterval, differenceInYears, format as formatDate} from 'date-fns'
-import {FilamentFunction, REQUIRED} from './parser.js'
-import {CanvasResult, is_string, scalar, string, unpack} from './ast.js'
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
+import {CanvasResult, is_scalar, is_string, scalar, string, unpack} from './ast.js'
 
 class Bounds {
     constructor(x, y, w, h) {
@@ -207,9 +207,27 @@ function draw_centered_text(ctx, font_size, name, x, y) {
     ctx.fillText(name,x - xoff1, y)
 }
 
-export const histogram = new FilamentFunction('histogram',{
-    data:REQUIRED
-}, function(data) {
+function calc_frequencies(data, bucket) {
+    bucket = unpack(bucket)
+    let freqs = {}
+    data._map(datum => {
+        let value = unpack(datum)
+        console.log("value",value)
+        if(is_scalar(value)) {
+            value = Math.round(value / bucket) * bucket
+        }
+        if(!freqs[value]) freqs[value] = 0
+        freqs[value] += 1
+    })
+    // console.log("bucket is",bucket)
+    // console.log("final frequencies",freqs)
+    return freqs
+}
+
+export const histogram = new FilamentFunctionWithScope('histogram',{
+    data:REQUIRED,
+    bucket:scalar(1),
+}, function(scope,data,bucket) {
     //count frequency of each item in the list
     //draw a barchart using frequency for height
     //use the key for the name
@@ -218,12 +236,7 @@ export const histogram = new FilamentFunction('histogram',{
         let ctx = canvas.getContext('2d')
         ctx.save()
         clear(ctx,canvas)
-        let freqs = {}
-        data._map(datum => {
-            let letter = unpack(datum)
-            if(!freqs[letter]) freqs[letter] = 0
-            freqs[letter] += 1
-        })
+        let freqs = calc_frequencies(data,bucket)
         let entries = Object.entries(freqs)
         let w = canvas.width / entries.length
         let max_y = max(entries.map(pair => pair[1]))
