@@ -27,13 +27,25 @@ import {drop, get_field, join, length, map, range, reverse, select, sort, sum, t
 import {chart, histogram, timeline} from './chart.js'
 import {dataset, stockhistory} from './dataset.js'
 
-import {Parser} from './parser.js'
+import {FilamentFunctionWithScope, Parser, REQUIRED} from './parser.js'
 import {scalar, Scope} from './ast.js'
 import {plot} from './plot.js'
 import {load_image, make_image, map_image} from './image.js'
 
+
+
+export const print = new FilamentFunctionWithScope('print',
+    {
+        msg:REQUIRED
+    },
+    function (scope,msg) {
+        this.log(msg.toString())
+    }
+)
+
 export function make_standard_scope() {
     let scope = new Scope("lang")
+    scope.install(print)
     scope.install(add, subtract, multiply, divide, power, sqrt, negate, mod, factorial, is_prime, random)
     scope.install(abs, sin, cos, tan)
     scope.install(lessthan, greaterthan, equal, notequal, lessthanorequal, greaterthanorequal, or, and, not)

@@ -1,3 +1,50 @@
+# Basic Syntax
+
+## identifiers
+
+Identifiers can (currently) use
+
+* alphanumeric `A-Za-z`
+* digits `0-9`
+* underscore `_`
+
+
+Other special characters such as `~@#$^&;?` should not
+be used since they may be used in the future.
+
+Whitespace is not significant, but is not allowed inside of indentifiers, since they
+are used for tokenization.
+
+## numbers
+
+Numbers are the same as in most programming languages
+(integer, floating point, hex). Octal is not supported.
+Binary is not currently supported (may revisit).
+
+
+* integer `-? [0-9]+`  ex: 42
+* decimal `-? [0-9]+ . [0-9]*` ex: 42.42
+* scientific notation `decimal e integer` ex: 42.42e42
+* hex: `0x [0-9] [A-F] [a-f]` ex: 0xFFAAbb.  Maybe also use # to indicate hex?
+
+Underscores may be placed
+anywhere within numbers to help with readability. They will
+be stripped before evaluation.
+
+`42_000_000` is easier to read than `42000000`
+
+Units are word suffixes. They may or may not be separated
+from the number part by a single space. Separating by newlines
+is not allowed.
+
+## strings
+
+Single, double, and back quotes are all allowed for creating text literals.
+There is no distinct character type.  *smart quotes* or curly quotes
+will be replaced with their standard equivalent.
+
+
+
 # Operators
 
 ## Boolean Operators
@@ -35,7 +82,7 @@
 `as` convert to a specified unit. ex: `10cm as inches`. works on lists.
 
 
-## specifically not included
+## Specifically Excluded
 
 * bit shifting `<<` `>>`
 * bitwise booleans `|` `&`
@@ -46,74 +93,10 @@
 * curly braces `{}` are currently not used and are often harder to type on non English (QWERTY) keyboards.
 
 
-# alternatives
 
-* pipeline: `|` `|>` `->`
-* anonymous function calls: `(x)=>(x*2)` or `(x)={x*2}`
-* apply operator over a list `@/` `//` or `over`.  ex:  `+ over [1,2,3]` to calculate the total.
-* allowing `-` or whitespace inside identifiers. Would this cause more trouble than it's worth?
+# Functions
 
-
-# Unicode operators and identifiers
-
-While any unicode characters can be used in strings and identifiers, 
-these will likely have special support in the interface to make them easier
-to enter. They will also be shown in their unicode form in the "print ready" syntax.
-
-* theta `ø` or **&#952;**
-* pi **π** or **∏**
-* alpha **&#945;**
-* sigma **&#963;** and **&#931;**
-* not equal **&#8800;**, greater than or equal, and less than or equal
-* right arrow **&#8594;** replaces >> 
-* left arrow **&#8592;** replaces <<
-* curved arrow **&#11148;** or **&#11181;** replaces return ??
-
-
-# identifiers
-
-Identifiers can (currently) use
-
-* alphanumeric `A-Za-z`
-* digits `0-9`
-* underscore `_`
-
-
-Other special characters such as `~@#$^&;?` should not 
-be used since they may be used in the future.
-
-Whitespace is not significant, but is not allowed inside of indentifiers, since they
-are used for tokenization.
-
-# number syntax
-
-Numbers are the same as in most programming languages
-(integer, floating point, hex). Octal is not supported. 
-Binary is not currently supported (may revisit).
-
-
-* integer `-? [0-9]+`  ex: 42
-* decimal `-? [0-9]+ . [0-9]*` ex: 42.42
-* scientific notation `decimal e integer` ex: 42.42e42
-* hex: `0x [0-9] [A-F] [a-f]` ex: 0xFFAAbb.  Maybe also use # to indicate hex?
-
-Underscores may be placed
-anywhere within numbers to help with readability. They will
-be stripped before evaluation.
-
-`42_000_000` is easier to read than `42000000`
-
-Units are word suffixes. They may or may not be separated
-from the number part by a single space. Separating by newlines
-is not allowed.
-
-# strings
-
-Single, double, and back quotes are all allowed for creating text literals.
-There is no distinct character type.  *smart quotes* or curly quotes
-will be replaced with their standard equivalent.
-
-# functions
+## Definition
 
 Functions are named by standard identifiers. They are called
 using parenthesis with one or more arguments. Arguments
@@ -134,17 +117,24 @@ anonymous functions.   Each argument includes a default value.
 The default of '?' means it has no default and must be provided
 by the caller.
 
+## Parameter Resolution 
+
 The arguments may be called by order or name. ex:
 
 call by order
+
 ```tilament
 myfun( [1,2,3], 'point', 'red')
 ```
+
 call by keyword
+
 ```tilament
 chart( data=[1,2,3], color='red')
 ```
+
 call by order and keyword
+
 ```tilament
 chart( [1,2,3], color='red')
 ```
@@ -161,7 +151,7 @@ Parameter resolution is as follows.
 * inside the function you just use the named parameters. don't care about positional args or indexed vs keywords.
 
 
-# pipeline operators
+## pipeline operators
 
 The `<<` and `>>` operators are called pipelines. They take something and pass it into something else. 
 They are used to assign values to variables, and to pass the output of one function into the
@@ -194,8 +184,9 @@ print(range(10))
 
 
 
-# control flow
+# Control Flow
 
+## If statement
 The if statement works as follows
 
 * The `if` keyword followed by a boolean expression, followed by `then`, followed by a block.
@@ -245,8 +236,82 @@ is_even << if(
 is_even << def (x:?) -> start x mod 2 = 0 end
 
 
+## Match statement
+
+Still being defined. I'm leaning towards something like
+
+```tilament
+match x start
+  5 -> expression
+  6 -> expression
+  x when x < 5 -> expression
+end
+```
 
 
+
+
+# Misc
+
+## Unicode operators and identifiers
+
+While any unicode characters can be used in strings and identifiers,
+these will likely have special support in the interface to make them easier
+to enter. They will also be shown in their unicode form in the "print ready" syntax.
+
+* theta `ø` or **&#952;**
+* pi **π** or **∏**
+* alpha **&#945;**
+* sigma **&#963;** and **&#931;**
+* not equal **&#8800;**, greater than or equal, and less than or equal
+* right arrow **&#8594;** replaces >>
+* left arrow **&#8592;** replaces <<
+* curved arrow **&#11148;** or **&#11181;** replaces return ??
+
+# Issues
+
+I'd really like to get rid of the curly braces for blocks.  I'm not sure how to do that. The
+if statement already has delimiters in the form of `then` and `else`. By adding `end` I
+could get rid of the braces.  I don't know about function definitions and match expressions
+yet.
+
+Match could be
+
+```
+match exp start
+  exp fun
+  exp fun
+  exp where exp fun
+  else exp
+end
+```
+
+if could be
+
+```
+if exp then
+  exp
+  exp
+else
+  exp
+  exp
+end
+```
+
+Function definitions could be
+
+```
+myname << define args start
+  exp
+  exp
+  exp
+end
+```
+
+
+Unicode stuff isn't working in docs. I don't know why. The symbols always get garbled.
+Ideally you'd write with some sort of abbreviation and the editor would immediately replace
+it with the unicode form.
 
 
 

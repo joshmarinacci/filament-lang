@@ -29,20 +29,10 @@ async function code_to_png(code, fname, scope) {
     await PImage.encodePNGToStream(img,createWriteStream(path.join('output','turtle',fname)))
 }
 
-const print = new FilamentFunctionWithScope('print',
-    {
-        msg:REQUIRED
-    },
-    function (scope,msg) {
-        this.log(msg.toString())
-    }
-)
-
 
 describe("block ordering", ()=>{
     let std_scope = make_standard_scope()
     const test_scope = new Scope("test",std_scope)
-    test_scope.install(print)
     it("test block order", async() => {
         await eval_code(`
         {
@@ -70,7 +60,6 @@ describe('turtle basics',() => {
     let std_scope = make_standard_scope()
     const turtle_scope = new Scope('turtle',std_scope)
     turtle_scope.install(turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_left, turtle_penup, turtle_done)
-    turtle_scope.install(print)
     it('make square',async ()=> {
         await code_to_png(`{
         turtle_start(0,0,0)
