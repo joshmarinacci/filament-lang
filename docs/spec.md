@@ -122,39 +122,36 @@ may be referred to by position (indexed) or name (keyword).
 
 Consider the `chart` function.
 
-```javascript
-function chart(
-    List data=required, 
-    String type='point'?, 
-    Color color='black'?) {
-
+```tilament
+myfun << (data:?, type:'point', color:'red') -> {  
+  
 }
 ```
 
-A call to `chart` must include the data parameter or it
-throws an error. The other arguments are optional
-(as indicated by the `?`). They have defaults to be used
-if the parameter is missing.  The arguments may be
-called by order or name. ex:
+`myfun` is an identifier. A function which takes x and y is
+declared and assigned to myfun. Essentially all functions are
+anonymous functions.   Each argument includes a default value.
+The default of '?' means it has no default and must be provided
+by the caller.
+
+The arguments may be called by order or name. ex:
 
 call by order
-```javascript
-chart( [1,2,3], 'point', 'red')
+```tilament
+myfun( [1,2,3], 'point', 'red')
 ```
 call by keyword
-```javascript
+```tilament
 chart( data=[1,2,3], color='red')
 ```
 call by order and keyword
-```javascript
+```tilament
 chart( [1,2,3], color='red')
 ```
 
-# V2 of function args
+Parameter resolution is as follows.
 
-* a function is referenced by name. you can't have two functions with the same name and use args to decide between them. No multi-methods.
-* a function definition needs a name for all parameters. Any parameter may be called by keyword.
-* every parameter should have a default value or a ! indicating it is required.
+* all parameters may be specified by name or position (index)
 * the parameters are prepared by the runtime from the call site at runtime.
     * all named args are filled in first, from left to right in the parameters def.
     * any indexed arguments are filled into missing parameters, left to right.
@@ -164,24 +161,88 @@ chart( [1,2,3], color='red')
 * inside the function you just use the named parameters. don't care about positional args or indexed vs keywords.
 
 
+# pipeline operators
+
+The `<<` and `>>` operators are called pipelines. They take something and pass it into something else. 
+They are used to assign values to variables, and to pass the output of one function into the
+first parameter of the next. 
+
+assign 42 to answer
+
+```filament
+answer << 42
+```
+
+is the same as
+
+```filament
+42 >> answer
+```
+
+pass the output of range into the print function
+
+```filament
+range(10) >> print()
+```
+
+is the same as
+
+```filament
+print(range(10))
+```
+
+
+
 
 # control flow
 
-For now control flow, function definitions, comments, code blocks, lambda functions,
-conditionals, etc are TBD, so they will use the JS equivalents for now.
+The if statement works as follows
 
-- No increment operators 
-- document the ‘as’ operator. works over lists too.
-- mention comments, blocks, conditionals, flow control are still TBD, so using JS for now
-- mention function def and lambda syntax still TBD, so JS for now
+* The `if` keyword followed by a boolean expression, followed by `then`, followed by a block.
+* Optional `else` block.
+* blocks may be replaced by single expressions.
 
+ex:
 
-* if, then, else
-* switch / match
-* code blocks
-* return
-* defining functions
-* defining custom datatypes or classes
+```tilament
+if (x = 5) then {
+  5
+} else {
+  10
+}
+```
+
+using single expressions
+
+```tilament
+if x = 5 then 5 else 10 
+```
+
+the if statement itself is an expression, so it's result can be assigned to a variable
+or used inside another expression
+
+```tilament
+x << 56
+is_even << if x mod 2 = 0 then true else false 
+```
+
+=================
+
+notes
+
+if(
+  test: exp,
+  then: exp exp exp,
+  else: exp exp exp
+)
+
+is_even << if(
+  test: x mod 2 = 0
+  then: true
+  else: false
+)
+
+is_even << def (x:?) -> start x mod 2 = 0 end
 
 
 
