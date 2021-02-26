@@ -17,9 +17,9 @@ export const make_image = new FilamentFunctionWithScope('makeimage',
 function get_pixel_as_array(image_data, x, y) {
     let n = (image_data.width*y + x)*4
     let px = [
-        image_data.data[n+0],
-        image_data.data[n+1],
-        image_data.data[n+2]
+        image_data.data[n+0]/255,
+        image_data.data[n+1]/255,
+        image_data.data[n+2]/255
     ]
     return px
 }

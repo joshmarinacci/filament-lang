@@ -491,7 +491,7 @@ export class IndexRef extends ASTNode {
     async evalFilament(scope) {
         let obj = await this.exp.evalFilament(scope)
         let index = await this.index.evalFilament(scope)
-        return pack(obj._get_at_index(unpack(index.value)))
+        return pack(obj._get_at_index(unpack(index)))
     }
 }
 

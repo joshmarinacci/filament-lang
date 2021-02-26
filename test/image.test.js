@@ -76,7 +76,6 @@ describe('image',() => {
 
     it('white noise', async () => {
         await code_to_png(`{
-            rando << () -> { 5 }
             make_image(width:100, height: 100)
             >> mapimage(with:(x,y,color) -> {
                 n << random(min:0,max:1)
@@ -95,18 +94,18 @@ describe('array indexing',() => {
     scope.install(make_image, map_image, load_image)
 
 
-    it('load image to grayscale', async () => {
+    it('remove red channel from image', async () => {
         await code_to_png(`
             load_image(
             src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png'
             ) >> mapimage(with:(x,y,c) -> {
-                v1 << 0
-                v2 << 1
-                v3 << 0
+                v1 << 0//(c[0])
+                v2 << (c[1])
+                v3 << (c[2])
                 [v1,v2,v3]
 //                [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
             })
-        `,'load_image_grayscale.png',scope)
+        `,'remove_red.png',scope)
     });
 
 //     it('crossfade', async () => {
