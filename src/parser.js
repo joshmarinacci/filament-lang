@@ -5,7 +5,7 @@ import {
     call,
     fundef,
     ident, ifexp,
-    indexed, lambda,
+    indexed, IndexRef, lambda,
     list,
     named,
     pipeline_left,
@@ -92,6 +92,9 @@ export class Parser {
             //conditionals
             IfExp_short: (_if, test, _then, a) => ifexp(test.ast(),a.ast()),
             IfExp_full:  (_if, test, _then, a, _else, b) => ifexp(test.ast(),a.ast(),b.ast()),
+
+            //index dereference
+            IndexRef: (exp, _1, index, _2) => new IndexRef(exp.ast(),index.ast()),
 
             Block: (_1, statements, _2) => block(statements.ast()),
         })

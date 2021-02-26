@@ -169,6 +169,15 @@ describe('syntax',() => {
             [`range(3) >> map(with:x->x*2)`,l(s(0),s(2),s(4))],
         ])
     })
+    it('list indexing', async () => {
+        // console.log("arr",[8][0,2])
+        await all([
+            [`range(10)[2]`,s(2)],
+            [`[42,43,44] [0]`,s(42)],
+            [`map(range(10),with:x->x*2)[2]`,s(4)],
+            // [`[[42,43,44],[42,43,44]][0,1]`,l(s(42),s(43))],
+        ])
+    })
     /*
      match 1 {
         1: 1

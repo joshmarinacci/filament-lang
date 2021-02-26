@@ -1,5 +1,5 @@
 Filament {
-  Exp = Block |  LowOp
+  Exp = Block | IndexRef | LowOp
 
   LowOp = AsExp
 
@@ -38,6 +38,8 @@ Filament {
     | unitnumber
     | number
     | string
+
+  IndexRef = Exp "[" Exp "]"
 
   Block = "{" Exp* "}"
 

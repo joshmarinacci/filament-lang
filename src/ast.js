@@ -191,6 +191,9 @@ class FList extends ASTNode {
     _get_length() {
         return this.value.length
     }
+    _get_at_index(n) {
+        return this.value[n]
+    }
     _map(cb) {
         return this.value.map(cb)
     }
@@ -478,6 +481,19 @@ class FBlock extends ASTNode{
 }
 export const block = (sts) => new FBlock(sts)
 
+export class IndexRef extends ASTNode {
+    constructor(exp,index) {
+        super();
+        this.exp = exp
+        this.index = index
+    }
+
+    async evalFilament(scope) {
+        let obj = await this.exp.evalFilament(scope)
+        let index = await this.index.evalFilament(scope)
+        return pack(obj._get_at_index(unpack(index.value)))
+    }
+}
 
 export class CanvasResult{
     constructor(cb) {
