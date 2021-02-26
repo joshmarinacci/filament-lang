@@ -408,19 +408,6 @@ years << map(states, with:get_year)
 histogram(years, bucket:10)            
 ```
 
-```tilament
-dataset('states') 
-    >> map(with: st -> {
-           get_field(st,'statehood_date')
-           >> date(format:'MMMM dd, yyyy')
-           >> get_field('year')        
-    })
-    >> histogram(bucket:10)
-    
-```
-
-
-
 # Random Numbers
 
 Filament can generate random numbers for you. Now you might wonder why this is useful. It turns out 
@@ -533,6 +520,51 @@ range(20) >> map(with:make_square) >> row() >> draw()
 Show it a few times with different saturations and values.
 
 There we go. That looks great!
+
+
+# Images
+
+make an empty image then fill it with red.
+
+
+```filament
+make_image(width:100,height:100) 
+    >> map_image(with:(x,y,c) -> {
+        [1,0,0]
+        })
+```
+
+colors are represented as RGB, in the range 0 to 1.
+red << [1,0,0]
+blue << [0,0,1]
+gray << [0.5,0.5,0.5] or [50%, 50%, 50%]
+
+
+fill with random grayscale colors
+
+fill with a checkerboard
+
+draw a circle using the implicit equaiton, everything closer to the origin than 20 is red, else blue
+siilar to how GSL shaders work
+
+
+load an image from the web
+
+map it to remove the red channel
+
+map_image gives you a color for each pixel in the image, then you can return a new color, or modify the existing color.
+lets drop the red channel
+
+[0, c[1], c[2]]
+
+
+
+make an image grayscale or sepia
+
+
+
+
+
 
 
 
