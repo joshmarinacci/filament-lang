@@ -1,5 +1,5 @@
 Filament {
-  Exp = Block | IndexRef | LowOp
+  Exp = Block | LowOp
 
   LowOp = AsExp
 
@@ -30,6 +30,7 @@ Filament {
   HighOp
     = LambdaExp
     | GroupExp
+    | IndexRef
     | IfExp
     | FundefExp
     | FuncallExp
@@ -39,7 +40,7 @@ Filament {
     | number
     | string
 
-  IndexRef = Exp "[" Exp "]"
+  IndexRef = (FuncallExp|List|ident) "[" Exp "]"
 
   Block = "{" Exp* "}"
 

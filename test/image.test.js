@@ -130,18 +130,16 @@ describe('array indexing',function() {
     it('sepia', async function () {
         this.timeout(5000)
         await code_to_png(`{
-            brightness << (c) -> ((c[0])*0.299) + ((c[1])*0.587) + ((c[2])*0.114)
-            lerp  << (t,a,b) -> (a*t) + b*(1-t)
+            brightness << (c) -> c[0]*0.299 + c[1]*0.587 + c[2]*0.114
+            lerp  << (t,a,b) -> a*t + b*(1-t)
             white << [1,1,1]
-            black << [0,0,0]
             brown << [0.5,0.4,0.1]
             sepia << (x,y,color) -> {
-                b << brightness(color)
-                lerp(b,white,brown)
+                brightness(color) >> lerp(white,brown)
             }
             
             load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png') 
-            >> mapimage(with:sepia)
+                >> mapimage(with:sepia)
             }
         `,'sepia.png',scope)
     });
