@@ -88,7 +88,7 @@ describe('image',() => {
 
 
 
-describe('array indexing',() => {
+describe('array indexing',function() {
     let std_scope = make_standard_scope()
     const scope = new Scope('image', std_scope)
     scope.install(make_image, map_image, load_image)
@@ -99,13 +99,23 @@ describe('array indexing',() => {
             load_image(
             src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png'
             ) >> mapimage(with:(x,y,c) -> {
-                v1 << 0//(c[0])
+                v1 << 0
                 v2 << (c[1])
                 v3 << (c[2])
                 [v1,v2,v3]
-//                [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
             })
         `,'remove_red.png',scope)
+    });
+
+    it('image to grayscale', async function() {
+        await code_to_png(`
+            load_image(
+            src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png'
+            ) >> mapimage(with:(x,y,c) -> {
+                n << ((c[0])*0.299) + ((c[1])*0.587) + ((c[2])*0.114)
+                [n,n,n]
+            })
+        `,'grayscale.png',scope)
     });
 
 //     it('crossfade', async () => {
@@ -117,24 +127,22 @@ describe('array indexing',() => {
 //         `,'crossfade.png',scope)
 //     });
 
-    // it('grayscale', async () => {
-    //     await code_to_png(`
-    //         load_image(src:'url') >> mapimage(with:(color,x,y) -> {
-    //             [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
-    //         })
-    //     `,'load_image.png',scope)
-    // });
-    // it('sepia', async () => {
-    //     await code_to_png(`
-    //         brightness << (c) -> c[0]*0.24 + c[1]*0.24 + c[2]*0.5
-    //         lerp  << (t,a,b) -> a * (1-t) + b * (t)
-    //         white << [1,1,1]
-    //         brown << [0.5,0.4,0.1]
-    //         sepia << (x,y,color) -> {
-    //           b << brightness(c)
-    //           lerp(b,white,brown)
-    //         }
-    //         load_image(src:"url") >> mapimage(with:sepia)
-    //     `,'sepia.png',scope)
-    // });
+    it('sepia', async function () {
+        this.timeout(5000)
+        await code_to_png(`{
+            brightness << (c) -> ((c[0])*0.299) + ((c[1])*0.587) + ((c[2])*0.114)
+            lerp  << (t,a,b) -> (a*t) + b*(1-t)
+            white << [1,1,1]
+            black << [0,0,0]
+            brown << [0.5,0.4,0.1]
+            sepia << (x,y,color) -> {
+                b << brightness(color)
+                lerp(b,white,brown)
+            }
+            
+            load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png') 
+            >> mapimage(with:sepia)
+            }
+        `,'sepia.png',scope)
+    });
 })
