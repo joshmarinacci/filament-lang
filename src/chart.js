@@ -212,7 +212,7 @@ function calc_frequencies(data, bucket) {
     let freqs = {}
     data._map(datum => {
         let value = unpack(datum)
-        console.log("value",value)
+        // console.log("value",value)
         if(is_scalar(value)) {
             value = Math.round(value / bucket) * bucket
         }

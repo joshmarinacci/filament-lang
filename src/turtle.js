@@ -33,7 +33,7 @@ export const turtle_start = new FilamentFunctionWithScope('turtlestart',
         a:scalar(0)
     },
     function (scope,x,y,a) {
-        this.log("starting with",x,y,a)
+        // this.log("starting with",x,y,a)
         scope.set_var('!turtle_state', new TurtleState())
     }
 )

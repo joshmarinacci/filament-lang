@@ -3,7 +3,7 @@ import {all, s, l, b, setup} from "./common.js"
 import {list} from "../src/ast.js"
 
 await setup()
-console.log("done with setup")
+// console.log("done with setup")
 
 describe('math',() => {
     it("binary math operators", async ()=>{
