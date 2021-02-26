@@ -88,7 +88,7 @@ describe('image',() => {
 })
 
 
-/*
+
 describe('array indexing',() => {
     let std_scope = make_standard_scope()
     const scope = new Scope('image', std_scope)
@@ -97,41 +97,45 @@ describe('array indexing',() => {
 
     it('load image to grayscale', async () => {
         await code_to_png(`
-            load_image(src:'url') >> mapimage(with:(x,y,color) -> {
-                [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
+            load_image(
+            src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png'
+            ) >> mapimage(with:(x,y,c) -> {
+                v1 << 0
+                v2 << 1
+                v3 << 0
+                [v1,v2,v3]
+//                [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
             })
-        `,'load_image.png',scope)
+        `,'load_image_grayscale.png',scope)
     });
 
-    it('crossfade', async () => {
-        await code_to_png(`
-mapimage(img1,with(color,x,y) -> {
-    color2 = get_pixel(img2,x,y)
-    return color*0.5 + color2*0.5
-}
-        `,'crossfade.png',scope)
-    });
+//     it('crossfade', async () => {
+//         await code_to_png(`
+// mapimage(img1,with(color,x,y) -> {
+//     color2 = get_pixel(img2,x,y)
+//     return color*0.5 + color2*0.5
+// }
+//         `,'crossfade.png',scope)
+//     });
 
-    it('grayscale', async () => {
-        await code_to_png(`
-            load_image(src:'url') >> mapimage(with:(color,x,y) -> {
-                [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
-            })
-        `,'load_image.png',scope)
-    });
-    it('sepia', async () => {
-        await code_to_png(`
-            brightness << (c) -> c[0]*0.24 + c[1]*0.24 + c[2]*0.5
-            lerp  << (t,a,b) -> a * (1-t) + b * (t)
-            white << [1,1,1]
-            brown << [0.5,0.4,0.1]
-            sepia << (x,y,color) -> {
-              b << brightness(c)
-              lerp(b,white,brown)
-            }
-            load_image(src:"url") >> mapimage(with:sepia)
-        `,'sepia.png',scope)
-    });
+    // it('grayscale', async () => {
+    //     await code_to_png(`
+    //         load_image(src:'url') >> mapimage(with:(color,x,y) -> {
+    //             [ c[0]*0.25, c[1]*0.25, c[2]*0.5 ]
+    //         })
+    //     `,'load_image.png',scope)
+    // });
+    // it('sepia', async () => {
+    //     await code_to_png(`
+    //         brightness << (c) -> c[0]*0.24 + c[1]*0.24 + c[2]*0.5
+    //         lerp  << (t,a,b) -> a * (1-t) + b * (t)
+    //         white << [1,1,1]
+    //         brown << [0.5,0.4,0.1]
+    //         sepia << (x,y,color) -> {
+    //           b << brightness(c)
+    //           lerp(b,white,brown)
+    //         }
+    //         load_image(src:"url") >> mapimage(with:sepia)
+    //     `,'sepia.png',scope)
+    // });
 })
-
- */
