@@ -522,10 +522,103 @@ Show it a few times with different saturations and values.
 There we go. That looks great!
 
 
+# Making Shapes
+
+## Drawing some Rectangles
+
+draw a simple retangle 
+
+```tilament
+rect(width:10, height:10) >> draw()
+```
+
+by default it's in the upper left, but you can change the x and y
+
+```tilament
+rect(x:10,y:10,width:10,height:10) >> draw()
+```
+
+use units!
+
+```tilament
+[
+ rect(width:1cm, height: 5cm),
+ rect(width:1cm, height: 1in),
+] >> draw()
+```
+
+change the color use vector of rgb
+
+```tilament
+rect(w,h,fill:'red')
+```
+
+```tilament
+rect(w,h,fill:[0,1,0])
+```
+
+multiple shapes
+
+```tilament
+[
+    rect(),
+    rect(),
+    rect(),
+] >> draw()
+```
+
+by default all on the same one. pack into a row.
+
+```tilament
+[
+    rect(),
+    rect(),
+    rect(),
+] >> pack() >> draw()
+```
+
+
+can you guess what column does? :)
+
+this means you could make your own bar-chart.
+
+```tilament
+range(5) >> map(with: n => rect(width:1, height:n*5)) >> row(valign:"bottom", halign:"center") >> draw() 
+```
+
+Draw takes a shape or a list of shapes. all shapes have fill property which can be RGB triple or a named
+color like 'red'.
+
+## other shapes
+
+circle
+
+```tilament
+circle(x:50,y:50, fill:'blue') >> draw() 
+```
+
+## making art
+
+make some cool artwork with random numbers
+
+rotate a bunch of rects, use translucent colors. how?
+
+```tilament
+make << (n) -> {
+    rect(
+        width:100,
+        height:100,
+        rotate:toRad(n),
+        fill: HSB_to_RGB(n,0.5,0.5),
+        opacity: 10%,
+    )
+}
+range(10) >> map(with:make) >> draw()
+```
+
 # Images
 
-make an empty image then fill it with red.
-
+## new images with code
 
 ```filament
 make_image(width:100,height:100) 
@@ -548,6 +641,7 @@ draw a circle using the implicit equaiton, everything closer to the origin than 
 siilar to how GSL shaders work
 
 
+## modify existing images
 load an image from the web
 
 map it to remove the red channel
@@ -557,22 +651,27 @@ lets drop the red channel
 
 [0, c[1], c[2]]
 
+make an image grayscale with naive code
 
-
-make an image grayscale or sepia
-
-
-
-
-
-
-
+lets make this cleaner using some functions. to get brightness we multiply each part by a value, then add them
+    lerp(sum(c * gs), red, blue)
+make lerp to go between one color and another using the brigtness
+use it to make a sepia. use white and brown, a second using red and blue
+call it 'mix' instead of lerp.
 
 
 
-## Turtle Graphics
+
+
+
+
+
+# Turtle Graphics
+
 
 Based on this tutorial. *link*
+
+## how turtles move
 
 Image a turtle walking around. Starts at the center.
 
@@ -584,7 +683,7 @@ Now make a square by doing it 4 times.
 
 This is annoying, so let’s make a function called square which draws it for us in a loop (use range and map)
 
-### Shapes
+## Shapes
 
 Now make a function to draw a hexagon.
 
@@ -594,7 +693,7 @@ Do it with 100 and see it looks like a circle.
 
 Draw n gon, rotate slightly, draw again.  Repeat 50  times.
 
-### Colors
+## Colors
 
 Now switch color on each time.
 
