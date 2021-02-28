@@ -212,6 +212,17 @@ class FList extends ASTNode {
     _filter(cb) {
         return this.value.filter(cb)
     }
+    _flatten() {
+        let arr = []
+        this.value.forEach(a => {
+            if(a.type === 'list') {
+                arr = arr.concat(a._flatten().value)
+            } else {
+                arr.push(a)
+            }
+        })
+        return new FList(arr)
+    }
 
     toString() {
         return `[${this.value.join(", ")}]`

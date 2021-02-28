@@ -5,7 +5,7 @@ import {createWriteStream} from 'fs'
 import {default as path} from 'path'
 import {make_standard_scope} from '../src/lang.js'
 import {setup} from './common.js'
-import {circle, draw, rect, row} from '../src/shape.js'
+import {circle, draw, hsl_to_rgb, rect, row} from '../src/shape.js'
 
 await setup()
 
@@ -39,7 +39,7 @@ async function code_to_png(code, fname, scope) {
 
 describe("shapes", ()=> {
     let std_scope = make_standard_scope()
-    std_scope.install(rect,draw, row, circle)
+    std_scope.install(rect,draw, row, circle, hsl_to_rgb)
     it("one rect", async () => {
         await code_to_png(
             `
@@ -124,6 +124,31 @@ make << (n) -> {
 range(100) >> map(with:make) >> draw()
 }
         `,'lots_of_rects.png',std_scope)
+    })
+
+    it('yellow using hsl',async() => {
+        await code_to_png(`
+        rect(width:50, height:50, fill:hsl_to_rgb([0.5,1.0,0.5])) >> draw()
+        `,'hsl_yellow.png',std_scope)
+    })
+
+
+    it('random colored rects',async() => {
+        await code_to_png(`{
+GRC << 0.618033988749895        
+make_square << (depth, h) -> {
+    color << [h, 0.5, 0.5]
+    print(color)
+    if depth <= 0 then {
+        rect( width: 40,  height: 40, fill: HSL_TO_RGB(color))
+    } else {
+        [rect( width: 40,  height: 40, fill: HSL_TO_RGB(color)),
+        make_square(depth-1,h+GRC)]
+    }
+}
+make_square(10, random()) >> row(gap:0) >> draw()
+}
+`,'random_colored_rects.png',std_scope)
     })
 })
 

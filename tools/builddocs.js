@@ -58,7 +58,7 @@ async function eval_filament(doc) {
         FuncallExp: (ident, _1, args, _2) => `${ident.hi()} ( ${args.hi().join(", ")} )`,
         FundefExp: (def, ident,_1,args,_3,block ) => `${def.hi()} ${ident.hi()} ( ${args.hi()} ) { ${block.hi()} }`,
         LambdaExp_short: (ident,_,block) => `${ident.hi()} ->${block.hi()}`,
-        LambdaExp_full: (_1,ident,_2,_3,block) => `(${ident.hi()}) ->${block.hi()}`,
+        LambdaExp_full: (_1,ident,_2,_3,block) => `(${ident.hi()}) -> { ${block.hi()} }`,
         DefArg_default: (name,_,a) => argname(name.hi()) + op(":") + a.hi(),
         DefArg_solo:(name) => argname(name.hi()),
         Arg_named: (name, _, a) => argname(name.hi()) + op(":") + a.hi(),
@@ -68,6 +68,7 @@ async function eval_filament(doc) {
         UnExp:(o,a) => o.hi() + a.hi(),
         BoolExp_bool:(a,o,b) => a.hi()+op(o.hi()+b.hi()),
         GroupExp: (_1, exps, _2) => "("+exps.hi()+")",
+        IfExp_full: (_if, test,_then,a,_else,b) => "if" + test.hi() + "then" + a.hi() + "el" + b.hi()
     })
     let scope = make_standard_scope()
 

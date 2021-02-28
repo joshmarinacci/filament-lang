@@ -430,7 +430,7 @@ range(20) >> map(with: n-> random(min:5,max:10))
 ```
 
 Mapping a range is an easy way to create a list, then call random on each one to make the final numbers. 
-However, making random numbers is so common you can just call `random` directly using `count`.
+However, making lists random numbers is so common you can just call `random` directly using `count`.
 
 ```filament
 random(min:5, max:10, count:20)
@@ -448,72 +448,87 @@ pure white.
 
 Let's make 20 randomly colored squares.
 
-```tilament
-make_square << () {
-    rect( width: 20, 
-        height: 20, 
-        fill_color: [random(),random(),random()]
+```filament
+{
+make_square << () -> {
+    rect( width: 100, 
+         height: 100, 
+           fill: [random(),random(),random()]
     )
 }
-range(20) >> map(with:make_square) >> row() >> draw()
+range(20) >> map(with:make_square) >> row(gap:0) >> draw()
+}
 ```
 
-Hmm. Those are pretty ugly. Some colors are too dark. Some are too similar. The problem
-is that we are using the RGB color space. We don't have a way to make the colors more similar easily.
-However, there is another color space we can use called HSV for Hue Saturation and Value.
-This way we can have a single number for the hue (the 'color'), and keep the saturation and value
-fixed. Then we can convert them back to RGB to draw them.
+Hmm. Those are pretty ugly. Some colors are too dark. Some are too similar. The problem is that we
+are using the [RGB color space](https://en.wikipedia.org/wiki/RGB_color_space). We don't have a way
+to make the colors more similar easily. However, there is another color space we can use called
+[HSL](https://en.wikipedia.org/wiki/HSL_and_HSV) for Hue, Saturation, and Lightness. This way we can
+have a single number for the hue (the 'color'), and keep the saturation and lightness fixed. Then we
+can convert them back to RGB to draw them.
 
-Have `HSV_TO_RGB` function. Takes h,  s, v in 0-1 range, returns RGB in 0-1 range.
+For the conversion we have a handy function called `HSL_TO_RGB` function. It takes the hue,
+saturation, and lightness the 0-1 range, returns RGB in then 0-1 range.
 
-```tilament
-make_square << () {
-    color << [random(), 80%, 90%]
-    rect( width: 20, 
-        height: 20, 
-        fill_color: HSV_TO_RGB(color)
+```filament
+{
+make_square << () -> {
+    color << [random(), 0.8, 0.9]
+    rect(  width: 100, 
+          height: 100, 
+            fill: HSL_TO_RGB(color)
     )
 }
-range(20) >> map(with:make_square) >> row() >> draw()
+range(20) >> map(with:make_square) >> row(gap:0) >> draw()
+}
 ```
-In the code above we choose a random hue but keep the saturation at 0.8 (sort of pastel like)
-and the brightness almost at 100%.
 
-Let's try that again with different S and V values
+In the code above we choose a random hue but keep the saturation at 0.8 (sort of pastel like) and
+the lightness almost at 100%.
 
-Generate again but keep s=0.5 and v=0.95
+Let's try that again with different S and L values. Lower the saturation to 0.5, meaning
+it's partly gray, and move lightness to 50% (0.5)
 
-```tilament
-make_square << () {
-    color << [random(), 80%, 90%]
-    rect( width: 20, 
-        height: 20, 
-        fill_color: HSV_TO_RGB(color)
+```filament
+{
+make_square << () -> {
+    color << [random(), 0.5, 0.5]
+    rect( width: 100, 
+         height: 100, 
+           fill: HSL_TO_RGB(color)
     )
 }
-range(20) >> map(with:make_square) >> row() >> draw()
+range(20) >> map(with:make_square) >> row(gap:0) >> draw()
+}
 ```
 
-better.
+These look better. Each color is the same distance from black and white, so we are getting some nice
+hues.  However, it's still pretty random. You'll notice that sometimes the colors clump together.
+Instead we'd like to have them distributed evenly across the hue. 
 
-However, it's still pretty random. You'll notice that sometimes the colors clump together. Instead
-we'd like to have them distributed evenly across the hue. There's a clever trick we can use with the
-golden ratio.Start with a random number then add the GR to it. Each time we wrap it back around at 1.
-This works because the hue is like a circle. When you go far enough to the right edge it wraps back around.
-Thanks to the golden ratio it will keep looping around and always pick a new hue value distant from
-the previous ones.
+There's a clever trick we can use with the golden ratio. Start with a random number then add the
+golden ratio (1.618) to it. Each time we wrap it back around at 1. This works because the hue is
+like a circle. When you go far enough to the right edge it wraps back around. Thanks to the golden
+ratio it will keep looping around and always pick a new hue value distant from the previous ones.
 
-Instead let’s make it evenly distributed across the hue using golden ratio. Start with a random number then add golden_ratio_conjugate for each time through and wrap at 1. Requires a real loop, not a map or reduce. Or needs a global variable the lambda references.
-Show another 20. Looks good.
+Note that I'm using the Golden Ratio Conjugate, which is the reciprical of the Golden Ratio.
+Also note that Filament doesn't have loops yet, so I'm using a recursive version.
 
-```tilament
-h << random()
-make_square << () {
-    h << ((h + GR) mod 1)
-    color << [h, 80%, 90%]
-    rect( width: 20, height: 20, fill_color: HSV_TO_RGB(color) )
+```filament
+{
+GRC << 0.618033988749895        
+make_square << (depth, h) -> {
+    color << [h, 0.5, 0.5]
+    print(color)
+    if depth <= 0 then {
+        rect( width: 100,  height: 100, fill: HSL_TO_RGB(color))
+    } else {
+        [rect( width: 100,  height: 100, fill: HSL_TO_RGB(color)),
+        make_square(depth-1,h+GRC)]
+    }
 }
-range(20) >> map(with:make_square) >> row() >> draw()
+make_square(20, random()) >> row(gap:0) >> draw()
+}
 ```
 
 
