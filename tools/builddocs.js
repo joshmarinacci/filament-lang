@@ -68,7 +68,8 @@ async function eval_filament(doc) {
         UnExp:(o,a) => o.hi() + a.hi(),
         BoolExp_bool:(a,o,b) => a.hi()+op(o.hi()+b.hi()),
         GroupExp: (_1, exps, _2) => "("+exps.hi()+")",
-        IfExp_full: (_if, test,_then,a,_else,b) => "if" + test.hi() + "then" + a.hi() + "el" + b.hi()
+        IfExp_full: (_if, test,_then,a,_else,b) => "if " + test.hi() + " then " + a.hi() + " else " + b.hi(),
+        IndexRef: (exp,a,b,c) => exp.hi() + "[" + b.hi() + "]",
     })
     let scope = make_standard_scope()
 
@@ -158,6 +159,7 @@ function render_result(result) {
     if(result.type === 'list') return render_list(result)
     if(result.type === 'scalar') return RESULT(result.toString())
     if(result.type === 'canvas-result') return ""
+    if(is_image_result(result)) return ""
     console.log("type is",result.type)
     return RESULT('UNKNOWN')
 }

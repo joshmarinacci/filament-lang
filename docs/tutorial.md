@@ -642,7 +642,10 @@ There we go. That looks great!
 
 # Images
 
-## new images with code
+## New Images from Scratch
+
+Filament can create images with colors, just like shapes. The difference
+is that an image is made of pixels and you must specify a width and height.
 
 ```filament
 make_image(width:100,height:100) >> map_image(with:(x,y) -> {
@@ -650,47 +653,138 @@ make_image(width:100,height:100) >> map_image(with:(x,y) -> {
 })
 ```
 
-colors are represented as RGB, in the range 0 to 1.
-red << [1,0,0]
-blue << [0,0,1]
-gray << [0.5,0.5,0.5] or [50%, 50%, 50%]
+The code above creates an image filled with rect. The `map_image` calls
+the function you pass to it for every pixel. This function should return a new
+color for that pixel. Colors are represented as RGB, in the range 0 to 1, just
+like with shapes.
 
+This means `red << [1,0,0]`, `blue << [0,0,1]`, and `gray << [0.5,0.5,0.5]` or `[50%, 50%, 50%]`
 
-fill with random grayscale colors
+Let's make another image where instead of using a single color, we calculate a new random grayscale
+value for each pixel.
 
 ```filament
 make_image(width:100, height: 100) >>
-    mapimage(with:(x,y,color) -> {
+    map_image(with:(x,y,color) -> {
         n << random(min:0,max:1)
         [n,n,n]
     })
 ```
 
-fill with a checkerboard
+So far we have ignored the x and y values, but if we use them we can create
+patterns that vary over space. Let's make stripes where teh color changes
+based on if the x value is even or odd.
 
-draw a circle using the implicit equaiton, everything closer to the origin than 20 is red, else blue
-siilar to how GSL shaders work
+```filament
+{
+red << [1,0,0]
+green << [0,1,0]
+make_image(width:100,height:100) >> map_image(with:(x,y,color) -> {
+   if x mod 2 = 0 then {red} else {green}
+})
+}
+```
+
+We can even draw shapes pixel by pixel using implict equations. For example if let's calculate
+the distance of a pixel from the origin. If it's greater than some threshold then make it
+be red, otherwise green. This is similar to how GPU pixel shaders work.
+
+```filament
+dist << (x,y) -> sqrt(x**2 + y**2)
+make_image(width: 100, height:100) >>
+    map_image(with:(x,y,c) -> {
+    if dist(x,y)<100 then [0,1,0] else [1,0,1]
+    })
+```
 
 
-## modify existing images
-load an image from the web
 
-map it to remove the red channel
+## Loading Images from the Web
 
-map_image gives you a color for each pixel in the image, then you can return a new color, or modify the existing color.
-lets drop the red channel
+We can load an image from the web using the `load_image` function.
+```filament
+load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png')
+```
 
-[0, c[1], c[2]]
+Once we have the image we can modify it. Let's drop the red channel by returning
+a new color that only includes the green and blue values from the original pixels.
 
-make an image grayscale with naive code
+```filament
+load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png') >>
+    mapimage(with:(x,y,c) -> {
+        v1 << 0
+        v2 << (c[1])
+        v3 << (c[2])
+        [v1,v2,v3]
+    })
+```
 
-lets make this cleaner using some functions. to get brightness we multiply each part by a value, then add them
-    lerp(sum(c * gs), red, blue)
-make lerp to go between one color and another using the brigtness
-use it to make a sepia. use white and brown, a second using red and blue
-call it 'mix' instead of lerp.
+We can also make an image grayscale by averaging the colors.
 
 
+```filament
+load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png') >>
+    mapimage(with:(x,y,c) -> {
+        n << sum(c)/3
+        [n,n,n]
+    })
+```
+
+Converting to grayscale by averaging the red green and blue does work, but it doesn't
+loook very good. Taht's because it doesn't acocunt for the fact that the human
+eye is more sensitive to blue than to green or red.  Let's create a few functions
+to make it work better.
+
+first we need brightness base on a more accurate grayscale conversion
+
+```filament
+brightness << (c) -> c[0]*0.299 + c[1]*0.587 + c[2]*0.114
+```
+
+Now let's create a function to mix two colors together using a t value
+that goes from 0 to one. If t is 0 then you get only the first color. If it's 1 then you
+get only the second color. Otherwise you get a mixture of hte two. Sometimes
+this is called a lerp function, short for interpolate.
+
+```filament
+mix  << (t,a,b) -> a*t + b*(1-t)
+```
+
+Now that we can mix two colors, we can use black and white
+for grayscale. But we could also use white and brown for a
+sepia town, or even something crazier like red and blue.
+
+
+```filament
+{
+brightness << (c) -> c[0]*0.299 + c[1]*0.587 + c[2]*0.114
+mix  << (t,a,b) -> a*t + b*(1-t)
+white << [1,1,1]
+brown << [0.5,0.4,0.1]
+sepia << (x,y,color) -> {
+    brightness(color) >> mix(white,brown)
+}
+
+load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png') 
+    >> mapimage(with:sepia)
+}
+```
+
+
+```filament
+{
+brightness << (c) -> c[0]*0.299 + c[1]*0.587 + c[2]*0.114
+mix  << (t,a,b) -> a*t + b*(1-t)
+red << [1,0,0]
+blue << [0,0,1]
+rb << (x,y,color) -> {
+    brightness(color) >> mix(red,blue)
+}
+
+load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png') 
+    >> mapimage(with:rb)
+}
+```
 
 
 
