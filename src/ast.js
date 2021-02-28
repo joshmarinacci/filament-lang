@@ -268,6 +268,17 @@ export class FTable extends ASTNode {
     }
 }
 
+export class FObject extends ASTNode {
+    constructor(obj) {
+        super();
+        this.type = 'object'
+        this.value = obj
+    }
+    async evalFilament() {
+        return this
+    }
+}
+
 class FCall extends ASTNode {
     constructor(name,args) {
         super()

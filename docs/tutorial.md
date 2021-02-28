@@ -524,93 +524,97 @@ There we go. That looks great!
 
 # Making Shapes
 
-## Drawing some Rectangles
+Filament makes it easy to draw shapes. Let's start with some simple squares.
 
-draw a simple retangle 
+## Drawing Squares
 
-```tilament
+
+To create a square call the `rect` function with a width and height, then
+send it into the `draw()` function to show up on the screen.
+
+```filament
 rect(width:10, height:10) >> draw()
 ```
 
-by default it's in the upper left, but you can change the x and y
+By default the shape is the upper left, but you can change the x and y to put it wherever you want.
 
-```tilament
+```filament
 rect(x:10,y:10,width:10,height:10) >> draw()
 ```
 
-use units!
+If you want to draw more than one shape, just put them into a list.
+You can even use units for the size of your shapes. Below are two
+rectangles, one in centimeters and one in inches. If you don't include
+any unit then Filament assumes it is in pixels.
 
-```tilament
+```filament
 [
- rect(width:1cm, height: 5cm),
- rect(width:1cm, height: 1in),
+ rect(x:0, width:1cm, height: 5cm),
+ rect(x:50, width:1in, height: 1in),
 ] >> draw()
 ```
 
-change the color use vector of rgb
+Along with size, you can also set the color of shapes using
+the `fill` argument. You can set it to named colors as strings like
+`"red"`, `"green"`, and `"green"` or use a list of three numbers
+between 0 and 1.  These will be interpreted as RGB values.
 
-```tilament
-rect(w,h,fill:'red')
+so 
+```filament
+rect(width:10cm,height:10cm,fill:'blue')
 ```
 
-```tilament
-rect(w,h,fill:[0,1,0])
+is the same as
+
+```filament
+rect(width:10cm,height:10cm,fill:[0,0,1])
 ```
 
-multiple shapes
+You can draw multiple shapes by putting them
+into a list, but then they might draw on top of each other
+unless you manually set their x,y positions. Since it's 
+common to want to put shapes next to each other, you can
+use the row function to space them out, with an optional
+`gap` parameter
 
-```tilament
+
+```filament
 [
-    rect(),
-    rect(),
-    rect(),
-] >> draw()
+    rect(width:10cm, height:20cm, fill:'red'),
+    rect(width:10cm, height:20cm, fill:'green'),
+    rect(width:10cm, height:20cm, fill:'blue'),
+] >> row(gap:1cm) >> draw()
 ```
 
-by default all on the same one. pack into a row.
+Can you guess what column does? :)
 
-```tilament
-[
-    rect(),
-    rect(),
-    rect(),
-] >> pack() >> draw()
+This means you could make your own bar chart from scratch!
+
+```filament
+range(5) >>
+    map(with: n => rect(width:1cm, height:n*5cm)) >>
+    row(valign:"bottom", halign:"center") >>
+    draw() 
 ```
 
-
-can you guess what column does? :)
-
-this means you could make your own bar-chart.
-
-```tilament
-range(5) >> map(with: n => rect(width:1, height:n*5)) >> row(valign:"bottom", halign:"center") >> draw() 
-```
-
-Draw takes a shape or a list of shapes. all shapes have fill property which can be RGB triple or a named
-color like 'red'.
-
-## other shapes
+## Other Shapes
 
 circle
 
-```tilament
-circle(x:50,y:50, fill:'blue') >> draw() 
+```filament
+circle(x:50,y:50, fill:'aqua') >> draw() 
 ```
 
 ## making art
 
-make some cool artwork with random numbers
+Make some cool artwork with random numbers
 
-rotate a bunch of rects, use translucent colors. how?
-
-```tilament
+```filament
 make << (n) -> {
     rect(
         width:100,
         height:100,
-        rotate:toRad(n),
-        fill: HSB_to_RGB(n,0.5,0.5),
-        opacity: 10%,
+        fill: [n/10,0.5,0.5]
     )
 }
 range(10) >> map(with:make) >> draw()
