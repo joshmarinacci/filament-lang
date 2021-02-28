@@ -544,4 +544,4 @@ export const is_boolean = (a) => a&&a.type === 'boolean'
 export const is_string = (a) => a&&a.type === 'string'
 export const is_list = (b) => b&&b.type === 'list'
 export const is_canvas_result = (b) => b &&b.type === 'canvas-result'
-
+export const is_image_result = (b) => b && b.data && b.width && b.height

@@ -15,7 +15,7 @@
 import path from 'path'
 import {createWriteStream, promises as fs} from 'fs'
 import {Parser, strip_under} from '../src/parser.js'
-import {is_canvas_result} from "../src/ast.js"
+import {is_canvas_result, is_image_result} from "../src/ast.js"
 import {make_standard_scope} from '../src/lang.js'
 import {default as PImage} from "pureimage"
 import {l, mkdir} from './util.js'
@@ -94,15 +94,27 @@ async function generate_canvas_images(doc, basedir, subdir) {
     await mkdir(path.join(basedir,subdir))
     // l("rendering all canvas images in doc",doc)
     return Promise.all(doc
-        .filter(block => block.type === 'CODE' && is_canvas_result(block.result))
+        .filter(block => block.type === 'CODE')
         .map(async(block,i) => {
-            const img = PImage.make(1000,500);
-            await block.result.cb(img)
-            let fname = `output.${i}.png`
-            block.src = path.join(subdir,fname)
-            let imgpath = path.join(basedir,subdir,fname)
-            await PImage.encodePNGToStream(img,createWriteStream(imgpath))
-            l('rendered image',imgpath)
+            if(is_canvas_result(block.result)) {
+                // console.log("is canvas",block.result)
+                const img = PImage.make(1000,500);
+                await block.result.cb(img)
+                let fname = `output.${i}.png`
+                block.src = path.join(subdir,fname)
+                let imgpath = path.join(basedir,subdir,fname)
+                await PImage.encodePNGToStream(img,createWriteStream(imgpath))
+                l('rendered image',imgpath)
+            }
+            // console.log("doing block",block)
+            if(is_image_result(block.result)) {
+                // console.log("is image", block.result)
+                let fname = `output.${i}.png`
+                block.src = path.join(subdir,fname)
+                let imgpath = path.join(basedir,subdir,fname)
+                let img = block.result
+                await PImage.encodePNGToStream(img,createWriteStream(imgpath))
+            }
         })).then(done => {
             console.log("fully done writing images")
         })
