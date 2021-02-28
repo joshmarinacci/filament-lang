@@ -31,6 +31,7 @@ import {FilamentFunctionWithScope, Parser, REQUIRED} from './parser.js'
 import {scalar, Scope} from './ast.js'
 import {plot} from './plot.js'
 import {load_image, make_image, map_image} from './image.js'
+import {circle, draw, rect, row} from './shape.js'
 
 
 
@@ -54,6 +55,7 @@ export function make_standard_scope() {
     scope.install(floor, ceiling)
     scope.install(date_cons, time_cons, today)
     scope.install(dataset, chart, timeline, histogram, plot, stockhistory)
+    scope.install(rect,draw, row, circle)
     scope.set_var('pi', scalar(Math.PI))
 
     scope.install(make_image, map_image, load_image)

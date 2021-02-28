@@ -533,13 +533,13 @@ To create a square call the `rect` function with a width and height, then
 send it into the `draw()` function to show up on the screen.
 
 ```filament
-rect(width:10, height:10) >> draw()
+rect(width:100, height:100) >> draw()
 ```
 
 By default the shape is the upper left, but you can change the x and y to put it wherever you want.
 
 ```filament
-rect(x:10,y:10,width:10,height:10) >> draw()
+rect(x:200,y:100,width:100,height:100) >> draw()
 ```
 
 If you want to draw more than one shape, just put them into a list.
@@ -550,7 +550,7 @@ any unit then Filament assumes it is in pixels.
 ```filament
 [
  rect(x:0, width:1cm, height: 5cm),
- rect(x:50, width:1in, height: 1in),
+ rect(x:50, width:1in, height: 1in)
 ] >> draw()
 ```
 
@@ -560,14 +560,15 @@ the `fill` argument. You can set it to named colors as strings like
 between 0 and 1.  These will be interpreted as RGB values.
 
 so 
+
 ```filament
-rect(width:10cm,height:10cm,fill:'blue')
+rect(width:10cm,height:10cm,fill:'blue') >> draw()
 ```
 
 is the same as
 
 ```filament
-rect(width:10cm,height:10cm,fill:[0,0,1])
+rect(width:10cm,height:10cm,fill:[0,0,1]) >> draw()
 ```
 
 You can draw multiple shapes by putting them
@@ -582,7 +583,7 @@ use the row function to space them out, with an optional
 [
     rect(width:10cm, height:20cm, fill:'red'),
     rect(width:10cm, height:20cm, fill:'green'),
-    rect(width:10cm, height:20cm, fill:'blue'),
+    rect(width:10cm, height:20cm, fill:'blue')
 ] >> row(gap:1cm) >> draw()
 ```
 
@@ -592,9 +593,9 @@ This means you could make your own bar chart from scratch!
 
 ```filament
 range(5) >>
-    map(with: n => rect(width:1cm, height:n*5cm)) >>
+    map(with: n -> rect(width:1cm, height:n*5cm)) >>
     row(valign:"bottom", halign:"center") >>
-    draw() 
+    draw()
 ```
 
 ## Other Shapes
@@ -612,12 +613,14 @@ Make some cool artwork with random numbers
 ```filament
 make << (n) -> {
     rect(
+        x: random()*200,
+        y: random()*200,
         width:100,
         height:100,
-        fill: [n/10,0.5,0.5]
+        fill: [n/100,random(),0]
     )
 }
-range(10) >> map(with:make) >> draw()
+range(100) >> map(with:make) >> draw()
 ```
 
 # Images

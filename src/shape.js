@@ -36,10 +36,10 @@ export const row = new FilamentFunctionWithScope('row',{
     data:REQUIRED,
     gap:scalar(1,'cm')
 }, function(scope,data,gap){
-    console.log("laying out",data)
+    // console.log("laying out",data)
     let x = 0
     return list(data._map(r => {
-        this.log("rect",r)
+        // this.log("rect",r)
         let r2 = new FObject({
             type:r.value.type,
             x:scalar(x),
@@ -70,7 +70,7 @@ export const draw = new FilamentFunctionWithScope('draw',
             ctx.save()
             fill_bg(canvas,ctx,'white')
             ctx.scale(10,10)
-            this.log("drawing data",data)
+            // this.log("drawing data",data)
             if(data.type) {
                 draw_shape(ctx,data)
             }
@@ -95,7 +95,7 @@ function to_px(value) {
 }
 
 function to_color(fill) {
-    console.log("converting color",fill)
+    // console.log("converting color",fill)
     if(fill.type === 'string') return fill.value
     if(fill.type === 'list') {
         if(fill._get_length() === 3) {
@@ -126,7 +126,7 @@ function draw_shape(ctx, data) {
         let y = to_px(data.y)
         let w = to_px(data.width)
         let h = to_px(data.height)
-        console.log("using",x,y,w,h,ctx.fillStyle)
+        // console.log("using",x,y,w,h,ctx.fillStyle)
         ctx.fillRect(x,y,w,h)
         // console.log("filled")
         return
