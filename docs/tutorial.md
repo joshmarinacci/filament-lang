@@ -628,10 +628,9 @@ range(100) >> map(with:make) >> draw()
 ## new images with code
 
 ```filament
-make_image(width:100,height:100) 
-    >> map_image(with:(x,y,c) -> {
-        [1,0,0]
-        })
+make_image(width:100,height:100) >> map_image(with:(x,y) -> {
+    [1,0,0]
+})
 ```
 
 colors are represented as RGB, in the range 0 to 1.
@@ -641,6 +640,14 @@ gray << [0.5,0.5,0.5] or [50%, 50%, 50%]
 
 
 fill with random grayscale colors
+
+```filament
+make_image(width:100, height: 100) >>
+    mapimage(with:(x,y,color) -> {
+        n << random(min:0,max:1)
+        [n,n,n]
+    })
+```
 
 fill with a checkerboard
 
