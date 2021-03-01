@@ -795,33 +795,201 @@ load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png')
 
 Based on this tutorial. *link*
 
-## how turtles move
+Turtle graphics is a different way of generating images than setting pixels or drawing shapes on the 
+cartesian plane. Instead of saying "put a shape here", you have a turtle with a pen which draws the
+shapes for you. I know that sounds confusing, so let's start with some examples.
 
-Image a turtle walking around. Starts at the center.
+## How Turtles Move
 
-Move forward 100. See what it looks like. Should show turtle on screen.
+Image a turtle walking around in an infinite plane. Starts at the center and is pointed north. You can tell turtle to move forward or to turn. to start, let's tell it to move forward by 100 pixels.
 
-Now turn right and move again. See L shape.
+```filament
+turtle_start(0,0,0)
+turtle_pendown()
 
-Now make a square by doing it 4 times.
+turtle_forward(100)
 
-This is annoying, so let’s make a function called square which draws it for us in a loop (use range and map)
+turtle_done()
+```
+
+Now let's tell it to turn right and move forward another hundred.
+
+```filament
+turtle_start(0,0,0)
+turtle_pendown()
+
+turtle_forward(100)
+turtle_right(90)
+turtle_forward(100)
+
+turtle_done()
+```
+
+Now we have an L shape. The turtle is carrying a pen, so every where it moves it draws a line.
+
+Now let's make a square by doing it four times.
+
+```filament
+turtle_start(0,0,0)
+
+turtle_forward(100)
+turtle_right(90)
+turtle_forward(100)
+turtle_right(90)
+turtle_forward(100)
+turtle_right(90)
+turtle_forward(100)
+turtle_right(90)
+
+turtle_done()
+```
+
+Now we have a square. Of course, writing 'right' 'forward' over and over is annoying. Instead let's use a loop to do it four times.
+
+```filament
+turtle_start(0,0,0)
+
+range(4) >> map(with: () -> {
+    turtle_forward(100)
+    turtle_right(90)
+})
+
+turtle_done()
+```
+
+Much better.
 
 ## Shapes
 
-Now make a function to draw a hexagon.
+Now that we know how to make a square, we can clearly see how to draw a hexagon. Loop 6 times
+and turn right by 60 degrees 
 
-Now make an N-gon, pass in sides and size
+```filament
+turtle_start(0,0,0)
 
-Do it with 100 and see it looks like a circle.
+range(6) >> map(with: () -> {
+    turtle_forward(100)
+    turtle_right(60)
+})
 
-Draw n gon, rotate slightly, draw again.  Repeat 50  times.
+turtle_done()
+```
+
+We can start to see a pattern. For any regular polygon with N sides we loop N times and turn
+by 360/N.  Let's make some code to draw any sort of polygon. We can change the value of N
+to draw a different shape. Here it is for an octogon.
+
+```filament
+turtle_start(0,0,0)
+
+ngon << (N,side) -> {
+    range(N) >> map(with: () -> {
+        turtle_forward(side)
+        turtle_right(360/N)
+    })
+}
+ngon(8,60)
+
+turtle_done()
+```
+
+If we change N to 100 and size to 10 it looks like a circle.
+
+```filament
+turtle_start(0,0,0)
+
+ngon << (N,side) -> {
+    range(N) >> map(with: () -> {
+        turtle_forward(side)
+        turtle_right(360/N)
+    })
+}
+
+ngon(100,10)
+turtle_done()
+```
+
+
+
 
 ## Colors
 
-Now switch color on each time.
+What's even cooler than drawing a shape from lines, is drawing a shape over and over. Let's
+go back to drawing a square, but do it over and over with a slight rotation.
 
-Draw a leaf shape, loop to make a flower.
+```filament
+turtle_start(0,0,0)
+
+ngon << (N,side) -> {
+    range(N) >> map(with: () -> {
+        turtle_forward(side)
+        turtle_right(360/N)
+    })
+}
+
+range(50) >> map(with:() -> {
+    ngon(4,100)
+    turtle_right(10)
+})
+
+turtle_done()
+```
+
+Woah!
+
+Now let's switch colors each time with `turtle_pencolor()`
+
+```filament
+turtle_start(0,0,0)
+
+ngon << (N,side) -> {
+    range(N) >> map(with: () -> {
+        turtle_forward(side)
+        turtle_right(360/N)
+    })
+}
+
+range(50) >> map(with:(i) -> {
+    ngon(4,100)
+    turtle_right(10)
+    red << i/50
+    turtle_pencolor([red,0,0])
+})
+
+turtle_done()
+```
+
+Turtle graphics is a really fun way to draw shapes incrementally. What
+we've done is define a small thing, a side, then repeat it to make a shape,
+then repeat *that* to make a more complex shape. 
+
+For our final example let's draw a flower.  How could we do this? Why
+dont' we start with a petal, figure that out, then draw it a bunch of times
+to make the flower. But how do we draw a petal? By breaking it down
+into even smaller pieces.
+
+We learned to draw a curve by doing lots of short lines. Let's do just
+a partial circle.
+
+draw short line
+rotate slightly
+
+we have an arc
+
+
+now flip around and do it again
+
+we have a petal
+
+now let's do that a bunch of times to get a flower
+
+now we have a flower. Most programming is like this. We build big complex
+things out of lots of smaller simpler pieces.
+
+
+
+
+
 
 
 

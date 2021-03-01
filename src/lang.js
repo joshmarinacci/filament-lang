@@ -32,6 +32,15 @@ import {scalar, Scope} from './ast.js'
 import {plot} from './plot.js'
 import {load_image, make_image, map_image} from './image.js'
 import {circle, draw, hsl_to_rgb, rect, row} from './shape.js'
+import {
+    turtle_done,
+    turtle_forward,
+    turtle_left,
+    turtle_pendown,
+    turtle_penup,
+    turtle_right,
+    turtle_start
+} from './turtle.js'
 
 
 
@@ -59,6 +68,8 @@ export function make_standard_scope() {
     scope.set_var('pi', scalar(Math.PI))
 
     scope.install(make_image, map_image, load_image)
+    scope.install(turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_left, turtle_penup, turtle_done)
+
     return scope
 }
 
