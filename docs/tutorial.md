@@ -952,8 +952,8 @@ ngon << (N,side) -> {
 range(50) >> map(with:(i) -> {
     ngon(4,100)
     turtle_right(10)
-    red << i/50
-    turtle_pencolor([red,0,0])
+    t << (i/50)
+    turtle_pencolor([0,1-t,t])
 })
 
 turtle_done()

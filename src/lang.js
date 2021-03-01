@@ -35,7 +35,7 @@ import {circle, draw, hsl_to_rgb, rect, row} from './shape.js'
 import {
     turtle_done,
     turtle_forward,
-    turtle_left,
+    turtle_left, turtle_pencolor,
     turtle_pendown,
     turtle_penup,
     turtle_right,
@@ -68,7 +68,7 @@ export function make_standard_scope() {
     scope.set_var('pi', scalar(Math.PI))
 
     scope.install(make_image, map_image, load_image)
-    scope.install(turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_left, turtle_penup, turtle_done)
+    scope.install(turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_left, turtle_penup, turtle_done, turtle_pencolor)
 
     return scope
 }

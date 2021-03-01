@@ -12,7 +12,7 @@
 
 
 import {FilamentFunctionWithScope, REQUIRED} from './parser.js'
-import {CanvasResult, scalar} from './ast.js'
+import {CanvasResult, list, scalar} from './ast.js'
 
 class TurtleState {
     constructor() {
@@ -41,6 +41,18 @@ export const turtle_start = new FilamentFunctionWithScope('turtlestart',
 function toRad(a) {
     return a/180*Math.PI
 }
+
+function to_color(fill) {
+    if(fill.type === 'string') return fill.value
+    if(fill.type === 'list') {
+        if(fill._get_length() === 3) {
+            let vals = fill.value.map(s => Math.floor(s.value*255)).join(",")
+            return `rgb(${vals})`
+        }
+    }
+    return 'blue'
+}
+
 
 export const turtle_done = new FilamentFunctionWithScope('turtledone',
     {},
@@ -77,6 +89,13 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
                 }
                 if(cmd[0] === 'l') {
                     a -= cmd[1]
+                }
+                if(cmd[0] === 'c') {
+                    ctx.stroke()
+                    ctx.beginPath()
+                    ctx.moveTo(x,y)
+                    let c = to_color(cmd[1])
+                    ctx.strokeStyle = c
                 }
             })
             ctx.stroke()
@@ -125,4 +144,13 @@ export const turtle_left = new FilamentFunctionWithScope('turtleleft',
         state.push_command(['l',a.value])
     }
 )
+
+export const turtle_pencolor = new FilamentFunctionWithScope('turtlepencolor',
+    {
+        color:REQUIRED,
+    },
+    function (scope,color) {
+        let state = scope.lookup('!turtle_state')
+        state.push_command(['c',color])
+    })
 
