@@ -39,12 +39,22 @@ export const row = new FilamentFunctionWithScope('row',{
     data = data._flatten()
     // console.log("laying out",data)
     let x = 0
+    let y = 0
+    let mh = 0
+    let mw = 1000
     return list(data._map(r => {
         // this.log("rect",r)
+        let h = to_px(r.value.height)
+        if(h>mh) mh = h;
+        let w = to_px(r.value.width)
+        if(x+w > mw) {
+            x = 0
+            y = y + mh
+        }
         let r2 = new FObject({
             type:r.value.type,
             x:scalar(x),
-            y:r.value.y,
+            y:scalar(y),
             width:r.value.width,
             height:r.value.height,
             fill:r.value.fill,
@@ -70,7 +80,7 @@ export const draw = new FilamentFunctionWithScope('draw',
             let ctx = canvas.getContext('2d')
             ctx.save()
             fill_bg(canvas,ctx,'white')
-            ctx.scale(10,10)
+            // ctx.scale(10,10)
             // this.log("drawing data",data)
             if(data.type) {
                 draw_shape(ctx,data)

@@ -489,7 +489,7 @@ You can draw multiple shapes by putting them
 into a list, but then they might draw on top of each other
 unless you manually set their x,y positions. Since it's 
 common to want to put shapes next to each other, you can
-use the row function to space them out, with an optional
+use the `row` function to space them out, with an optional
 `gap` parameter
 
 
@@ -517,7 +517,7 @@ range(5) >>
 circle
 
 ```filament
-circle(x:50,y:50, fill:'aqua') >> draw() 
+circle(x:4cm,y:4cm, radius: 2cm, fill:'aqua') >> draw() 
 ```
 
 ## making art
@@ -558,7 +558,7 @@ make_square << () -> {
            fill: [random(),random(),random()]
     )
 }
-range(20) >> map(with:make_square) >> row(gap:0) >> draw()
+range(50) >> map(with:make_square) >> row(gap:0) >> draw()
 }
 ```
 
@@ -581,7 +581,7 @@ make_square << () -> {
             fill: HSL_TO_RGB(color)
     )
 }
-range(20) >> map(with:make_square) >> row(gap:0) >> draw()
+range(50) >> map(with:make_square) >> row(gap:0) >> draw()
 }
 ```
 
@@ -600,7 +600,7 @@ make_square << () -> {
            fill: HSL_TO_RGB(color)
     )
 }
-range(20) >> map(with:make_square) >> row(gap:0) >> draw()
+range(50) >> map(with:make_square) >> row(gap:0) >> draw()
 }
 ```
 
@@ -621,7 +621,6 @@ Also note that Filament doesn't have loops yet, so I'm using a recursive version
 GRC << 0.618033988749895        
 make_square << (depth, h) -> {
     color << [h, 0.5, 0.5]
-    print(color)
     if depth <= 0 then {
         rect( width: 100,  height: 100, fill: HSL_TO_RGB(color))
     } else {
@@ -629,7 +628,7 @@ make_square << (depth, h) -> {
         make_square(depth-1,h+GRC)]
     }
 }
-make_square(20, random()) >> row(gap:0) >> draw()
+make_square(50, random()) >> row(gap:0) >> draw()
 }
 ```
 
@@ -693,7 +692,7 @@ be red, otherwise green. This is similar to how GPU pixel shaders work.
 dist << (x,y) -> sqrt(x**2 + y**2)
 make_image(width: 100, height:100) >>
     map_image(with:(x,y,c) -> {
-    if dist(x,y)<100 then [0,1,0] else [1,0,1]
+    if dist(x,y)<100 then [0,1,0] else [1,0,0]
     })
 ```
 
