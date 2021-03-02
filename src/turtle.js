@@ -68,7 +68,7 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
             ctx.fillRect(0,0,canvas.width,canvas.height)
             let x = 0
             let y = 0
-            let a = 0
+            let a = -90
             ctx.strokeStyle = 'black'
             ctx.beginPath()
             ctx.moveTo(x,y)
@@ -79,7 +79,6 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
                     let ra = toRad(a)
                     let dx = Math.cos(ra)
                     let dy = Math.sin(ra)
-                    // console.log(dx,dy)
                     x+= dx*cmd[1]
                     y+= dy*cmd[1]
                     ctx.lineTo(x,y)
@@ -99,6 +98,21 @@ export const turtle_done = new FilamentFunctionWithScope('turtledone',
                 }
             })
             ctx.stroke()
+
+            // draw turtle
+            ctx.save()
+            ctx.translate(x,y)
+            ctx.rotate(toRad(a-90))
+            ctx.beginPath()
+            ctx.moveTo(0,0)
+            ctx.lineTo(-5,0)
+            ctx.lineTo(0,20)
+            ctx.lineTo(5,0)
+            ctx.lineTo(0,0)
+            // ctx.close()
+            ctx.fillStyle = 'green'
+            ctx.fill()
+            ctx.restore()
 
         })
     }
