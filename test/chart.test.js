@@ -54,7 +54,7 @@ describe("charts", ()=>{
         states << dataset('states')
         first_letter << (state:?) -> take(get_field(state,'name'), 1)
         states << map(states, first_letter)
-        histogram(states)
+        histogram(states, title:'count of states by first letter')
     }
         `,'statenames.png',std_scope)
     })

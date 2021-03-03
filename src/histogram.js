@@ -1,11 +1,12 @@
 import {FilamentFunctionWithScope, REQUIRED} from './parser.js'
-import {CanvasResult, is_scalar, scalar, unpack} from './ast.js'
+import {CanvasResult, is_scalar, scalar, string, unpack} from './ast.js'
 import {Bounds, clear, COLORS, draw_centered_text, max, STYLE} from './graphics.js'
 
 export const histogram = new FilamentFunctionWithScope('histogram',{
     data:REQUIRED,
     bucket:scalar(1),
-}, function(scope,data,bucket) {
+    title:string('count'),
+}, function(scope,data,bucket,title) {
     //count frequency of each item in the list
     //draw a barchart using frequency for height
     //use the key for the name
@@ -33,9 +34,29 @@ export const histogram = new FilamentFunctionWithScope('histogram',{
             draw_centered_text(ctx,STYLE.FONT_SIZE,name,bounds.x+i*w+w/2, bounds.y2-20)
             draw_centered_text(ctx,STYLE.FONT_SIZE,count+"",bounds.x+i*w+w/2, bounds.y2-40)
         })
+
+        let lx = bounds.x+bounds.w/2
+        let ly = bounds.y+STYLE.FONT_SIZE
+
+        draw_centered_text_with_background(ctx,lx,ly,unpack(title),STYLE.FONT_SIZE,STYLE.LEGEND.FILL_COLOR)
         ctx.restore()
     })
 })
+
+function fill_bounds(ctx, tb, FILL_COLOR) {
+    ctx.fillStyle = FILL_COLOR
+    ctx.fillRect(tb.x,tb.y,tb.w,tb.h)
+}
+
+function draw_centered_text_with_background(ctx, lx,ly,title, padding, fill_color) {
+    let tm = ctx.measureText(title)
+    let tb = new Bounds(lx-tm.width/2,ly,tm.width,STYLE.FONT_SIZE)
+    tb = tb.expand(padding)
+    fill_bounds(ctx,tb, fill_color)
+    ctx.fillStyle = STYLE.FONT_COLOR
+    ctx.font = STYLE.FONT
+    ctx.fillText(title,lx-tm.width/2,ly+STYLE.FONT_SIZE)
+}
 
 
 function calc_frequencies(data, bucket) {

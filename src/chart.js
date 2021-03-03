@@ -15,7 +15,7 @@ function draw_legend(c, b, m) {
     let legend =`${m.x_label} vs ${m.y_label}`
     let metrics = c.measureText(legend)
 
-    let xx = (b.w-metrics.width)/2
+    let xx = b.x+(b.w-metrics.width)/2
     let yy = STYLE.FONT_SIZE
     let txt_bounds = new Bounds(xx,yy-STYLE.FONT_SIZE,metrics.width,STYLE.FONT_SIZE)
     txt_bounds = txt_bounds.expand(10)
