@@ -961,12 +961,25 @@ we've done is define a small thing, a side, then repeat it to make a shape,
 then repeat *that* to make a more complex shape. 
 
 For our final example let's draw a flower.  How could we do this? Why
-dont' we start with a petal, figure that out, then draw it a bunch of times
+don't we start with a petal, figure that out, then draw it a bunch of times
 to make the flower. But how do we draw a petal? By breaking it down
 into even smaller pieces.
 
 We learned to draw a curve by doing lots of short lines. Let's do just
 a partial circle.
+
+```filament
+turtle_start(0,0,0)
+arc << () -> {
+    map(range(120), with:(n)->{
+      turtle_forward(2)
+      turtle_right(1)
+    })       
+}
+
+arc()
+turtle_done()
+```
 
 draw short line
 rotate slightly

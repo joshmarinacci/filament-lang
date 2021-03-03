@@ -110,6 +110,34 @@ describe('turtle basics',() => {
         }`,'turtle_polygon.png',turtle_scope)
     })
 
+
+    it('flower', async() => {
+        await code_to_png(`{
+        turtle_start(0,0,0)
+        turtle_pendown()
+        arc << () -> {
+            map(range(120), with:(n)->{
+              turtle_forward(2)
+              turtle_right(1)
+            })       
+        }
+        leaf << () -> {
+            arc()
+            turtle_right(60)
+            arc()
+            turtle_right(60)
+        }
+        
+        range(36) >> map(with: () -> {
+            leaf()
+            turtle_right(10)
+        })
+        
+        turtle_penup()
+        turtle_done()
+        }`,'flower.png',turtle_scope)
+    })
+
     /*
 
     https://www.calormen.com/jslogo/#
