@@ -633,11 +633,8 @@ make_square(50, random()) >> row(gap:0) >> draw()
 ```
 
 
-Show it a few times with different saturations and values.
-
-There we go. That looks great!
-
-
+There we go. That looks great! Why don't you try it yourself and change the
+saturation and lightness values.
 
 # Images
 
