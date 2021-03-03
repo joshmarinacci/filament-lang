@@ -958,7 +958,9 @@ turtle_done()
 
 Turtle graphics is a really fun way to draw shapes incrementally. What
 we've done is define a small thing, a side, then repeat it to make a shape,
-then repeat *that* to make a more complex shape. 
+then repeat *that* to make a more complex shape.
+
+# Complex Shapes
 
 For our final example let's draw a flower.  How could we do this? Why
 don't we start with a petal, figure that out, then draw it a bunch of times
@@ -981,20 +983,65 @@ arc()
 turtle_done()
 ```
 
-draw short line
-rotate slightly
+Perfect. Now we can rotate and do it again
 
-we have an arc
+```filament
+turtle_start(0,0,0)
+
+turtle_pendown()
+
+arc << () -> {
+    map(range(120), with:(n)->{
+      turtle_forward(2)
+      turtle_right(1)
+    })       
+}
 
 
-now flip around and do it again
+leaf << () -> {
+    arc()
+    turtle_right(60)
+    arc()
+    turtle_right(60)
+}
 
-we have a petal
+leaf()
 
-now let's do that a bunch of times to get a flower
+turtle_done()
 
-now we have a flower. Most programming is like this. We build big complex
-things out of lots of smaller simpler pieces.
+```
+
+Now we have a full petal. To get a complete flower we just need to do it a bunch
+of times.
+
+
+```filament
+turtle_start(0,0,0)
+turtle_pendown()
+arc << () -> {
+    map(range(120), with:(n)->{
+      turtle_forward(2)
+      turtle_right(1)
+    })       
+}
+leaf << () -> {
+    arc()
+    turtle_right(60)
+    arc()
+    turtle_right(60)
+}
+
+range(36) >> map(with: () -> {
+    leaf()
+    turtle_right(10)
+})
+
+turtle_penup()
+turtle_done()
+```
+
+Now we have a complete flower. Most programming is like this. We build big complex
+things out of lots of smaller, simpler pieces.
 
 
 
