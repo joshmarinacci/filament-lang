@@ -24,7 +24,7 @@ import {
     tan, time_cons, today
 } from './math.js'
 import {drop, get_field, join, length, map, range, reverse, select, sort, sum, take} from './lists.js'
-import {chart, histogram, timeline} from './chart.js'
+import {chart} from './chart.js'
 import {dataset, stockhistory} from './dataset.js'
 
 import {FilamentFunctionWithScope, Parser, REQUIRED} from './parser.js'
@@ -41,6 +41,8 @@ import {
     turtle_right,
     turtle_start
 } from './turtle.js'
+import {histogram} from './histogram.js'
+import {timeline} from './timeline.js'
 
 
 

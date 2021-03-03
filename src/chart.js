@@ -1,45 +1,14 @@
-import {compareAsc, compareDesc, parse as parseDate, eachYearOfInterval, differenceInYears, format as formatDate} from 'date-fns'
-import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
-import {CanvasResult, is_scalar, is_string, scalar, string, unpack} from './ast.js'
-
-
-const COLORS = ['red','green','blue','yellow','magenta','cyan']
-const STYLE = {
-    FONT_SIZE:20,
-    FONT_COLOR: 'black',
-    X_AXIS: {
-        TICK_LENGTH:10,
-        LINE_WIDTH: 2,
-        LINE_COLOR:'#888888',
-    },
-    Y_AXIS: {
-        TICK_LENGTH:2,
-        LINE_WIDTH: 2,
-        LINE_COLOR:'#888888',
-    },
-    LEGEND: {
-        FILL_COLOR: '#cccccc'
-    }
-}
-STYLE.FONT = `${STYLE.FONT_SIZE}px sans-serif`
-
-class Bounds {
-    constructor(x, y, w, h) {
-        this.x = x
-        this.y = y
-        this.w = w
-        this.h = h
-        this.x2 = this.x + this.w
-        this.y2 = this.y+this.h
-    }
-    inset(n) {
-        return new Bounds(this.x+n,this.y+n,this.w-n*2,this.h-n*2)
-    }
-    expand(n) {
-        return this.inset(-n)
-    }
-
-}
+import {FilamentFunction, REQUIRED} from './parser.js'
+import {CanvasResult, is_string, string, unpack} from './ast.js'
+import {
+    Bounds,
+    clear, COLORS,
+    draw_centered_text,
+    draw_right_aligned_text,
+    max,
+    min,
+    STYLE
+} from './graphics.js'
 
 function draw_legend(c, b, m) {
     c.font = STYLE.FONT
@@ -57,8 +26,6 @@ function draw_legend(c, b, m) {
     c.fillText(legend,xx,yy)
 }
 
-const max = (data) => data.reduce((a,b)=> unpack(a)>unpack(b)?a:b)
-const min = (data) => data.reduce((a,b)=> unpack(a)<unpack(b)?a:b)
 
 function draw_scatter(c, b, m) {
     let default_radius = 10
@@ -200,11 +167,6 @@ export const chart = new FilamentFunction('chart',
     summary:'simple bar and scatter charts'
     })
 
-function clear(ctx,canvas) {
-    ctx.fillStyle = 'white'
-    ctx.fillRect(0,0,canvas.width,canvas.height)
-}
-
 
 function draw_bars(ctx, bounds, m) {
     let bar_inset = 5
@@ -292,117 +254,3 @@ function draw_yaxis(c, b, m) {
 
 }
 
-function draw_centered_text(ctx, font_size, text, x, y) {
-    ctx.fillStyle = STYLE.FONT_COLOR
-    ctx.font = `${font_size}px sans-serif`
-    let measure1 = ctx.measureText(text)
-    let xoff = measure1.width/2
-    ctx.fillText(text,x - xoff, y)
-}
-function draw_right_aligned_text(c, label, x, y) {
-    c.fillStyle = STYLE.FONT_COLOR
-    c.font = STYLE.FONT
-    let measure = c.measureText(label)
-    let lh = STYLE.FONT_SIZE
-    c.fillText(label, x - measure.width, y+lh/2)
-}
-
-function calc_frequencies(data, bucket) {
-    bucket = unpack(bucket)
-    let freqs = {}
-    data._map(datum => {
-        let value = unpack(datum)
-        // console.log("value",value)
-        if(is_scalar(value)) {
-            value = Math.round(value / bucket) * bucket
-        }
-        if(!freqs[value]) freqs[value] = 0
-        freqs[value] += 1
-    })
-    // console.log("bucket is",bucket)
-    // console.log("final frequencies",freqs)
-    return freqs
-}
-
-export const histogram = new FilamentFunctionWithScope('histogram',{
-    data:REQUIRED,
-    bucket:scalar(1),
-}, function(scope,data,bucket) {
-    //count frequency of each item in the list
-    //draw a barchart using frequency for height
-    //use the key for the name
-    return new CanvasResult((canvas)=>{
-        let ctx = canvas.getContext('2d')
-        ctx.save()
-        clear(ctx,canvas)
-        let freqs = calc_frequencies(data,bucket)
-        let entries = Object.entries(freqs)
-        let w = canvas.width / entries.length
-        let max_y = max(entries.map(pair => pair[1]))
-        let hh = canvas.height/max_y
-        entries.forEach((pair,i) => {
-            const [name,count] = pair
-            ctx.fillStyle = COLORS[i%COLORS.length]
-            let x = i*w
-            let y = canvas.height - hh*count
-            ctx.fillRect(x,y,w-5,hh*count)
-            draw_centered_text(ctx,STYLE.FONT_SIZE,name,i*w+w/2, canvas.height-30)
-            draw_centered_text(ctx,STYLE.FONT_SIZE,count+"",i*w+w/2, canvas.height-10)
-        })
-        ctx.restore()
-    })
-})
-
-export const timeline = new FilamentFunction('timeline',
-    {
-        data:REQUIRED,
-        date:REQUIRED,
-        name:REQUIRED,
-    },
-    function(data, date, name) {
-    let get_date = (datum) => datum
-    if(is_string(date)) get_date = (d,i) => {
-        let dt = data._get_field_from(date,d,i)
-        if(is_string(dt)) return parseDate(unpack(dt),'MMMM dd, yyyy', new Date())
-        return dt
-    }
-
-    let date_values = data._map(get_date)
-    date_values.sort((a,b)=>compareAsc(a,b))
-    let min = date_values[0]
-    let max = data._map(get_date)
-    max.sort((a,b)=> compareDesc(a,b))
-    max = max[0]
-    let interval = {
-        start:min,
-        end:max,
-    }
-    return new CanvasResult((canvas)=>{
-        let ctx = canvas.getContext('2d')
-        ctx.save()
-        clear(ctx,canvas)
-        let width = canvas.width
-        let height = canvas.height
-        let pairs = data._map((datum,i) => {
-            return {
-                name:data._get_field_from(name,datum,i),
-                date:get_date(datum,i)
-            }
-        })
-
-        pairs.forEach((datum,i) => {
-            ctx.fillStyle = 'aqua'
-            ctx.fillStyle = 'black'
-            let diff_x = differenceInYears(datum.date,min)
-            let x = diff_x*10
-            let y = 0
-            ctx.fillRect(x,y,2,canvas.height-30)
-            ctx.fillText(datum.name,x+2, (i%20)*10)
-        })
-
-        ctx.fillText(formatDate(min,'yyyy'),0,height-10)
-        ctx.fillText(formatDate(max,'yyyy'),width-20,height-10)
-        ctx.restore()
-    })
-}
-)
