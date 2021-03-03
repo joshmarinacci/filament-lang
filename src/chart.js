@@ -143,6 +143,7 @@ function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
         m.name_axis.values = m.data._map(m.name_axis.get)
         m.name_axis.max = unpack(max(m.name_axis.values))
     }
+    console.log("metrics are",m)
     return m
 }
 
@@ -245,7 +246,7 @@ function draw_xaxis(c, b, m) {
     c.fillStyle = STYLE.FONT_COLOR
     c.font = STYLE.FONT
     m.x_axis.values.forEach((item,i)=>{
-        let label = m.x_axis.get(item,i)
+        let label = unpack(m.x_axis.get(item,i))
         let x = b.x+bar_width*i + bar_width/2
         let y = b.y2+STYLE.FONT_SIZE
         draw_centered_text(c,STYLE.FONT_SIZE,label,x,y)

@@ -42,10 +42,10 @@ describe("charts", ()=>{
         await code_to_png(`{
         planets << dataset('planets')
         chart(planets, type:'scatter', 
-                  x:'orbital_radius',
-                  y:'mean_radius',
-                  size:'mean_radius',
-                   name:'name'
+                          x:'orbital_radius',
+                          y:'mean_radius',
+                       size:'mean_radius',
+                       name:'name'
                   )
                   }`,"planets.png", std_scope)
     })
@@ -53,7 +53,6 @@ describe("charts", ()=>{
         await code_to_png(`{
         states << dataset('states')
         first_letter << (state:?) -> take(get_field(state,'name'), 1)
-        
         states << map(states, first_letter)
         histogram(states)
     }
@@ -69,4 +68,11 @@ histogram(years, bucket:10)
             }`
         ],'statedates_decade.png',std_scope)
     })
+        it("tallest buildings",async () => {
+            await code_to_png(`{
+buildings << dataset('tallest_buildings')
+b2 << take(buildings,5) 
+chart(b2, y:'height', x:'name')
+            }`,'buildings.png',std_scope)
+        })
 })
