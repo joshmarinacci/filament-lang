@@ -218,8 +218,6 @@ function draw_xaxis(c, b, m) {
     c.stroke()
 
     // ticks between each section, below the line
-    c.lineWidth = STYLE.X_AXIS.LINE_WIDTH
-    c.strokeStyle = STYLE.X_AXIS.LINE_COLOR
     c.beginPath()
     for(let i=0; i<=m.count; i++) {
         c.moveTo(b.x+i*bar_width, b.y2)
@@ -228,14 +226,13 @@ function draw_xaxis(c, b, m) {
     c.stroke()
 
     // labels for each bar below the line
-    m.data._forEach((datu,i)=>{
-        let label = m.get_x(datu,i)
-        c.fillStyle = STYLE.FONT_COLOR
-        c.font = STYLE.FONT
-        let xoff = 0
-        let measure = c.measureText(label)
-        xoff += measure.width/2
-        c.fillText(label,b.x+bar_width*i + xoff, b.y2+STYLE.FONT_SIZE)
+    c.fillStyle = STYLE.FONT_COLOR
+    c.font = STYLE.FONT
+    m.data._forEach((item,i)=>{
+        let label = m.get_x(item,i)
+        let x = b.x+bar_width*i + bar_width/2
+        let y = b.y2+STYLE.FONT_SIZE
+        draw_centered_text(c,STYLE.FONT_SIZE,label,x,y)
     })
 }
 
@@ -293,12 +290,12 @@ function draw_yaxis(c, b, m) {
 
 }
 
-function draw_centered_text(ctx, font_size, name, x, y) {
+function draw_centered_text(ctx, font_size, text, x, y) {
     ctx.fillStyle = 'black'
     ctx.font = `${font_size}px sans-serif`
-    let measure1 = ctx.measureText(name)
-    let xoff1 = measure1.width/2
-    ctx.fillText(name,x - xoff1, y)
+    let measure1 = ctx.measureText(text)
+    let xoff = measure1.width/2
+    ctx.fillText(text,x - xoff, y)
 }
 
 function calc_frequencies(data, bucket) {
