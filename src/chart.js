@@ -2,6 +2,10 @@ import {compareAsc, compareDesc, parse as parseDate, eachYearOfInterval, differe
 import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {CanvasResult, is_scalar, is_string, scalar, string, unpack} from './ast.js'
 
+
+const STYLE = {
+    FONT_SIZE:20
+}
 class Bounds {
     constructor(x, y, w, h) {
         this.x = x
@@ -45,7 +49,6 @@ function fill_bounds(ctx, b, red) {
 }
 
 function draw_scatter(ctx, bounds, data, x, y, size, name) {
-    let font_size = 20
     let default_radius = 10
 
     let x_values = data._map((d,i) => data._get_field_from(x,d,i))
@@ -83,7 +86,7 @@ function draw_scatter(ctx, bounds, data, x, y, size, name) {
         if(name) {
             let vn = n_values[i]
             ctx.fillStyle = 'black'
-            ctx.font = `${font_size}px sans-serif`
+            ctx.font = `${STYLE.FONT_SIZE}px sans-serif`
             let w = ctx.measureText(vn + "").width
             ctx.fillText(vn + "", vx - w / 2, vy)
         }
@@ -127,6 +130,8 @@ export const chart = new FilamentFunction('chart',
         if(type.value === 'bar') {
             // 20px padding on all sides
             bounds = bounds.inset(20)
+            draw_xaxis(ctx,bounds,data,x_label)
+            draw_yaxis(ctx,bounds,data,y_label,y)
             draw_bars(ctx,bounds,data,x_label,y)
             draw_legend(ctx,bounds,data,x_label,y_label)
         }
@@ -158,35 +163,19 @@ function draw_border(ctx, canvas) {
 
 const COLORS = ['red','green','blue','yellow','magenta','cyan']
 
+
 function draw_bars(ctx, bounds, data, x_label, y) {
 
     let bar_gap = 10
-    let font_size = 20
     const bar_width = bounds.w/data._get_length()
-    let get_y = (datum) => datum
-    if(typeof y === 'function') get_y = y
-    if(is_string(y)) get_y = (d,i) => data._get_field_from(y,d,i)
-
+    let get_y = calc_y_accessor(data,y)
     let values = data._map(get_y)
     let max_val = max(values)
 
-    // ctx.fillStyle = 'darkgray'
-    // ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h)
 
-    data._forEach((datu,i)=>{
-        let label = i+""
-        if(x_label !== 'index') label = datu[x_label]
-        ctx.fillStyle = 'black'
-        ctx.font = `${font_size}px sans-serif`
-        let xoff = (bar_width-bar_gap)/2
-        let measure = ctx.measureText(label)
-        xoff -= measure.width/2
-        ctx.fillText(label,bounds.x+bar_width*i + xoff, bounds.y2)
-        // ctx.fillRect(bounds.x+bar_width*i+xoff, bounds.y2-20,measure.width,5)
-    })
     // make the bottom 30px shorter
-    bounds = new Bounds(bounds.x,bounds.y,bounds.w,bounds.h-font_size)
-
+    // bounds = new Bounds(bounds.x,bounds.y,bounds.w,bounds.h-STYLE.FONT_SIZE)
+    //draw the bars
     let scale = (bounds.h)/max_val
     data._forEach((datu,i)=>{
         let value = get_y(datu,i)
@@ -197,6 +186,107 @@ function draw_bars(ctx, bounds, data, x_label, y) {
             bar_width-bar_gap,
             value*scale)
     })
+}
+
+function draw_xaxis(c, b, data, x_label) {
+    // axis line
+    c.lineWidth = 2
+    c.strokeStyle = 'black'
+    c.beginPath()
+    c.moveTo(b.x,b.y2)
+    c.lineTo(b.x2,b.y2)
+    c.stroke()
+
+    // ticks between each section, below the line
+    c.lineWidth = 2
+    c.strokeStyle = 'black'
+    c.beginPath()
+    let count = data._get_length()
+    let size = b.w/count
+    for(let i=0; i<=count; i++) {
+        c.moveTo(b.x+i*size, b.y2)
+        c.lineTo(b.x+i*size, b.y2 + 10)
+    }
+    c.stroke()
+
+    let get_x = (datu,i) => {
+        if(x_label !== 'index') return datu[x_label]
+        return i+""
+    }
+    // labels for each bar below the line
+    const bar_width = b.w/data._get_length()
+    data._forEach((datu,i)=>{
+        let label = get_x(datu,i)
+        // let label = i+""
+        // if(x_label !== 'index') label = datu[x_label]
+        c.fillStyle = 'black'
+        c.font = `${STYLE.FONT_SIZE}px sans-serif`
+        // let xoff = (bar_width-bar_gap)/2
+        let xoff = 0
+        let measure = c.measureText(label)
+        xoff += measure.width/2
+        c.fillText(label,b.x+bar_width*i + xoff, b.y2+STYLE.FONT_SIZE)
+    })
+}
+
+function calc_y_accessor(data, y) {
+    let get_y = (datum) => datum
+    if(typeof y === 'function') get_y = y
+    if(is_string(y)) get_y = (d,i) => data._get_field_from(y,d,i)
+    return get_y
+}
+
+function draw_right_aligned_text(c, label, x, y) {
+    let measure = c.measureText(label)
+    let lh = STYLE.FONT_SIZE
+    c.fillText(label, x - measure.width, y+lh/2)
+}
+
+function draw_yaxis(c, b, data, y_label,y) {
+    //y axis line
+    c.lineWidth = 2
+    c.strokeStyle = 'black'
+
+    //y axis line
+    c.beginPath()
+    c.moveTo(b.x,b.y)
+    c.lineTo(b.x,b.y2)
+    c.stroke()
+
+
+    //get the accessor
+    let get_y = calc_y_accessor(data,y)
+    let values = data._map(get_y)
+    //get max value
+    let max_val = max(values)
+    //get min value
+    let min_val = scalar(0)
+    //calculate the correct top and bottom values
+    let ticks = unpack(max_val) - unpack(min_val)
+    let tick_gap = b.h/ticks
+
+
+    //draw background lines
+    c.lineWidth = 2
+    c.strokeStyle = 'black'
+    c.beginPath()
+    //light h lines across each tick
+    for(let i=0; i<ticks; i++) {
+        c.moveTo(b.x,b.y+i*tick_gap)
+        c.lineTo(b.x2,b.y+i*tick_gap)
+    }
+    c.stroke()
+
+
+    //draw tick labels
+    c.fillStyle = 'black'
+    c.font = `${STYLE.FONT_SIZE}px sans-serif`
+    for(let i=0; i<ticks; i++) {
+        let v = (ticks-i)
+        let label = v+""
+        draw_right_aligned_text(c,label,b.x,b.y+i*tick_gap)
+    }
+
 }
 
 function draw_centered_text(ctx, font_size, name, x, y) {
@@ -232,7 +322,6 @@ export const histogram = new FilamentFunctionWithScope('histogram',{
     //draw a barchart using frequency for height
     //use the key for the name
     return new CanvasResult((canvas)=>{
-        let font_size = 20
         let ctx = canvas.getContext('2d')
         ctx.save()
         clear(ctx,canvas)
@@ -247,8 +336,8 @@ export const histogram = new FilamentFunctionWithScope('histogram',{
             let x = i*w
             let y = canvas.height - hh*count
             ctx.fillRect(x,y,w-5,hh*count)
-            draw_centered_text(ctx,font_size,name,i*w+w/2, canvas.height-30)
-            draw_centered_text(ctx,font_size,count+"",i*w+w/2, canvas.height-10)
+            draw_centered_text(ctx,STYLE.FONT_SIZE,name,i*w+w/2, canvas.height-30)
+            draw_centered_text(ctx,STYLE.FONT_SIZE,count+"",i*w+w/2, canvas.height-10)
         })
         ctx.restore()
     })
