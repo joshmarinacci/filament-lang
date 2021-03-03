@@ -36,7 +36,7 @@ describe("charts", ()=>{
         await code_to_png(`chart([1,2,3,1])`,"simple.png", std_scope)
     })
     it("alphabet", async() => {
-        await code_to_png(`chart(dataset('alphabet'), name:'letter', y:'syllables')`,"alphabet.png", std_scope)
+        await code_to_png(`chart(dataset('alphabet'), x:'letter', y:'syllables')`,"alphabet.png", std_scope)
     })
     it("scatter", async() => {
         await code_to_png(`{

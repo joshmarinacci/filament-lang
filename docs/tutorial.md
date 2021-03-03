@@ -363,6 +363,14 @@ planets << dataset('planets')
 chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius')
 ```
 
+Now lets make the size of the circle represent the size of the planet and show the names
+
+```filament
+planets << dataset('planets')
+chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius', size:'mean_radius', name:'name')
+```
+
+
 Here's a fun one. Let's see which letters have one syllable vs two.
 
 ```ilament
@@ -376,7 +384,7 @@ Let's check out the relative heights of the tallest buildings in the world:
 ```filament
 buildings << dataset('tallest_buildings')
 b2 << take(buildings,5) 
-chart(b2, y:'height', x_label:'name')
+chart(b2, y:'height', x:'name')
 ```
 
 
