@@ -58,58 +58,35 @@ function draw_legend(c, b, m) {
 }
 
 const max = (data) => data.reduce((a,b)=> unpack(a)>unpack(b)?a:b)
+const min = (data) => data.reduce((a,b)=> unpack(a)<unpack(b)?a:b)
 
-
-function fill_bounds(ctx, b, red) {
-    ctx.fillStyle = red
-    ctx.fillRect(b.x,b.y,b.w,b.h)
-}
-
-function draw_scatter(c, b, data, x, y, size, name) {
+function draw_scatter(c, b, m) {
     let default_radius = 10
-
-    let x_values = data._map((d,i) => data._get_field_from(x,d,i))
-    let max_x = max(x_values)
-    let x_scale = b.w/max_x
-
-    let y_values = data._map((d,i) => data._get_field_from(y,d,i))
-    let max_y = max(y_values)
-    let y_scale = b.h/max_y
-
-    let s_values = null
+    let x_scale = b.w/m.x_axis.max
+    let y_scale = b.h/m.y_axis.max
     let max_s = default_radius
-    if(size) {
-        s_values = data._map((d,i) => data._get_field_from(size,d,i).value)
-        max_s = max(s_values)
-    }
+    if(m.size) max_s = m.size_axis.max
     let s_scale = 100/max_s
 
-    let n_values = null
-    if(name) {
-        n_values = data._map((d, i) => data._get_field_from(name, d, i))
-    }
-
-    data._forEach((datum,i) => {
-        let vx = x_values[i] * x_scale + b.x
-        let vy = b.h - (y_values[i] * y_scale) + b.y
+    m.data._forEach((datum,i) => {
+        let vx = m.x_axis.values[i] * x_scale + b.x
+        let vy = b.h - (m.y_axis.values[i] * y_scale) + b.y
         let vs = default_radius
-        if(size) vs = s_values[i] * s_scale
+        if(m.size) vs = m.size_axis.values[i] * s_scale
         c.fillStyle = '#ccffcc'
         c.beginPath()
         c.arc(vx, vy, vs, 0, Math.PI*2)
         c.fill()
         c.strokeStyle = 'black'
         c.stroke()
-        if(name) {
-            let vn = n_values[i]
-            c.fillStyle = 'black'
-            c.font = `${STYLE.FONT_SIZE}px sans-serif`
-            let w = c.measureText(vn + "").width
-            c.fillText(vn + "", vx - w / 2, vy)
+        if(m.name) {
+            let vn = unpack(m.name_axis.values[i])
+            draw_centered_text(c,STYLE.FONT_SIZE, vn+"", vx, vy)
         }
     })
 
-    c.strokeStyle = 'black'
+    c.strokeStyle = STYLE.X_AXIS.LINE_COLOR
+    c.lineWidth = STYLE.X_AXIS.LINE_WIDTH
     c.beginPath()
     c.moveTo(b.x,b.y)
     c.lineTo(b.x,b.y2)
@@ -117,7 +94,8 @@ function draw_scatter(c, b, data, x, y, size, name) {
     c.stroke()
 }
 
-function calc_data_metrics(data, x, x_label, y, y_label) {
+function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
+    if(!x) x = 'index'
     let m = {
         data:data,
         x:x,
@@ -125,12 +103,46 @@ function calc_data_metrics(data, x, x_label, y, y_label) {
         y:y,
         y_label:y_label,
         count:data._get_length(),
-        get_x:calc_x_accessor(data,x_label),
-        get_y:calc_y_accessor(data,y),
+        size: size,
+        name:name,
     }
-    m.values = m.data._map(m.get_y)
-    m.max = unpack(max(m.values))
-    m.min = unpack(scalar(0))
+    if(x) {
+        m.x_axis = {
+            get: (d, i) => {
+                if (m.x === 'index') return i + ""
+                return m.data._get_field_from(m.x, d, i)
+            },
+        }
+        m.x_axis.values = m.data._map(m.x_axis.get)
+        m.x_axis.max = unpack(max(m.x_axis.values))
+        m.x_axis.min = unpack(min(m.x_axis.values))
+    }
+
+    m.y_axis = {
+        get:(d,i)=>{
+            if(typeof m.y === 'function') return m.y(d,i)
+            if(is_string(m.y)) return m.data._get_field_from(m.y,d,i)
+            return d
+        },
+    }
+    m.y_axis.values = m.data._map(m.y_axis.get)
+    m.y_axis.max = unpack(max(m.y_axis.values))
+    m.y_axis.min = unpack(min(m.y_axis.values))
+
+    if(size) {
+        m.size_axis = {
+            get: (d, i) => m.data._get_field_from(m.size, d, i),
+        }
+        m.size_axis.values = m.data._map(m.size_axis.get)
+        m.size_axis.max = unpack(max(m.size_axis.values))
+    }
+    if(name) {
+        m.name_axis = {
+            get: (d, i) => m.data._get_field_from(m.name, d, i),
+        }
+        m.name_axis.values = m.data._map(m.name_axis.get)
+        m.name_axis.max = unpack(max(m.name_axis.values))
+    }
     return m
 }
 
@@ -161,21 +173,25 @@ export const chart = new FilamentFunction('chart',
         if(ylabel) y_label = ylabel.value
 
         let bounds = new Bounds(0,0,canvas.width,canvas.height)
+        let m = calc_data_metrics(data,
+            x,x_label,
+            y,y_label,
+            size,
+            name,
+            )
+        bounds = bounds.inset(STYLE.FONT_SIZE*1.5)
         if(type.value === 'bar') {
-            // 20px padding on all sides
-            let m = calc_data_metrics(data,x,x_label,y,y_label)
-            bounds = bounds.inset(STYLE.FONT_SIZE*1.5)
             draw_xaxis(ctx,bounds,m)
             draw_yaxis(ctx,bounds,m)
             draw_bars(ctx,bounds,m)
             draw_legend(ctx,bounds,m)
         }
         if(type.value === 'scatter') {
-            bounds = bounds.inset(20)
-            //shift down by 50px to make room for the legend
-            bounds = new Bounds(bounds.x,bounds.y+50,bounds.w,bounds.h-50)
-            draw_scatter(ctx,bounds,data,x,y,size, name)
-            draw_legend(ctx,bounds,data,x_label,y_label)
+            bounds = new Bounds(bounds.x+50,bounds.y+50,bounds.w-50,bounds.h-50)
+            draw_scatter(ctx,bounds,m)
+            draw_legend(ctx,bounds,m)
+            draw_xaxis(ctx,bounds,m)
+            draw_yaxis(ctx,bounds,m)
         }
         ctx.restore()
     })
@@ -192,16 +208,16 @@ function clear(ctx,canvas) {
 function draw_bars(ctx, bounds, m) {
     let bar_inset = 5
     const bar_width = bounds.w/m.count
-    let scale = (bounds.h)/m.max
+    let y_scale = (bounds.h)/m.y_axis.max
 
-    m.data._forEach((item,i)=>{
-        let value = m.get_y(item,i)
+    m.y_axis.values.forEach((item,i)=>{
+        let value = unpack(m.y_axis.get(item,i))
         ctx.fillStyle = COLORS[i%COLORS.length]
         ctx.fillRect(
             bounds.x + bar_width * i+bar_inset,
-            bounds.y2-value*scale,
+            bounds.y2-value*y_scale,
             bar_width-bar_inset*2,
-            value*scale)
+            value*y_scale)
     })
 }
 
@@ -228,40 +244,25 @@ function draw_xaxis(c, b, m) {
     // labels for each bar below the line
     c.fillStyle = STYLE.FONT_COLOR
     c.font = STYLE.FONT
-    m.data._forEach((item,i)=>{
-        let label = m.get_x(item,i)
+    m.x_axis.values.forEach((item,i)=>{
+        let label = m.x_axis.get(item,i)
         let x = b.x+bar_width*i + bar_width/2
         let y = b.y2+STYLE.FONT_SIZE
         draw_centered_text(c,STYLE.FONT_SIZE,label,x,y)
     })
 }
 
-function calc_y_accessor(data, y) {
-    let get_y = (datum) => datum
-    if(typeof y === 'function') get_y = y
-    if(is_string(y)) get_y = (d,i) => data._get_field_from(y,d,i)
-    return get_y
-}
-
-function calc_x_accessor(data,x_label) {
-    let get_x = (datu,i) => {
-        if(x_label !== 'index') return datu[x_label]
-        return i+""
-    }
-    return get_x
-}
-
-function draw_right_aligned_text(c, label, x, y) {
-    c.fillStyle = STYLE.FONT_COLOR
-    c.font = STYLE.FONT
-    let measure = c.measureText(label)
-    let lh = STYLE.FONT_SIZE
-    c.fillText(label, x - measure.width, y+lh/2)
-}
-
 function draw_yaxis(c, b, m) {
-    let ticks = m.max - m.min
+    let ticks = m.y_axis.max - 0
+    console.log("max is",m.y_axis.max)
     let tick_gap = b.h/ticks
+    while(tick_gap < 20) {
+        tick_gap = tick_gap*10
+        ticks = ticks / 10
+    }
+    ticks = Math.floor(ticks)
+    tick_gap = Math.floor(tick_gap)
+    console.log("ticks",ticks,b.h,tick_gap)
 
     //y axis line
     c.lineWidth = STYLE.Y_AXIS.LINE_WIDTH
@@ -277,25 +278,32 @@ function draw_yaxis(c, b, m) {
     c.beginPath()
     //light h lines across each tick
     for(let i=0; i<ticks; i++) {
-        c.moveTo(b.x,b.y+i*tick_gap)
-        c.lineTo(b.x2,b.y+i*tick_gap)
+        c.moveTo(b.x,b.y2-i*tick_gap)
+        c.lineTo(b.x2,b.y2-i*tick_gap)
     }
     c.stroke()
 
     //draw tick labels
     for(let i=0; i<ticks; i++) {
         let label = (ticks-i)+""
-        draw_right_aligned_text(c,label,b.x,b.y+i*tick_gap)
+        draw_right_aligned_text(c,label,b.x,b.y2-(ticks-i)*tick_gap)
     }
 
 }
 
 function draw_centered_text(ctx, font_size, text, x, y) {
-    ctx.fillStyle = 'black'
+    ctx.fillStyle = STYLE.FONT_COLOR
     ctx.font = `${font_size}px sans-serif`
     let measure1 = ctx.measureText(text)
     let xoff = measure1.width/2
     ctx.fillText(text,x - xoff, y)
+}
+function draw_right_aligned_text(c, label, x, y) {
+    c.fillStyle = STYLE.FONT_COLOR
+    c.font = STYLE.FONT
+    let measure = c.measureText(label)
+    let lh = STYLE.FONT_SIZE
+    c.fillText(label, x - measure.width, y+lh/2)
 }
 
 function calc_frequencies(data, bucket) {
