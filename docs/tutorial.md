@@ -968,7 +968,7 @@ Turtle graphics is a really fun way to draw shapes incrementally. What
 we've done is define a small thing, a side, then repeat it to make a shape,
 then repeat *that* to make a more complex shape.
 
-# Complex Shapes
+## Complex Shapes
 
 For our final example let's draw a flower.  How could we do this? Why
 don't we start with a petal, figure that out, then draw it a bunch of times

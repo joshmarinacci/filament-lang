@@ -113,6 +113,24 @@ function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
     return m
 }
 
+/**
+ * @name {chart}
+ * @module {charts}
+ * @params {
+ *     data: required,
+ *     x: null,
+ *     xlabel, null,
+ *     y: null,
+ *     ylabel:null,
+ *     type:string('bar')
+ *     size:null,
+ *     name:null,
+ * }
+ * @return CanvasResult
+ * @summary { Draws a chart. Type can be either 'bar' or 'scatter'.
+ *
+ * }
+ */
 export const chart = new FilamentFunction('chart',
     {
         data:REQUIRED,

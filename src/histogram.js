@@ -33,6 +33,19 @@ function draw_y_axis(c,b,max) {
     }
 }
 
+/**
+ * @name {histogram}
+ * @module {charts}
+ * @params {
+ *     data: required,
+ *     bucket:scalar(1),
+ *     title:string('count'),
+ * }
+ * @return CanvasResult
+ * @summary {Draws a histogram by counting repeated values in the data. Counts by buckets,
+ * so a bucket of 10 would give you counts of 0->9, 10->19, 20->29, etc. }
+ */
+
 export const histogram = new FilamentFunctionWithScope('histogram',{
     data:REQUIRED,
     bucket:scalar(1),
