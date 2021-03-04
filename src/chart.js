@@ -122,7 +122,7 @@ function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
  *     xlabel, null,
  *     y: null,
  *     ylabel:null,
- *     type:string('bar')
+ *     type:"bar",
  *     size:null,
  *     name:null,
  * }
