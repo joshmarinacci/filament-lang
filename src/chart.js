@@ -110,7 +110,6 @@ function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
         m.name_axis.values = m.data._map(m.name_axis.get)
         m.name_axis.max = unpack(max(m.name_axis.values))
     }
-    console.log("metrics are",m)
     return m
 }
 
@@ -217,7 +216,6 @@ function draw_xaxis(c, b, m) {
 
 function draw_yaxis(c, b, m) {
     let ticks = m.y_axis.max - 0
-    console.log("max is",m.y_axis.max)
     let tick_gap = b.h/ticks
     while(tick_gap < 20) {
         tick_gap = tick_gap*10
@@ -225,7 +223,6 @@ function draw_yaxis(c, b, m) {
     }
     ticks = Math.floor(ticks)
     tick_gap = Math.floor(tick_gap)
-    console.log("ticks",ticks,b.h,tick_gap)
 
     //y axis line
     c.lineWidth = STYLE.Y_AXIS.LINE_WIDTH

@@ -1,6 +1,37 @@
 import {FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {CanvasResult, is_scalar, scalar, string, unpack} from './ast.js'
-import {Bounds, clear, COLORS, draw_centered_text, max, STYLE} from './graphics.js'
+import {
+    Bounds,
+    clear,
+    COLORS,
+    draw_centered_text,
+    draw_right_aligned_text,
+    max,
+    STYLE
+} from './graphics.js'
+
+function draw_y_axis(c,b,max) {
+    //y axis line
+    c.lineWidth = STYLE.Y_AXIS.LINE_WIDTH
+    c.strokeStyle = STYLE.Y_AXIS.LINE_COLOR
+
+    c.beginPath()
+    c.moveTo(b.x,b.y)
+    c.lineTo(b.x,b.y2)
+    c.stroke()
+
+    let min = 0
+    // console.log("doing ticks from",min,max,'over',b.h,b.y2)
+
+
+    let size = b.h/(max-min)
+    for(let i=min; i<=max; i++) {
+        let y = b.y2 - i*size
+        c.fillStyle = 'black'
+        c.fillRect(b.x-10,y,10,1)
+        draw_right_aligned_text(c,i+"",b.x-2,y+5)
+    }
+}
 
 export const histogram = new FilamentFunctionWithScope('histogram',{
     data:REQUIRED,
@@ -21,13 +52,15 @@ export const histogram = new FilamentFunctionWithScope('histogram',{
 
         let entries = Object.entries(freqs)
         let w = bounds.w / entries.length
+        let gap = 5
         let max_y = max(entries.map(pair => pair[1]))
-        let hh = canvas.height/max_y
+        let hh = bounds.h/max_y
         //draw bars
         entries.forEach((pair,i) => {
             const [name,count] = pair
+            let h = hh*count
             ctx.fillStyle = COLORS[i%COLORS.length]
-            ctx.fillRect(bounds.x+i*w,bounds.y2-hh*count,w-5,hh*count)
+            ctx.fillRect(bounds.x+i*w+gap,bounds.y2-h,w-gap*2,h)
         })
         entries.forEach((pair,i) => {
             const [name,count] = pair
@@ -38,7 +71,11 @@ export const histogram = new FilamentFunctionWithScope('histogram',{
         let lx = bounds.x+bounds.w/2
         let ly = bounds.y+STYLE.FONT_SIZE
 
+        //legend
         draw_centered_text_with_background(ctx,lx,ly,unpack(title),STYLE.FONT_SIZE,STYLE.LEGEND.FILL_COLOR)
+
+        //y axis
+        draw_y_axis(ctx,bounds,max_y)
         ctx.restore()
     })
 })
