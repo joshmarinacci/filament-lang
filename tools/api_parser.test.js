@@ -27,4 +27,20 @@ describe('lists',() => {
         `
         await parse_api_docs(txt)
     })
+
+    it('should parse multiple blocks', async () => {
+        let txt = `
+        some stuff
+/**
+ * @name {fun1}
+*/
+ some stuff after
+ 
+/**
+ * @name {fun2}
+*/
+  
+        `
+        await parse_api_docs(txt)
+    })
 })
