@@ -19,7 +19,7 @@ function setup_parser() {
         parser = {}
         parser.grammar = ohm.grammar(`
 JSDocOuter {
-    blocks = block+
+    blocks = block*
     block = junk bstart line* bend junk
     bstart = "/**"
     bend = space* "*/"        
@@ -39,9 +39,13 @@ JSDocOuter {
             line:(spaces, star, content, nl) => {
                 return content.block().join("")
             },
-            _terminal:function() {
-                return this.sourceString
-            }
+            _terminal:function() { return this.sourceString }
+        })
+        parser.semantics.addOperation('raw',{
+            blocks:(blk) => blk.raw(),
+            block:(junk_a, bstart, content, bend, junk_b) => content.raw().join("\n"),
+            line:(spaces, star, content, nl) => content.raw().join(""),
+            _terminal:function() { return this.sourceString },
         })
 
         let inline_parser = {}
@@ -55,7 +59,7 @@ JSDocInner {
     content = (~")" any)+
     
     StructTag = TagName "{" Struct "}"
-    Struct = ListOf<KV,",">
+    Struct = ListOf<KV,","> ","?
     KV = ident ":" (letter|digit)+
 }
         `)
@@ -69,7 +73,7 @@ JSDocInner {
             NonemptyListOf:(v,_1,_2) => [v.tags()].concat(_2.tags()),
             KV: (key, _, value) => ["keyvalue",key.tags(), value.tags().join("")],
             StructTag:(name, _1, content, _2) => [name.tags(),zip_up(content.tags())],
-            Struct:(d) => d.tags(),
+            Struct:(d,_) => d.tags(),
         })
         parser.inline_parser = inline_parser
     }
@@ -78,12 +82,12 @@ JSDocInner {
 }
 
 export async function parse_api_docs(text) {
-    l("parsing",text)
+    // l("parsing",text)
     let parser = setup_parser()
     let match = parser.grammar.match(text)
     // l('match is',match.succeeded())
     if(!match.succeeded()) {
-        throw new Error("could not parse",match)
+        throw new Error(`could not parse outer ${text.substring(0,1000)}`)
     }
 
     let blocks = parser.semantics(match).block()
@@ -92,15 +96,16 @@ export async function parse_api_docs(text) {
         // l("========")
         // l(blk)
         let mtch = parser.inline_parser.grammar.match(blk)
-        // l('internal matched = ', mtch.succeeded())
+        // l('internal matched = ', mtch)
         if(!mtch.succeeded()) {
-            throw new Error("could not parse",mtch)
+            throw new Error("could not parse inner",mtch)
         }
         let tags = parser.inline_parser.semantics(mtch).tags()
         // console.log("tags",tags)
         return {
             type: 'block',
             tags: tags,
+            raw:parser.semantics(match).raw(),
         }
     })
     return res

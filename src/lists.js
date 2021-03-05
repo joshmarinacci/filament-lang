@@ -6,21 +6,24 @@ import {getYear} from 'date-fns'
 
 // * __range__: generate a list of numbers: `(max), (min,max), (min,max,step)`
 /**
- * @name {range}
- * @module {list}
+ * @name (range)
+ * @module (list)
  * @params {
  *     max:required,
  *     min:0,
  *     step:1,
  * }
- * @summary { creates a new list of numbers, from min to max, counting by step. If min is left out it defaults to 0. If step is
- * left out it defaults to 1. *note* the count will always go up to max, but not include it. Thus `range(5)` returns `[0,1,2,3,4]`
- * @example {
+ * @summary ( creates a new list of numbers, from min to max, counting by step. If min is left out it defaults to 0. If step is
+ * left out it defaults to 1. *note* the count will always go up to max, but not include it. Thus `range 5` returns `[0,1,2,3,4]`
+ * )
+ */
+/*
+ * @example (
  *      List from 0 to 13: `range(14)`
- * }
- * @example {
+ * )
+ * @example (
  *      multiples of 5 up to 100: `range(100, step:5)`
-  * }
+ * )
  */
 export const range = new FilamentFunction('range',
     {
