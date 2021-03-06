@@ -5,27 +5,28 @@
   "browser": "dist/filament.js",
   "main": "src/index.js",
   "scripts": {
-    "build-umd": "mkdir -p dist/ && cp src/filament.ohm dist/ && ./node_modules/.bin/rollup -c",
+    "clean": "rm -rf dist/ output/ node_modules/ src/filament.ohm.js filament-lang-*.tgz",
+    "compile-ohm": "tools/compile_ohm.js",
+    "build-umd": "npm run compile-ohm && mkdir -p dist/ && ./node_modules/.bin/rollup -c",
     "test-umd": "cd test-umd && rm -f dist && ln -s ../dist && ../node_modules/.bin/http-server -c-1 -o",
-    "test": "mocha",
-    "docs": "node tools/alldocs"
+    "test": "npm run compile-ohm && mocha -t 200000",
+    "docs": "npm run compile-ohm && node tools/alldocs"
   },
   "author": "joshua@marinacci.org",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "date-fns": "^2.17.0",
-    "mocha": "^8.2.1",
+    "date-fns": "^2.19.0",
+    "mocha": "^8.3.1",
     "node-fetch": "^2.6.1",
     "ohm-js": "^15.4.1"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.2",
     "@rollup/plugin-commonjs": "^17.1.0",
-    "@rollup/plugin-node-resolve": "^11.1.1",
+    "@rollup/plugin-node-resolve": "^11.2.0",
     "http-server": "^0.12.3",
     "pureimage": "^0.2.7",
-    "rollup": "^2.39.0",
-    "rollup-plugin-string": "^3.0.0"
+    "rollup": "^2.40.0"
   }
 }

@@ -5,8 +5,7 @@ import {boolean, list, scalar} from '../src/ast.js'
 
 
 export async function setup() {
-    let grammar_source = (await fs.readFile(new URL('../src/filament.ohm', import.meta.url))).toString();
-    await setup_parser(grammar_source)
+    await setup_parser()
 }
 export async function test_same(str, ans, scope) {
     let ret = await eval_code(str,scope)

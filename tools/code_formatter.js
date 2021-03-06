@@ -1,18 +1,18 @@
 import {promises as fs} from 'fs'
 import {Parser, strip_under} from '../src/parser.js'
 import {make_standard_scope} from '../src/lang.js'
+import filament_grammar from '../src/filament.ohm.js'
 
 export async function highlight_code() {
 
 }
-export async function eval_filament(doc) {
 
+export async function eval_filament(doc) {
 
     // l("evaluating all filament objects in",doc)
     let codeblocks = doc.filter(block => block.type === 'CODE' && block.language === 'filament')
     // l("codeblocks",codeblocks)
-    let filament_grammer = (await fs.readFile('src/filament.ohm')).toString()
-    let parser = new Parser(null,filament_grammer)
+    let parser = new Parser(null,filament_grammar)
 
     let level = 0
     const indent = () => {

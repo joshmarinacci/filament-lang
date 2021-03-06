@@ -48,7 +48,12 @@
 
     <script>
     (async function() { // async function expression used as an IIFE
-      await Filament.setup_parser()
+      try {
+        await Filament.setup_parser()
+      }
+      catch (e) {
+        console.log('Filament.setup_parser error', e)
+      }
       const canvas = document.getElementById('canvas');
 
       const heartCode = `
