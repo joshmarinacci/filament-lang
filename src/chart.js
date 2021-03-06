@@ -26,7 +26,6 @@ function draw_legend(c, b, m) {
     c.fillText(legend,xx,yy)
 }
 
-
 function draw_scatter(c, b, m) {
     let default_radius = 10
     let x_scale = b.w/m.x_axis.max
@@ -114,22 +113,21 @@ function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
 }
 
 /**
- * @name {chart}
- * @module {charts}
+ * @name (chart)
+ * @module (charts)
  * @params {
  *     data: required,
  *     x: null,
- *     xlabel, null,
+ *     xlabel: null,
  *     y: null,
  *     ylabel:null,
- *     type:"bar",
+ *     type:bar,
  *     size:null,
  *     name:null,
  * }
- * @return CanvasResult
- * @summary { Draws a chart. Type can be either 'bar' or 'scatter'.
+ * @summary ( Draws a chart. Type can be either 'bar' or 'scatter'.
  *
- * }
+ * )
  */
 export const chart = new FilamentFunction('chart',
     {

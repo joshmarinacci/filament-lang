@@ -26,14 +26,14 @@ function unop(a,cb) {
 }
 
 /**
- * @name {add}
- * @module {math}
+ * @name (add)
+ * @module (math)
  * @params {
  *     a:required,
  *     b:required
  * }
- * @summary {Adds two values. Can be two numbers, with or without units. Can also be two lists. Or a number
- * and a list. Follows the rules of all binary operations. }
+ * @summary (Adds two values. Can be two numbers, with or without units. Can also be two lists. Or a number
+ * and a list. Follows the rules of all binary operations. )
  */
 export const add = new FilamentFunction('add',{a:REQUIRED, b:REQUIRED},
     function(a,b) {
@@ -58,14 +58,14 @@ export const add = new FilamentFunction('add',{a:REQUIRED, b:REQUIRED},
     })
 
 /**
- * @name {subtract}
- * @module {math}
+ * @name (subtract)
+ * @module (math)
  * @params {
  *     a:required,
  *     b:required
  * }
- * @summary {subtracts two values. Can be two numbers, with or without units. Can also be two lists. Or a number
- * and a list. Follows the rules of all binary operations. }
+ * @summary (subtracts two values. Can be two numbers, with or without units. Can also be two lists. Or a number
+ * and a list. Follows the rules of all binary operations. )
  */
 export const subtract = new FilamentFunction('subtract',{a:REQUIRED, b:REQUIRED},
     function (a,b) {
@@ -156,14 +156,14 @@ export const power = new FilamentFunction('power',{a:REQUIRED, b:REQUIRED},
     return binop(a,b,(a,b)=>Math.pow(a,b))
 })
 /**
- * @name {sqrt}
- * @module {math}
+ * @name (sqrt)
+ * @module (math)
  * @params {
  *     a:required
  * }
- * @summary {returns the square root of a scalar value. If the value has a unit, the return will be in the same unit.
+ * @summary (returns the square root of a scalar value. If the value has a unit, the return will be in the same unit.
  * Can also work on lists by applying the square root to each value in the list.
- * Follows the rules of all unary operations. }
+ * Follows the rules of all unary operations. )
  */
 
 export const sqrt = new FilamentFunctionWithScope('sqrt',{a:REQUIRED},function(scope,a) {
@@ -212,12 +212,12 @@ export const convertunit = new FilamentFunction('convertunit',
 
 
 /**
- * @name {is_prime}
- * @module {math}
+ * @name (is_prime)
+ * @module (math)
  * @params {
  *     n:required
  * }
- * @summary { Returns true if the number is prime, false otherwise. }
+ * @summary ( Returns true if the number is prime, false otherwise. )
  */
 
 export const is_prime = new FilamentFunction('is_prime', {n:REQUIRED},function(n) {
@@ -258,9 +258,9 @@ export const date_cons = new FilamentFunction('date',{
     throw new Error(`cannot create date from args ${input} , ${year}, ${month},${day},${format}`)
 })
 
-/**
- * @name {time}
- * @module {datetime}
+/*
+ * @name (time)
+ * @module (datetime)
  * @params {
  *     input:null,
  *     hour:0,
@@ -268,14 +268,14 @@ export const date_cons = new FilamentFunction('date',{
  *     second:0,
  *     format:null,
  * }
- * @summary { creates a new time object. You can specify the hour, minute, and second as numbers, or pass a string
- * input and a format to be parsed. [Format description](https://date-fns.org/v2.18.0/docs/format). }
- * @example {
+ * @summary ( creates a new time object. You can specify the hour, minute, and second as numbers, or pass a string
+ * input and a format to be parsed. [Format description](https://date-fns.org/v2.18.0/docs/format). )
+ * @example (
  *      to create 1:43 PM use `time(hour:13, minute:43)`
- * }
- * @example {
+ * )
+ * @example (
  *      to create 1:43 PM using a string, use `time('1:43 PM', format:'h:mm AA')`
- * }
+ * )
  */
 
 
