@@ -58,6 +58,7 @@ blockquote.input {
     border: 1px solid #facaca;
     padding: 1rem;
     background-color: #fff6c7;
+    white-space: pre;
 }
 blockquote.output {
     border: 1px solid #adadfd;
@@ -65,15 +66,14 @@ blockquote.output {
     background-color: #e0fff2;
 }
 
-blockquote .id {
-    color: blue;
-}
-blockquote .operator {
-    color: red;
-}
-blockquote .literal {
-    color: green;
-}
+
+blockquote .id {  color: red; }
+blockquote .op {  color: red; }
+blockquote .num {  color: green; }
+blockquote .str {  color: saddlebrown; }
+blockquote .argname {  color: purple; }
+blockquote .punc {  color: #888; }
+blockquote .funname { color: blue; }
 
 
 img {

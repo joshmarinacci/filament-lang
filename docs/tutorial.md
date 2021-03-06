@@ -367,7 +367,11 @@ Now lets make the size of the circle represent the size of the planet and show t
 
 ```filament
 planets << dataset('planets')
-chart(planets, type: 'scatter', x: 'orbital_radius', y: 'mean_radius', size:'mean_radius', name:'name')
+chart(planets, type: 'scatter', 
+  x: 'orbital_radius', 
+      y: 'mean_radius', 
+        size:'mean_radius', 
+        name:'name')
 ```
 
 

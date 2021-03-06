@@ -20,76 +20,9 @@ import {make_standard_scope} from '../src/lang.js'
 import {default as PImage} from "pureimage"
 import {l, mkdir} from './util.js'
 import {parse_markdown} from './markdown.js'
+import {eval_filament} from './code_formatter.js'
 
 
-async function eval_filament(doc) {
-
-
-    // l("evaluating all filament objects in",doc)
-    let codeblocks = doc.filter(block => block.type === 'CODE' && block.language === 'filament')
-    // l("codeblocks",codeblocks)
-    let filament_grammer = (await fs.readFile('src/filament.ohm')).toString()
-    let parser = new Parser(null,filament_grammer)
-
-    const lit = v => `<span class="literal">${v}</span>`
-    const strlit = v => `<span class="literal">"${v}"</span>`
-    const id = v => `<span class="id">${v}</span>`
-    const op = v => ` <span class='operator'>${v}</span> `
-    const argname = v => `<span class='id'>${v}</span>`
-
-    parser.semantics.addOperation('hi',{
-        _terminal() { return this.sourceString },
-        ident : (i, i2) => id(i.hi() + i2.hi().join("")),
-
-        unit: u => u.sourceString,
-        unitnumber: (v, u) => lit(v.hi() +  lit(u.hi())),
-        number_fract: (a, b, c) => lit(parseFloat(strip_under(a.sourceString + b.sourceString + c.sourceString))),
-        number_whole: a => lit(parseInt(strip_under(a.sourceString))),
-        number_hex: (_, a) => lit(parseInt(strip_under(a.sourceString), 16)),
-        // number: (v) => l,
-        string: (_1, txt, _2) => strlit(txt.sourceString),
-
-        Block: (_1, statements, _2) => ""+statements.hi().join("\n")+"\n\n",
-        PipeOp_left:(next,_,first) => next.hi() + op('&lt;&lt;') + first.hi(),
-        PipeOp_right:(first,_,next) => first.hi() + op("&gt;&gt;") + next.hi(),
-        NonemptyListOf: (a, b, c) => [a.hi()].concat(c.hi()),
-        EmptyListOf:() => [],
-        List: (a, b, c) => `[${b.hi().join(", ")}]`,
-        FuncallExp: (ident, _1, args, _2) => `${ident.hi()} ( ${args.hi().join(", ")} )`,
-        FundefExp: (def, ident,_1,args,_3,block ) => `${def.hi()} ${ident.hi()} ( ${args.hi()} ) { ${block.hi()} }`,
-        LambdaExp_short: (ident,_,block) => `${ident.hi()} ->${block.hi()}`,
-        LambdaExp_full: (_1,ident,_2,_3,block) => `(${ident.hi()}) -> { ${block.hi()} }`,
-        DefArg_default: (name,_,a) => argname(name.hi()) + op(":") + a.hi(),
-        DefArg_solo:(name) => argname(name.hi()),
-        Arg_named: (name, _, a) => argname(name.hi()) + op(":") + a.hi(),
-        AddExp_add: (a, o, b) => a.hi()+op(o.hi())+b.hi(),
-        MulExp_mul: (a, o, b) => a.hi()+op(o.hi())+b.hi(),
-        AsExp_convert: (a, o, unit) => a.hi()+op(o.hi())+unit.hi(),
-        UnExp:(o,a) => o.hi() + a.hi(),
-        BoolExp_bool:(a,o,b) => a.hi()+op(o.hi()+b.hi()),
-        GroupExp: (_1, exps, _2) => "("+exps.hi()+")",
-        IfExp_full: (_if, test,_then,a,_else,b) => "if " + test.hi() + " then " + a.hi() + " else " + b.hi(),
-        IndexRef: (exp,a,b,c) => exp.hi() + "[" + b.hi() + "]",
-    })
-    let scope = make_standard_scope()
-
-    return Promise.all(codeblocks.map(async (code) => {
-        // console.log('processing',code)
-        let match = parser.parse('{'+code.content+'}')
-        // console.log('match',match.failed())
-        if(match.failed()) throw new Error("match failed on: " + code.content);
-        let ast = parser.ast(match)
-        // console.log("ast is",ast)
-        let res = await ast.evalFilament(scope)
-        // console.log("final result is",res,'for code',code)
-        code.result = res
-        code.highlight = parser.semantics(match).hi()
-        // console.log("highlighted:",code.highlight)
-        return res
-    })).then(()=>{
-        // console.log("all done")
-    })
-}
 
 async function generate_canvas_images(doc, basedir, subdir) {
     await mkdir(path.join(basedir,subdir))
