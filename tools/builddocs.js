@@ -23,7 +23,6 @@ import {parse_markdown} from './markdown.js'
 import {eval_filament} from './code_formatter.js'
 
 
-
 async function generate_canvas_images(doc, basedir, subdir) {
     await mkdir(path.join(basedir,subdir))
     // l("rendering all canvas images in doc",doc)

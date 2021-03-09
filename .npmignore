@@ -5,3 +5,4 @@ filament-lang-*.tgz
 /tools
 /test
 /output
+/src/filament.ohm.js

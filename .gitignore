@@ -3,3 +3,4 @@
 /dist
 /test-umd/dist
 filament-lang-*.tgz
+/src/filament.ohm.js

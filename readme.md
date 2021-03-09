@@ -10,9 +10,7 @@ npm install --save filament-lang
 Evaluate code:
 
 ```javascript
-//read the source grammar first
-let grammar_source = (await fs.readFile('node_modules/filament-lang/src/filament.ohm')).toString();
-await setup_parser(grammar_source)
+await setup_parser()
 let ret = await eval_code('42ft')
 console.log("we should have a scalar with 42 and feet for the unit:",ret)
 ```
@@ -146,11 +144,6 @@ npm run build-umd
 This will create a `dist/` directory and generate the following files in that directory:
 
 - `dist/filament.js`
-- `dist/filament.ohm`
-
-*Note that `filament.ohm` is copied verbatim from `src/filament.ohm`, because Filament relies upon
-this file being available at runtime. In some future version, `filament.ohm` may be bundled 
-into `filament.js` for convenience.*
 
 ### Testing the built UMD module
 
