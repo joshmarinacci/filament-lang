@@ -57,6 +57,11 @@ const body = tag('body')
 const head = tag('head')
 const html = tag('html')
 const blockquote = tag('blockquote')
+function stylesheet_link(url) {
+    return `<link rel='stylesheet' href='${url}'>`
+}
+
+
 
 
 const fn_param = ([name,type]) => dt(name)+dd(type)
@@ -77,7 +82,9 @@ const module = ([grp_name,group]) => section(
 export async function generate_api_html(out_file, mods) {
     log("generating", mods, 'to dir', out_file)
     let output = html(
-        head(),
+        head(
+            stylesheet_link("api.css")
+        ),
         body(
             h1("API"),
             entries(mods,module)

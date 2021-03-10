@@ -20,6 +20,7 @@ async function setup() {
     await mkdir(OUTDIR)
     await mkdir(path.join(OUTDIR, 'images'))
     await copy("tools/style.css", path.join(OUTDIR, 'style.css'))
+    await copy("tools/api.css", path.join(OUTDIR, 'api.css'))
 }
 
 async function make_prose_docs() {

@@ -51,7 +51,8 @@ JSDocOuter {
         let inline_parser = {}
         inline_parser.grammar = ohm.grammar(`
 JSDocInner {
-    Tags = (Tag | StructTag)*
+    Tags = (Tag | StructTag | blocktag)*
+    blocktag = "@"ident (~"@end" any)* "@end"
     Tag = TagName "(" content ")"
     TagName = "@"ident
     
@@ -68,6 +69,7 @@ JSDocInner {
             _terminal:function() { return this.sourceString },
             ident:(d) => d.tags().join("").trim(),
             content:(d) => d.tags().join("").trim(),
+            blocktag:(_1, name, content, end) => [name.tags(), content.tags().join("")],
             Tag:(name,_1,content,_2) => [name.tags(),content.tags()],
             TagName:(_,ident) => ident.tags(),
             NonemptyListOf:(v,_1,_2) => [v.tags()].concat(_2.tags()),

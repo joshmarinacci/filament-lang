@@ -66,4 +66,12 @@ describe('lists',() => {
         console.log(docs)
     })
 
+    it('should parse block tags', async () => {
+        let txt = `/**
+        * @example some really cool stuff @end
+        */`
+        let docs = await parse_api_docs(txt)
+        console.log("final docs is",docs[0])
+    })
+
 })
