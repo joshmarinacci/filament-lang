@@ -32,47 +32,49 @@ export function group_modules(apis) {
 
 function log() { console.log(...arguments)}
 
-export async function generate_api_html(out_file, groups) {
-    log("generating", groups, 'to dir', out_file)
-    let html = `
-<html>
-<head></head>
-<body>
-
-${
-        Object.entries(groups).map(([grp_name,group]) => {
-            return `<section>
-<h2>${grp_name}</h2>
-
-<ul>
-${group.map(fun => {
-    console.log(fun.params)
-     return `
-<li>
-<h3>${fun.name}</h3>
-<dl>
-${Object.entries(fun.params).map(([name,type]) => {
-    return `<dt>${name}</dt> <dd>${type}</dd>`
-}).join("")}
-<dt>foo</dt>
-<dd>bar</dd>
-</dl>
-<p>${fun.summary}</p>
-</li>`   
-}).join("")}
-</ul>
- 
-</section>
-`
-        }).join("")
+function tag(name) {
+    return function() {
+        return `\n<${name}>${[...arguments].join("")} </${name}>`
     }
+}
+const entries = (obj,fun) => Object.entries(obj).map(fun).join("")
+const map = (arr,fn) => arr.map(fn).join("")
 
-<section>
+const h1 = tag('h1')
+const h2 = tag('h2')
+const h3 = tag('h3')
+const dt = tag('dt')
+const dd = tag('dd')
+const dl = tag('dl')
+const p = tag('p')
+const li = tag('li')
+const ul = tag('ul')
+const section = tag('section')
+const body = tag('body')
+const head = tag('head')
+const html = tag('html')
 
 
-</body>
-</html>
-`
-    log(html)
-    await fs.writeFile(out_file, html)
+const fn_param = ([name,type]) => dt(name)+dd(type)
+const function_api = (fn) => li(
+    h3(fn.name),
+    dl(entries(fn.params,fn_param)),
+    p(fn.summary))
+
+const module = ([grp_name,group]) => section(
+    h2(grp_name),
+    ul(map(group,function_api)))
+
+
+export async function generate_api_html(out_file, mods) {
+    log("generating", mods, 'to dir', out_file)
+    let output = html(
+        head(),
+        body(
+            h1("API"),
+            entries(mods,module)
+        )
+    )
+    log(output)
+    await fs.writeFile(out_file, output)
 }
