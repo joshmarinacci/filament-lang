@@ -33,7 +33,27 @@ function unop(a,cb) {
  *     b:required
  * }
  * @summary (Adds two values. Can be two numbers, with or without units. Can also be two lists. Or a number
- * and a list. Follows the rules of all binary operations. )
+ * and a list. Follows the rules of all binary operations.)
+ *
+ * @example
+ * // use the operator form
+ * 4 + 2 = 6
+ * @end
+ *
+ * @example
+ * // use the function form
+ * add(4,2) = 6
+ * @end
+ *
+ * @example
+ * // number + list
+ * 4 + [2,3,4]  = [6,7,8]
+ * @end
+ *
+ * @example
+ * // list + list adds pairwise
+ * [1,2,3] + [4,5,6] = [5,7,9]
+ * @end
  */
 export const add = new FilamentFunction('add',{a:REQUIRED, b:REQUIRED},
     function(a,b) {

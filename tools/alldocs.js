@@ -33,10 +33,10 @@ async function make_prose_docs() {
 
 
 const SRC = [
-    // 'src/chart.js',
-    // 'src/math.js',
-    // 'src/lists.js',
-    'tools/test.api.js',
+    'src/chart.js',
+    'src/math.js',
+    'src/lists.js',
+    // 'tools/test.api.js',
 ]
 
 
