@@ -7,12 +7,14 @@ export function group_modules(apis) {
             let name = null
             let params = null
             let summary = null
+            let examples = []
             api.tags.forEach(tag => {
                 // console.log("tag",tag)
                 if (tag[0] === 'module') group_name = tag[1]
                 if (tag[0] === 'name') name = tag[1]
                 if (tag[0] === 'params') params = tag[1]
                 if (tag[0] === 'summary') summary = tag[1]
+                if (tag[0] === 'example') examples.push(tag[1])
             })
             if (!group_name) throw new Error(`API needs to be in a group\n${api.raw}`)
             if (!name) throw new Error(`API needs a name\n${api.raw}`)
@@ -20,7 +22,8 @@ export function group_modules(apis) {
             groups[group_name].push({
                 name,
                 params,
-                summary
+                summary,
+                examples,
             })
             return
         }
@@ -53,13 +56,18 @@ const section = tag('section')
 const body = tag('body')
 const head = tag('head')
 const html = tag('html')
+const blockquote = tag('blockquote')
 
 
 const fn_param = ([name,type]) => dt(name)+dd(type)
+const fn_example = (ex) => blockquote(ex)
+
 const function_api = (fn) => li(
     h3(fn.name),
     dl(entries(fn.params,fn_param)),
-    p(fn.summary))
+    p(fn.summary),
+    map(fn.examples,fn_example)
+    )
 
 const module = ([grp_name,group]) => section(
     h2(grp_name),
