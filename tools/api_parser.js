@@ -37,7 +37,7 @@ JSDocOuter {
                 return content.block().join("")
             },
             line:(spaces, star, content, nl) => {
-                return content.block().join("")
+                return content.block().join("")+"\n"
             },
             _terminal:function() { return this.sourceString }
         })
@@ -93,10 +93,10 @@ export async function parse_api_docs(text) {
     }
 
     let blocks = parser.semantics(match).block()
-    // l("blocks",blocks)
+    l("blocks",blocks)
     let res = blocks.map(blk => {
-        // l("========")
-        // l(blk)
+        l("========")
+        l(blk)
         let mtch = parser.inline_parser.grammar.match(blk)
         // l('internal matched = ', mtch)
         if(!mtch.succeeded()) {

@@ -1,3 +1,5 @@
 blockquote {
     background-color: lightgoldenrodyellow;
+    white-space: pre;
+    font-family: monospace;
 }

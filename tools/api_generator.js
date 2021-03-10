@@ -65,7 +65,10 @@ function stylesheet_link(url) {
 
 
 const fn_param = ([name,type]) => dt(name)+dd(type)
-const fn_example = (ex) => blockquote(ex)
+const fn_example = (ex) => {
+    console.log("ezample is",ex)
+    return blockquote(ex)
+}
 
 const function_api = (fn) => li(
     h3(fn.name),
