@@ -50,6 +50,7 @@ const dt = tag('dt')
 const dd = tag('dd')
 const dl = tag('dl')
 const p = tag('p')
+const b = tag('b')
 const li = tag('li')
 const ul = tag('ul')
 const section = tag('section')
@@ -57,39 +58,48 @@ const body = tag('body')
 const head = tag('head')
 const html = tag('html')
 const blockquote = tag('blockquote')
+const nav = tag('nav')
 function stylesheet_link(url) {
     return `<link rel='stylesheet' href='${url}'>`
+}
+function a(atts, ...content) {
+    let ats = Object.entries(atts).map(([key,value]) => {
+        return `${key}="${value}"`
+    })
+    return `<a ${ats.join(" ")} >${[...content].join("")}</a>`
 }
 
 
 
 
 const fn_param = ([name,type]) => dt(name)+dd(type)
-const fn_example = (ex) => {
-    console.log("ezample is",ex)
-    return blockquote(ex)
-}
+const fn_example = (ex) => blockquote(ex)
 
 const function_api = (fn) => li(
-    h3(fn.name),
+    a({name:fn.name},h3(fn.name)),
     dl(entries(fn.params,fn_param)),
     p(fn.summary),
     map(fn.examples,fn_example)
     )
 
+const function_toc = (fn) => li(
+    a({href:'#'+fn.name},fn.name)
+)
 const module = ([grp_name,group]) => section(
-    h2(grp_name),
+    nav(ul(a({name:grp_name},b(grp_name)),map(group,function_toc))),
     ul(map(group,function_api)))
 
+const toc = ([grp_name,group]) => li(a({href:'#'+grp_name},grp_name))
 
 export async function generate_api_html(out_file, mods) {
     log("generating", mods, 'to dir', out_file)
     let output = html(
         head(
-            stylesheet_link("api.css")
+            stylesheet_link("../tools/api.css")
         ),
         body(
-            h1("API"),
+            h1("Filament API"),
+            nav(ul(b('API'),entries(mods,toc))),
             entries(mods,module)
         )
     )

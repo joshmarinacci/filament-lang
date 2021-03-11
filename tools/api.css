@@ -1,5 +1,70 @@
+body {
+    font-family: sans-serif;
+    padding:0;
+    margin:0;
+}
+p {
+    font-family: serif;
+}
 blockquote {
     background-color: lightgoldenrodyellow;
     white-space: pre;
     font-family: monospace;
 }
+
+section {
+    max-width: 800px;
+    margin: auto;
+}
+section > ul {
+    list-style: none;
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+
+section > ul > li {
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+
+section h2 {
+    font-family: 'Libre Franklin', sans-serif;
+    padding: 1em;
+    padding-top: 4rem;
+}
+
+/* general nav */
+
+nav {
+    border: 1px solid red;
+    position: sticky;
+    top:0;
+    background-color: #facaca;
+    min-height: 5rem;
+}
+nav > ul {
+    padding-left: 0.5rem;
+}
+
+
+section > nav {
+    border: 1px solid red;
+    position: sticky;
+    background-color: lightgoldenrodyellow;
+    top: 3rem;
+}
+nav ul {
+    list-style: none;
+}
+nav ul li {
+    display: inline-block;
+}
+nav ul a {
+    padding: 0.5rem;
+}
+section > ul > li > a > h3 {
+    padding-top: 9rem;
+}
+
+
+
