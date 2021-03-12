@@ -86,6 +86,10 @@ export const add = new FilamentFunction('add',{a:REQUIRED, b:REQUIRED},
  * }
  * @summary (subtracts two values. Can be two numbers, with or without units. Can also be two lists. Or a number
  * and a list. Follows the rules of all binary operations. )
+ * @example
+ * //list - list
+ * [1,2,3] - [4,5,6] = [-3,-3,-3]
+ * @end
  */
 export const subtract = new FilamentFunction('subtract',{a:REQUIRED, b:REQUIRED},
     function (a,b) {
@@ -137,6 +141,37 @@ function is_scalar_without_unit(a) {
     return false
 }
 
+/**
+ * @name (multiply)
+ * @module (math)
+ * @params {
+ *     a:required,
+ *     b:required
+ * }
+ * @summary (Multiplies two values. Can be two numbers, with or without units. Can also be two lists. Or a number
+ * and a list. Follows the rules of all binary operations.)
+ *
+ * @example
+ * // use the operator form
+ * 4 * 2 = 8
+ * @end
+ *
+ * @example
+ * // use the function form
+ * multiply(4,2) = 8
+ * @end
+ *
+ * @example
+ * // number + list
+ * 4 * [2,3,4]  = [8,12,16]
+ * @end
+ *
+ * @example
+ * // list + list adds pairwise
+ * [1,2,3] * [4,5,6] = [4,10,18]
+ * @end
+ */
+
 export const multiply = new FilamentFunction('multiply',{a:REQUIRED, b:REQUIRED},
     function (a,b) {
         //if one has a unit and one does
@@ -154,6 +189,38 @@ export const multiply = new FilamentFunction('multiply',{a:REQUIRED, b:REQUIRED}
 },{
     summary:'multiply numbers and lists'
     })
+
+/**
+ * @name (divide)
+ * @module (math)
+ * @params {
+ *     a:required,
+ *     b:required
+ * }
+ * @summary (Divides two values. Can be two numbers, with or without units. Can also be two lists. Or a number
+ * and a list. Follows the rules of all binary operations.)
+ *
+ * @example
+ * // use the operator form
+ * 4 / 2 = 2
+ * @end
+ *
+ * @example
+ * // use the function form
+ * divide(4,2) = 2
+ * @end
+ *
+ * @example
+ * // number + list
+ * 4 / [2,3,4]  = [2,1.333,1]
+ * @end
+ *
+ * @example
+ * // list + list adds pairwise
+ * [1,2,3] / [4,5,6] = [0.25,0.2,0.5]
+ * @end
+ */
+
 export const divide = new FilamentFunction('divide',{a:REQUIRED, b:REQUIRED},
     function (a,b) {
         if(is_scalar_with_unit(a) && is_scalar_without_unit(b)) {
@@ -168,6 +235,37 @@ export const divide = new FilamentFunction('divide',{a:REQUIRED, b:REQUIRED},
         }
     return binop(a,b,(a,b)=>a/b)
 })
+
+/**
+ * @name (power)
+ * @module (math)
+ * @params {
+ *     a:required,
+ *     b:required
+ * }
+ * @summary (raises a value to a power. Can be two numbers, with or without units. Can also be two lists. Or a number
+ * and a list. Follows the rules of all binary operations.)
+ *
+ * @example
+ * // use the operator form
+ * 4 ** 2 = 16
+ * @end
+ *
+ * @example
+ * // use the function form
+ * power(4,2) = 16
+ * @end
+ *
+ * @example
+ * // number + list
+ * 4 ** [2,3,4]  = [16,64,256]
+ * @end
+ *
+ * @example
+ * // list + list adds pairwise
+ * [1,2,3] ** [4,5,6] = [1, 32, 729]
+ * @end
+ */
 export const power = new FilamentFunction('power',{a:REQUIRED, b:REQUIRED},
     function (a,b) {
         if(is_scalar_with_unit(a) && is_scalar_without_unit(b)) {
@@ -185,11 +283,28 @@ export const power = new FilamentFunction('power',{a:REQUIRED, b:REQUIRED},
  * Can also work on lists by applying the square root to each value in the list.
  * Follows the rules of all unary operations. )
  */
-
 export const sqrt = new FilamentFunctionWithScope('sqrt',{a:REQUIRED},function(scope,a) {
     return unop(a,(a)=>Math.sqrt(a))
 })
+
+/**
+ * @name(negate)
+ * @module(math)
+ * @params{
+ *   a:required
+ * }
+ * @summary(returns the negation of the value)
+ */
 export const negate = new FilamentFunction('negate', {a:REQUIRED}, (a) =>unop(a,a=>-a))
+
+/**
+ * @name(factorial)
+ * @module(math)
+ * @params {
+ *     a:required
+ * }
+ * @summary(returns the factorial of the number)
+ */
 export const factorial = new FilamentFunction('factorial', {a:REQUIRED}, (a) => unop(a,(a)=>{
     if(a === 0 || a === 1) return 1
     let sum = 1
@@ -205,12 +320,69 @@ function make_unop(name, cb) {
     return new FilamentFunction(name,{a:REQUIRED}, (a) => unop(a,cb))
 }
 
+/**
+ * @name(sin)
+ * @module(math)
+ * @params {
+ *     a:required
+ * }
+ * @summary(returns the sine of the angle specified in radians)
+ */
 export const sin = new FilamentFunction('sin', {a:REQUIRED}, (a) =>scalar(Math.sin(a.value)))
+/**
+ * @name(cos)
+ * @module(math)
+ * @params {
+ *     a:required
+ * }
+ * @summary(returns the cosine of the angle specified in radians)
+ */
 export const cos = new FilamentFunction('cos', {a:REQUIRED}, (a) =>scalar(Math.cos(a.value)))
+/**
+ * @name(tan)
+ * @module(math)
+ * @params {
+ *     a:required
+ * }
+ * @summary(returns the tangent of the angle specified in radians)
+ */
 export const tan = new FilamentFunction('tan', {a:REQUIRED}, (a) =>scalar(Math.tan(a.value)))
+/**
+ * @name(abs)
+ * @module(math)
+ * @params {
+ *     a:required
+ * }
+ * @summary(returns the absolute value of the value)
+ */
 export const abs = new FilamentFunction('abs', {a:REQUIRED}, (a) =>scalar(Math.abs(a.value)))
 
+/**
+ * @name(mod)
+ * @module(math)
+ * @params {
+ *     a:required,
+ *     b:required
+ * }
+ * @summary(performs remainder division)
+ * @example
+ *  8 mod 5  = 3
+ * @end
+ */
 export const mod = make_binop('mod',(a,b)=>a%b)
+
+/**
+ * @name(lessthan)
+ * @module(math)
+ * @params {
+ *     a:required,
+ *     b:required
+ * }
+ * @summary(returns true of the first value is less than the other)
+ * @example
+ *  //operator form
+ * @end
+ */
 export const lessthan = make_binop('lessthan',(a,b)=>a<b)
 export const greaterthan = make_binop('greaterthan',(a,b)=>a>b)
 export const equal = make_binop('equal',(a,b)=>a===b)
