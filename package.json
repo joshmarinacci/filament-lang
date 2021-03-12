@@ -7,7 +7,8 @@
   "scripts": {
     "clean": "rm -rf dist/ output/ node_modules/ src/filament.ohm.js filament-lang-*.tgz",
     "compile-ohm": "tools/compile_ohm.js",
-    "build-umd": "npm run compile-ohm && mkdir -p dist/ && ./node_modules/.bin/rollup -c",
+    "compile-api": "node tools/compile_api.js",
+    "build-umd": "npm run compile-ohm && npm run compile-api && mkdir -p dist/ && ./node_modules/.bin/rollup -c",
     "test-umd": "cd test-umd && rm -f dist && ln -s ../dist && ../node_modules/.bin/http-server -c-1 -o",
     "test": "npm run compile-ohm && mocha -t 200000",
     "docs": "npm run compile-ohm && node tools/alldocs"
