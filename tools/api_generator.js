@@ -95,7 +95,7 @@ export async function generate_api_html(out_file, mods) {
     log("generating", mods, 'to dir', out_file)
     let output = html(
         head(
-            stylesheet_link("../tools/api.css")
+            stylesheet_link("api.css")
         ),
         body(
             h1("Filament API"),
