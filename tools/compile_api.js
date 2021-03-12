@@ -29,6 +29,7 @@ async function make_api_docs(files) {
     let json = JSON.stringify(modules, null, "    ")
     // await fs.writeFile('output/api.json', json)
     // await generate_api_html('output/api.generated.html',modules)
+    json = json.replaceAll(/`/g,"'")
     const js = `export default String.raw\`${json}\``;
     await fs.writeFile('src/api.json.js',js)
 }
