@@ -9,7 +9,6 @@ export function group_modules(apis) {
             let summary = null
             let examples = []
             api.tags.forEach(tag => {
-                // console.log("tag",tag)
                 if (tag[0] === 'module') group_name = tag[1]
                 if (tag[0] === 'name') name = tag[1]
                 if (tag[0] === 'params') params = tag[1]
@@ -25,9 +24,8 @@ export function group_modules(apis) {
                 summary,
                 examples,
             })
-            return
+
         }
-        // console.log("api",api)
     })
     return groups
 }
@@ -92,17 +90,23 @@ const module = ([grp_name,group]) => section(
 const toc = ([grp_name,group]) => li(a({href:'#'+grp_name},grp_name))
 
 export async function generate_api_html(out_file, mods) {
-    log("generating", mods, 'to dir', out_file)
+    // log("generating", mods, 'to dir', out_file)
     let output = html(
         head(
             stylesheet_link("api.css")
         ),
         body(
             h1("Filament API"),
+            p(
+                a({href:"tutorial.html"},"tutorial"),
+                a({href:"intro.html"},"intro"),
+                a({href:"spec.html"},"spec"),
+                a({href:"api.generated.html"},"api"),
+            ),
             nav(ul(b('API'),entries(mods,toc))),
             entries(mods,module)
         )
     )
-    log(output)
+    // log(output)
     await fs.writeFile(out_file, output)
 }

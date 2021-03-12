@@ -93,12 +93,8 @@ export async function parse_api_docs(text) {
     }
 
     let blocks = parser.semantics(match).block()
-    l("blocks",blocks)
     let res = blocks.map(blk => {
-        l("========")
-        l(blk)
         let mtch = parser.inline_parser.grammar.match(blk)
-        // l('internal matched = ', mtch)
         if(!mtch.succeeded()) {
             throw new Error("could not parse inner",mtch)
         }

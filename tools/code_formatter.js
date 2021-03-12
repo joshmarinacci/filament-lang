@@ -115,7 +115,6 @@ export async function eval_filament(doc) {
     let scope = make_standard_scope()
 
     return Promise.all(codeblocks.map(async (code) => {
-        console.log('processing',code)
         let match = parser.parse('{'+code.content+'}')
         // console.log('match',match.failed())
         if(match.failed()) throw new Error("match failed on: " + code.content);
@@ -125,8 +124,6 @@ export async function eval_filament(doc) {
         // console.log("final result is",res,'for code',code)
         code.result = res
         code.highlight = parser.semantics(match).hi()
-        console.log("highlighted:")
-        console.log(code.highlight)
         return res
     })).then(()=>{
         // console.log("all done")
