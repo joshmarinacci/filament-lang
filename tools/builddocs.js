@@ -217,7 +217,7 @@ function render_html(toc, doc) {
             <a href="tutorial.html">tutorial</a>
             <a href="intro.html">intro</a>
             <a href="spec.html">spec</a>
-            <a href="api.html">api</a>
+            <a href="api.generated.html">api</a>
             </p>
             ${toc_html}
         </div>
