@@ -44,7 +44,7 @@ export class Parser {
             _terminal() { return this.sourceString },
 
             //primitives
-            ident(i, i2) { return ident(this.sourceString)  },
+            ident(i, i2) { return ident(this.sourceString,this.source) },
             bool: (a) => boolean(parseBoolean(a.sourceString)),
             string: (_1, str, _2) => string(str.sourceString),
 
@@ -100,7 +100,7 @@ export class Parser {
         })
         this.semantics.addOperation('unicode',{
             _terminal() { return this.sourceString },
-            ident(i, i2) { return ident(this.sourceString)  },
+            ident(i, i2) { return ident(this.sourceString, this.source)  },
             number(v) {
                 v = v.ast()
                 return ""+v.value

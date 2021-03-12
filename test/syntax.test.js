@@ -2,9 +2,24 @@ import {all, b, l, s, setup} from "./common.js"
 import {boolean, list, scalar, string} from '../src/ast.js'
 import {make_standard_scope} from '../src/lang.js'
 import {FilamentFunction} from '../src/parser.js'
+import {eval_code} from '../src/index.js'
+import assert from 'assert'
 
 await setup()
 
+describe('error handling',() => {
+    let scope = make_standard_scope()
+    it('missing symbol', async () => {
+        let code = `random(foo)`
+        try {
+            let ret = await eval_code(code, scope)
+            assert.fail("this code should have thrown an error")
+        } catch (e) {
+            console.log("error is",e.name, e.message, e.source)
+            assert.strictEqual(e.source.startIdx,7)
+        }
+    })
+})
 
 describe('syntax',() => {
     let scope = make_standard_scope()

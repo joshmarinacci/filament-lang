@@ -417,19 +417,30 @@ export const pipeline_right = (a,b) => new Pipeline('right',a,b)
 export const pipeline_left = (a,b) => new Pipeline('left',b,a)
 
 class Identifier extends ASTNode {
-    constructor(name) {
+    constructor(name, source) {
         super()
         this.type = 'identifier'
         this.name = strip_under(name.toLowerCase())
+        this._source = source
     }
     toString() {
         return this.name
     }
     async evalFilament(scope) {
-        return scope.lookup(this.name)
+        try {
+            return scope.lookup(this.name)
+        } catch (e) {
+            // console.log("lookup error",e)
+            // console.log("identifier is at",this)
+            let err = new Error()
+            err.name = "my name"
+            err.message = "error at" + JSON.stringify(this._source)
+            err.source = this._source
+            throw err
+        }
     }
 }
-export const ident = (n) => new Identifier(n)
+export const ident = (n,s) => new Identifier(n,s)
 
 class IfExp extends ASTNode {
     constructor(test,then_block,else_block) {
