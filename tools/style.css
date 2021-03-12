@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Libre+Franklin&display=swap');
+/*@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin&display=swap');*/
+/*@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Libre+Franklin&display=swap');*/
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Montserrat&display=swap');
 
 
 body {
@@ -8,8 +9,12 @@ body {
     display: grid;
     grid-template-columns: [left] 1fr [center]2fr [right]1fr [end];
     grid-gap: 1rem;
-    font-family: 'Libre Franklin', sans-serif;
+    /*font-family: 'Libre Franklin', sans-serif;*/
     font-size: 14px;
+    font-family: 'Merriweather', serif;
+}
+h1, h2, h3, h4, h5 {
+    font-family: 'Montserrat', sans-serif;
 }
 main {
     grid-column-start: center;
@@ -24,6 +29,12 @@ nav {
 div.nav-contents {
     position: sticky;
     top: 0px;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+div.nav-contents > ul {
+    list-style: none;
+    padding-left: 0;
 }
 
 
@@ -31,7 +42,7 @@ div.nav-contents {
 
 /* block styles */
 h1, h2, h3 {
-    font-family: 'Libre Baskerville', serif;
+    /*font-family: 'Libre Baskerville', serif;*/
     margin-top: 2rem;
 }
 p {
@@ -42,6 +53,7 @@ blockquote {
     font-family: monospace;
     overflow: auto;
     white-space: pre-line;
+    max-width: 50vw;
 }
 
 
