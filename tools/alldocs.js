@@ -55,6 +55,6 @@ async function make_api_docs(files) {
 }
 
 await setup()
-// await make_prose_docs()
+await make_prose_docs()
 await make_api_docs(SRC)
 
