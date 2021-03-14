@@ -46,6 +46,7 @@ h1, h2, h3 {
     margin-top: 2rem;
 }
 p {
+    line-height: 200%;
 }
 
 blockquote {
@@ -53,6 +54,13 @@ blockquote {
     font-family: monospace;
     overflow: auto;
     white-space: pre-line;
+    max-width: 50vw;
+}
+
+pre.language-filament {
+    border: 1px solid #facaca;
+    padding: 1rem;
+    background-color: #fff6c7;
     max-width: 50vw;
 }
 

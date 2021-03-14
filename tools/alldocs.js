@@ -20,7 +20,10 @@ async function setup() {
     await mkdir(OUTDIR)
     await mkdir(path.join(OUTDIR, 'images'))
     await copy("tools/style.css", path.join(OUTDIR, 'style.css'))
+    await copy("tools/prism.css", path.join(OUTDIR, 'prism.css'))
     await copy("tools/api.css", path.join(OUTDIR, 'api.css'))
+    await copy("tools/prism.js", path.join(OUTDIR, 'prism.js'))
+    await copy("tools/filament-style.js", path.join(OUTDIR, 'filament-style.js'))
 }
 
 async function make_prose_docs() {
