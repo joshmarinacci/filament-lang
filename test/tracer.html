@@ -1,0 +1,125 @@
+<html>
+<head>
+    <style type="text/css">
+        #canvas {
+            width:1200px;
+            height:600px;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas" width="1200" height="600"></canvas>
+<script type="module">
+    const canvas = document.getElementById('canvas')
+    canvas.width = 1200*2
+    canvas.height = 600*2
+
+    const scene = {
+        camera:{
+            point:[0,1.8,10],
+            fov:45,
+            up:[0,3,0],
+        },
+        lights:[
+            {
+                point:[-30,-10,20],
+                color:[1,1,1],
+            }
+        ],
+        objects:[
+            {
+                point: [0, 3.5, -3]
+            },
+            {
+                point: [-4,2,-1],
+            },
+            {
+                point: [-4,3,-1],
+            },
+        ],
+    }
+
+    const fov_radians = (Math.PI * (scene.camera.fov/2))/180
+    console.log("fov radians",fov_radians)
+    const ctx = canvas.getContext('2d')
+    let size = 50
+    let w = canvas.width/size
+    let h = canvas.height/size
+
+    function draw_px(ctx, x, y, c) {
+        let col = `rgb(${c[0]*255},${c[1]*255},${c[2]*255})`;
+        ctx.fillStyle = col
+        ctx.fillRect(x*size,y*size,size*0.9,size*0.9)
+    }
+    function lerp_vec(t, A, B) {
+        return [
+            (1-t)*A[0] + (t)*B[0],
+            (1-t)*A[1] + (t)*B[1],
+            (1-t)*A[2] + (t)*B[2],
+        ]
+    }
+
+    function len(dir) {
+        return Math.sqrt(dir[0]*dir[0]+ dir[1]*dir[1] + dir[2]*dir[2])
+    }
+
+    function norm(dir) {
+        let l = len(dir)
+        return [
+            dir[0]/l,
+            dir[1]/l,
+            dir[2]/l
+        ]
+    }
+
+    function sub_v(A, B) {
+        return [A[0]-B[0],A[1]-B[1],A[2]-B[2]]
+    }
+    function dot_v(A, B) {
+        return A[0]*B[0] + A[1]*B[1] + A[2]*B[2]
+    }
+    function mul_v(A, B) {
+        return [A[0]*B[0],A[1]*B[1],A[2]*B[2]]
+    }
+
+    function mul_s(A, s) {
+        return [A[0]*s, A[1]*s, A[2]*s]
+    }
+    function sub_s(A, s) {
+        return [A[0]-s, A[1]-s, A[2]-s]
+    }
+
+
+    function hit_sphere(cen, rad, ray) {
+        let oc = sub_v(ray.origin,cen)
+        let a = dot_v(ray.dir, ray.dir)
+        let b = 2.0 * dot_v(oc,ray.dir)
+        let c = dot_v(oc,oc) - rad*rad
+        let discr = b*b - 4*a*c
+        return discr > 0
+    }
+
+    function color(ray) {
+        if(hit_sphere([0,0,-1],0.5,ray)) return [1,0,0]
+        let d = norm(ray.dir)
+        let t = (d[1]+1.0)*0.5
+        return lerp_vec(t,[1.0,1.0,1.0],[0.5,0.7,1.0])
+    }
+    for(let x=0; x<w; x++) {
+        for(let y=0; y<h; y++) {
+            let u = x/w
+            let v = y/h
+            let r = {origin:[0,0,0], dir:[-2+u*4,1-v*2,-1]}
+
+            let c = color(r)
+            draw_px(ctx,x,y,c)
+            ctx.fillStyle = 'black'
+            ctx.font = '16px sans-serif';
+            let dir = norm(r.dir)
+            let t = r.dir[1]
+            ctx.fillText(t.toFixed(2),x*size+3,y*size+size*0.5)
+        }
+    }
+</script>
+</body>
+</html>
