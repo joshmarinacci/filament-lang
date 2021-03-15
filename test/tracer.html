@@ -25,10 +25,11 @@
     const YELLOW = [1,1,0]
     const WHITE = [1,1,1]
 
+    const ambient = 0.3
+
 
     const fov = 45
     const fov_radians = (Math.PI * (fov/2))/180
-    console.log("fov radians",fov_radians)
     const ctx = canvas.getContext('2d')
     let size = 20
     let w = canvas.width/size
@@ -100,9 +101,6 @@
         return add_v(A,mul_s(B,t))
     }
 
-    function color(ray, list) {
-    }
-
     let spheres = [
         {
             pos:[-1,0,-1],
@@ -149,6 +147,7 @@
                 c = [0,0,1]
                 // shoot ray to light
                 let hit_point = point_at_t(ray.origin,ray.dir,inter.t)
+                let N = norm(sub_v(hit_point, inter.obj.pos))
                 let ray2 = {
                     origin:hit_point,
                     dir:sub_v(light.pos,hit_point)
@@ -163,18 +162,17 @@
                 }
                 // if reach light
                 if(!inter2) {
-                    //      add ambient color
-                    c = inter.obj.color
-                    //      calc diffuse color
+                    //color = ambient * material + diffuse * material
+                    let diffuse = dot_v(norm(sub_v(light.pos,hit_point)),N)
+                    c = add_v(mul_s(inter.obj.color,ambient),
+                        mul_s(inter.obj.color,diffuse))
                 } else {
-                    //color using the normal
-                    // let N = norm(sub_v(point_at_t(ray.origin, ray.dir, inter.t), [0, 0, -1]))
-                    // c = [(N[0] + 1) * 0.5, (N[1] + 1) * 0.5, (N[2] + 1) * 0.5]
-                    c = MAGENTA
+                    //if in shadow, use just ambient
+                    c = mul_s(inter.obj.color,ambient)
                 }
             } else {
                 // color background
-                c = BLACK
+                c = WHITE
             }
 
             draw_px(ctx,x,y,c)
