@@ -11,38 +11,26 @@
 <canvas id="canvas" width="1200" height="600"></canvas>
 <script type="module">
     const canvas = document.getElementById('canvas')
+    //do 2x dpi
     canvas.width = 1200*2
     canvas.height = 600*2
 
-    const scene = {
-        camera:{
-            point:[0,1.8,10],
-            fov:45,
-            up:[0,3,0],
-        },
-        lights:[
-            {
-                point:[-30,-10,20],
-                color:[1,1,1],
-            }
-        ],
-        objects:[
-            {
-                point: [0, 3.5, -3]
-            },
-            {
-                point: [-4,2,-1],
-            },
-            {
-                point: [-4,3,-1],
-            },
-        ],
-    }
 
-    const fov_radians = (Math.PI * (scene.camera.fov/2))/180
+    //color constants
+    const RED = [1, 0, 0]
+    const GREEN = [0, 1, 0]
+    const BLUE = [0,0,1]
+    const BLACK = [0,0,0]
+    const MAGENTA = [1,0,1]
+    const YELLOW = [1,1,0]
+    const WHITE = [1,1,1]
+
+
+    const fov = 45
+    const fov_radians = (Math.PI * (fov/2))/180
     console.log("fov radians",fov_radians)
     const ctx = canvas.getContext('2d')
-    let size = 50
+    let size = 20
     let w = canvas.width/size
     let h = canvas.height/size
 
@@ -117,22 +105,24 @@
 
     let spheres = [
         {
-            pos:[-2,0,-2],
-            rad:0.5,
-            color:[1,0,0],
-        },
-        {
-            pos:[2,0,-2],
-            rad:0.5,
-            color:[0,1,0],
+            pos:[-1,0,-1],
+            rad:0.25,
+            color:RED,
         },
         {
             pos:[0,0,-1],
             rad:0.5,
-            color:[0,0,1],
+            color:BLUE,
+        },
+        {
+            pos:[1,0,-1],
+            rad:0.25,
+            color:GREEN,
         },
     ]
-    const background = [1, 0, 0]
+    let light = {
+        pos:[10,10,0]
+    }
 
     for(let x=0; x<w; x++) {
         for(let y=0; y<h; y++) {
@@ -158,18 +148,33 @@
             if(inter) {
                 c = [0,0,1]
                 // shoot ray to light
+                let hit_point = point_at_t(ray.origin,ray.dir,inter.t)
+                let ray2 = {
+                    origin:hit_point,
+                    dir:sub_v(light.pos,hit_point)
+                }
+                let inter2 = null
+                for(let j=0; j<list.length; j++) {
+                    let sph = list[j]
+                    let tt = hit_sphere(sph.pos,sph.rad,ray2)
+                    if(tt > 0) {
+                        inter2 = {t:tt, obj:sph}
+                    }
+                }
                 // if reach light
-                //      calc diffuse color
-                //      add ambient color
-                // return final color
-
-                //color using the normal
-                let N = norm(sub_v(point_at_t(ray.origin, ray.dir, inter.t), [0, 0, -1]))
-                c = [(N[0] + 1) * 0.5, (N[1] + 1) * 0.5, (N[2] + 1) * 0.5]
-                // else
+                if(!inter2) {
+                    //      add ambient color
+                    c = inter.obj.color
+                    //      calc diffuse color
+                } else {
+                    //color using the normal
+                    // let N = norm(sub_v(point_at_t(ray.origin, ray.dir, inter.t), [0, 0, -1]))
+                    // c = [(N[0] + 1) * 0.5, (N[1] + 1) * 0.5, (N[2] + 1) * 0.5]
+                    c = MAGENTA
+                }
             } else {
                 // color background
-                c = background
+                c = BLACK
             }
 
             draw_px(ctx,x,y,c)
