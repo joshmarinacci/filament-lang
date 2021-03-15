@@ -32,13 +32,14 @@
     const fov_radians = (Math.PI * (fov/2))/180
     const ctx = canvas.getContext('2d')
     let size = 20
+    let gap = 1.0
     let w = canvas.width/size
     let h = canvas.height/size
 
     function draw_px(ctx, x, y, c) {
         let col = `rgb(${c[0]*255},${c[1]*255},${c[2]*255})`;
         ctx.fillStyle = col
-        ctx.fillRect(x*size,y*size,size*0.9,size*0.9)
+        ctx.fillRect(x*size,y*size,size*gap,size*gap)
     }
     function lerp_vec(t, A, B) {
         return [
@@ -119,7 +120,7 @@
         },
     ]
     let light = {
-        pos:[10,10,0]
+        pos:[10,0,-1]
     }
 
     for(let x=0; x<w; x++) {
@@ -155,6 +156,7 @@
                 let inter2 = null
                 for(let j=0; j<list.length; j++) {
                     let sph = list[j]
+                    if(sph === inter.obj) continue
                     let tt = hit_sphere(sph.pos,sph.rad,ray2)
                     if(tt > 0) {
                         inter2 = {t:tt, obj:sph}
