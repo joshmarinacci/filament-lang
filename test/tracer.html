@@ -113,18 +113,6 @@
     }
 
     function color(ray, list) {
-        for(let i=0; i<list.length; i++) {
-            let sph = list[i]
-            let t = hit_sphere(sph.pos, sph.rad, ray)
-            if (t > 0) {
-                let N = norm(sub_v(point_at_t(ray.origin, ray.dir, t), [0, 0, -1]))
-                return [(N[0] + 1) * 0.5, (N[1] + 1) * 0.5, (N[2] + 1) * 0.5]
-            }
-        }
-
-        let d = norm(ray.dir)
-        let tt = (d[1]+1.0)*0.5
-        return lerp_vec(tt,[1.0,1.0,1.0],[0.5,0.7,1.0])
     }
 
     let spheres = [
@@ -144,18 +132,51 @@
             color:[0,0,1],
         },
     ]
+    const background = [1, 0, 0]
+
     for(let x=0; x<w; x++) {
         for(let y=0; y<h; y++) {
             let u = x/w
             let v = y/h
-            let r = {origin:[0,0,0], dir:[-2+u*4,1-v*2,-1]}
+            let ray = {
+                origin:[0,0,0],
+                dir:[-2+u*4,1-v*2,-1]
+            }
 
-            let c = color(r,spheres)
+            let list = spheres
+            //shoot ray, look for intersection
+            let inter = null
+            let c = [0,0,0]
+            for(let i=0; i<list.length; i++) {
+                let sph = list[i]
+                let t = hit_sphere(sph.pos, sph.rad, ray)
+                //if intersection
+                if (t > 0) {
+                    inter = { t:t, obj:sph}
+                }
+            }
+            if(inter) {
+                c = [0,0,1]
+                // shoot ray to light
+                // if reach light
+                //      calc diffuse color
+                //      add ambient color
+                // return final color
+
+                //color using the normal
+                let N = norm(sub_v(point_at_t(ray.origin, ray.dir, inter.t), [0, 0, -1]))
+                c = [(N[0] + 1) * 0.5, (N[1] + 1) * 0.5, (N[2] + 1) * 0.5]
+                // else
+            } else {
+                // color background
+                c = background
+            }
+
             draw_px(ctx,x,y,c)
-            ctx.fillStyle = 'black'
-            ctx.font = '16px sans-serif';
-            let t = r.dir[1]
-            ctx.fillText(t.toFixed(2),x*size+3,y*size+size*0.5)
+            // ctx.fillStyle = 'black'
+            // ctx.font = '16px sans-serif';
+            // let t = ray.dir[1]
+            // ctx.fillText(t.toFixed(2),x*size+3,y*size+size*0.5)
         }
     }
 </script>
