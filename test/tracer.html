@@ -81,6 +81,10 @@
     function mul_v(A, B) {
         return [A[0]*B[0],A[1]*B[1],A[2]*B[2]]
     }
+    function add_v(A, B) {
+        return [A[0]+B[0],A[1]+B[1],A[2]+B[2]]
+    }
+
 
     function mul_s(A, s) {
         return [A[0]*s, A[1]*s, A[2]*s]
@@ -96,13 +100,27 @@
         let b = 2.0 * dot_v(oc,ray.dir)
         let c = dot_v(oc,oc) - rad*rad
         let discr = b*b - 4*a*c
-        return discr > 0
+        if (discr < 0) {
+            return -1
+        } else {
+            return (-b -Math.sqrt(discr))/(2.0*a)
+        }
+    }
+
+    function point_at_t(A, B, t) {
+        //A + t*B
+        return add_v(A,mul_s(B,t))
     }
 
     function color(ray) {
-        if(hit_sphere([0,0,-1],0.5,ray)) return [1,0,0]
+        let t = hit_sphere([0,0,-1],0.5,ray)
+        if(t > 0) {
+            let N = norm(sub_v(point_at_t(ray.origin,ray.dir,t),[0,0,-1]))
+            return [(N[0]+1)*0.5, (N[1]+1)*0.5, (N[2]+1)*0.5]
+        }
+
         let d = norm(ray.dir)
-        let t = (d[1]+1.0)*0.5
+        t = (d[1]+1.0)*0.5
         return lerp_vec(t,[1.0,1.0,1.0],[0.5,0.7,1.0])
     }
     for(let x=0; x<w; x++) {
@@ -115,7 +133,6 @@
             draw_px(ctx,x,y,c)
             ctx.fillStyle = 'black'
             ctx.font = '16px sans-serif';
-            let dir = norm(r.dir)
             let t = r.dir[1]
             ctx.fillText(t.toFixed(2),x*size+3,y*size+size*0.5)
         }
