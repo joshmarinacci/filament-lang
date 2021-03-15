@@ -17,13 +17,6 @@
 
 
     //color constants
-    const RED = [1, 0, 0]
-    const GREEN = [0, 1, 0]
-    const BLUE = [0,0,1]
-    const BLACK = [0,0,0]
-    const MAGENTA = [1,0,1]
-    const YELLOW = [1,1,0]
-    const WHITE = [1,1,1]
 
     const ambient = 0.3
 
@@ -31,13 +24,13 @@
     const fov = 45
     const fov_radians = (Math.PI * (fov/2))/180
     const ctx = canvas.getContext('2d')
-    let size = 20
+    let size = 10
     let gap = 1.0
     let w = canvas.width/size
     let h = canvas.height/size
 
     function draw_px(ctx, x, y, c) {
-        let col = `rgb(${c[0]*255},${c[1]*255},${c[2]*255})`;
+        let col = `rgb(${c.x*255},${c.y*255},${c.z*255})`;
         ctx.fillStyle = col
         ctx.fillRect(x*size,y*size,size*gap,size*gap)
     }
@@ -62,33 +55,62 @@
         ]
     }
 
-    function sub_v(A, B) {
-        return [A[0]-B[0],A[1]-B[1],A[2]-B[2]]
-    }
-    function dot_v(A, B) {
-        return A[0]*B[0] + A[1]*B[1] + A[2]*B[2]
-    }
-    function mul_v(A, B) {
-        return [A[0]*B[0],A[1]*B[1],A[2]*B[2]]
-    }
-    function add_v(A, B) {
-        return [A[0]+B[0],A[1]+B[1],A[2]+B[2]]
-    }
+    // function sub_v(A, B) {
+    //     return [A[0]-B[0],A[1]-B[1],A[2]-B[2]]
+    // }
+    // function dot_v(A, B) {
+    //     return A[0]*B[0] + A[1]*B[1] + A[2]*B[2]
+    // }
+    // function mul_v(A, B) {
+    //     return [A[0]*B[0],A[1]*B[1],A[2]*B[2]]
+    // }
+    // function add_v(A, B) {
+    //     return [A[0]+B[0],A[1]+B[1],A[2]+B[2]]
+    // }
 
 
-    function mul_s(A, s) {
-        return [A[0]*s, A[1]*s, A[2]*s]
-    }
-    function sub_s(A, s) {
-        return [A[0]-s, A[1]-s, A[2]-s]
+    // function mul_s(A, s) {
+    //     return [A[0]*s, A[1]*s, A[2]*s]
+    // }
+    // function sub_s(A, s) {
+    //     return [A[0]-s, A[1]-s, A[2]-s]
+    // }
+
+
+    class Vector {
+        constructor(x,y,z) {
+            this.x = x
+            this.y = y
+            this.z = z
+        }
+        scale(s) { return new Vector(this.x*s,this.y*s,this.z*s)        }
+        add(B)   { return new Vector(this.x+B.x,this.y+B.y,this.z+B.z)  }
+        sub(B)   { return new Vector(this.x-B.x,this.y-B.y,this.z-B.z)  }
+        dot(B)   { return this.x*B.x + this.y*B.y + this.z*B.z          }
+        len()    { return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z) }
+        normalize(){
+            let l = this.len()
+            return new Vector(
+                this.x/l,
+                this.y/l,
+                this.z/l
+            )
+        }
     }
 
+    const RED = new Vector(1, 0, 0)
+    const GREEN = new Vector(0, 1, 0)
+    const BLUE = new Vector(0,0,1)
+    // const BLACK = [0,0,0]
+    // const MAGENTA = [1,0,1]
+    // const YELLOW = [1,1,0]
+    const WHITE = new Vector(1,1,1)
 
     function hit_sphere(cen, rad, ray) {
-        let oc = sub_v(ray.origin,cen)
-        let a = dot_v(ray.dir, ray.dir)
-        let b = 2.0 * dot_v(oc,ray.dir)
-        let c = dot_v(oc,oc) - rad*rad
+        let oc = ray.origin.sub(cen)
+        let a = ray.dir.dot(ray.dir)
+        let b = 2.0 * oc.dot(ray.dir)
+        let c = oc.dot(oc) - rad*rad
         let discr = b*b - 4*a*c
         if (discr < 0) {
             return -1
@@ -99,63 +121,72 @@
 
     function point_at_t(A, B, t) {
         //A + t*B
-        return add_v(A,mul_s(B,t))
+        return A.add(B.scale(t))
+        // return add_v(A,mul_s(B,t))
     }
 
     let spheres = [
         {
-            pos:[-1,0,-1],
+            pos: new Vector(-1,0,-1),
             rad:0.25,
             color:RED,
         },
         {
-            pos:[0,0,-1],
+            pos: new Vector(0,0,-1),
             rad:0.5,
             color:BLUE,
         },
         {
-            pos:[1,0,-1],
+            pos:new Vector(1,0,-1),
             rad:0.25,
             color:GREEN,
         },
     ]
     let light = {
-        pos:[10,0,-1]
+        pos:new Vector(10,0,-1)
     }
 
     for(let x=0; x<w; x++) {
         for(let y=0; y<h; y++) {
             let u = x/w
             let v = y/h
+            //ray << [origin, [-2+u*4, 1-v*2, -1]]
             let ray = {
-                origin:[0,0,0],
-                dir:[-2+u*4,1-v*2,-1]
+                origin:new Vector(0,0,0),
+                dir:new Vector(-2+u*4,1-v*2,-1),
             }
 
-            let list = spheres
             //shoot ray, look for intersection
             let inter = null
             let c = [0,0,0]
-            for(let i=0; i<list.length; i++) {
-                let sph = list[i]
+            // spheres >> map(with: (obj) -> intersect(obj,ray)) >> sort(by:"distance") >> hits
+            for(let i=0; i<spheres.length; i++) {
+                let sph = spheres[i]
                 let t = hit_sphere(sph.pos, sph.rad, ray)
                 //if intersection
                 if (t > 0) {
                     inter = { t:t, obj:sph}
                 }
             }
+            // closest = hits[0]
+            // if closest.distance < INFINITY then light_object(closest) else BACKGROUND
             if(inter) {
                 c = [0,0,1]
                 // shoot ray to light
+                // hit_point << ray.origin + ray.dir*closest.distance
+                // normal << unit(hit_point - closest.object.position)
                 let hit_point = point_at_t(ray.origin,ray.dir,inter.t)
-                let N = norm(sub_v(hit_point, inter.obj.pos))
+                let N = hit_point.sub(inter.obj.pos).normalize()
+                // ray2 << [hit_point, light.pos - hit_point]
                 let ray2 = {
                     origin:hit_point,
-                    dir:sub_v(light.pos,hit_point)
+                    dir:light.pos.sub(hit_point)
                 }
                 let inter2 = null
-                for(let j=0; j<list.length; j++) {
-                    let sph = list[j]
+                // spheres >> map(with: obj -> intersect(obj,ray2)) >> sort(by:"distance") >> shadows
+                // shadow = shadows[0]
+                for(let j=0; j<spheres.length; j++) {
+                    let sph = spheres[j]
                     if(sph === inter.obj) continue
                     let tt = hit_sphere(sph.pos,sph.rad,ray2)
                     if(tt > 0) {
@@ -163,17 +194,20 @@
                     }
                 }
                 // if reach light
+                // if shadow.distance < INFINITY then shade_diffuse(shadow,obj) else shade_ambient(obj)
                 if(!inter2) {
                     //color = ambient * material + diffuse * material
-                    let diffuse = dot_v(norm(sub_v(light.pos,hit_point)),N)
-                    c = add_v(mul_s(inter.obj.color,ambient),
-                        mul_s(inter.obj.color,diffuse))
+                    let diffuse = light.pos.sub(hit_point).normalize().dot(N)
+                    c = inter.obj.color.scale(ambient).add(inter.obj.color.scale(diffuse))
+                    // diffuse << unit(light.pos - hit_point) DOT normal
+                    // c << obj.color * ambient + obj.color * diffuse
                 } else {
-                    //if in shadow, use just ambient
-                    c = mul_s(inter.obj.color,ambient)
+                    // if in shadow, use just ambient
+                    // c = obj.color * ambient
+                    c = inter.obj.color.scale(ambient)
                 }
             } else {
-                // color background
+                // background color
                 c = WHITE
             }
 
