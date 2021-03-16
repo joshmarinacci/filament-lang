@@ -99,7 +99,7 @@ function render_result(result) {
 function render_code_output(block) {
     let code = ""
     if(block.language === 'filament') {
-        code = BQ(block.highlight)
+        code = `<pre><code class="language-filament">${block.highlight}</code></pre>`
     } else {
         code = BQ(block.content)
     }
@@ -208,6 +208,9 @@ function render_html(toc, doc) {
      <html>
      <head><title>${title}</title>
      <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="prism.css">
+     <script src="prism.js"></script>
+     <script src="filament-style.js"></script>
      </head>
         <body>
         <nav>

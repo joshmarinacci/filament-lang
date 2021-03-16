@@ -1,5 +1,9 @@
 * __sin__, __cos__, __tan__: the usual trig functions, in radians or degrees.
 
+```filament
+range(10000)
+```
+
 * bullet1
   bullet2
   bullet3
