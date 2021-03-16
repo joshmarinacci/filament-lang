@@ -1,0 +1,13 @@
+{
+    brightness << (c) -> c[0]*0.299 + c[1]*0.587 + c[2]*0.114
+    lerp  << (t,a,b) -> a*t + b*(1-t)
+    white << [1,1,1]
+    brown << [0.5,0.4,0.1]
+    sepia << (x,y,color) -> {
+        brightness(color) >> lerp(white,brown)
+    }
+
+    load_image(src:'https://vr.josh.earth/webxr-experiments/nonogram/thumb.png')
+        >> mapimage(with:sepia)
+}
+

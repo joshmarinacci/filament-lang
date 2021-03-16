@@ -11,7 +11,8 @@
     "build-umd": "npm run compile-ohm && npm run compile-api && mkdir -p dist/ && ./node_modules/.bin/rollup -c",
     "test-umd": "cd test-umd && rm -f dist && ln -s ../dist && ../node_modules/.bin/http-server -c-1 -o",
     "test": "npm run compile-ohm && mocha -t 200000",
-    "docs": "npm run compile-ohm && node tools/alldocs"
+    "docs": "npm run compile-ohm && node tools/alldocs",
+    "exec": "node tools/exec.js"
   },
   "author": "joshua@marinacci.org",
   "license": "ISC",
