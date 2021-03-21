@@ -26,56 +26,16 @@
     const ctx = canvas.getContext('2d')
     let size = 10
     let gap = 1.0
-    let w = canvas.width/size
-    let h = canvas.height/size
+    // let w = canvas.width/size
+    // let h = canvas.height/size
+    let w = 10
+    let h = 10
 
     function draw_px(ctx, x, y, c) {
         let col = `rgb(${c.x*255},${c.y*255},${c.z*255})`;
         ctx.fillStyle = col
         ctx.fillRect(x*size,y*size,size*gap,size*gap)
     }
-    function lerp_vec(t, A, B) {
-        return [
-            (1-t)*A[0] + (t)*B[0],
-            (1-t)*A[1] + (t)*B[1],
-            (1-t)*A[2] + (t)*B[2],
-        ]
-    }
-
-    function len(dir) {
-        return Math.sqrt(dir[0]*dir[0]+ dir[1]*dir[1] + dir[2]*dir[2])
-    }
-
-    function norm(dir) {
-        let l = len(dir)
-        return [
-            dir[0]/l,
-            dir[1]/l,
-            dir[2]/l
-        ]
-    }
-
-    // function sub_v(A, B) {
-    //     return [A[0]-B[0],A[1]-B[1],A[2]-B[2]]
-    // }
-    // function dot_v(A, B) {
-    //     return A[0]*B[0] + A[1]*B[1] + A[2]*B[2]
-    // }
-    // function mul_v(A, B) {
-    //     return [A[0]*B[0],A[1]*B[1],A[2]*B[2]]
-    // }
-    // function add_v(A, B) {
-    //     return [A[0]+B[0],A[1]+B[1],A[2]+B[2]]
-    // }
-
-
-    // function mul_s(A, s) {
-    //     return [A[0]*s, A[1]*s, A[2]*s]
-    // }
-    // function sub_s(A, s) {
-    //     return [A[0]-s, A[1]-s, A[2]-s]
-    // }
-
 
     class Vector {
         constructor(x,y,z) {
@@ -101,22 +61,31 @@
     const RED = new Vector(1, 0, 0)
     const GREEN = new Vector(0, 1, 0)
     const BLUE = new Vector(0,0,1)
-    // const BLACK = [0,0,0]
-    // const MAGENTA = [1,0,1]
-    // const YELLOW = [1,1,0]
     const WHITE = new Vector(1,1,1)
 
     function hit_sphere(cen, rad, ray) {
+        // console.log('intersecting', cen,rad, 'with',ray)
+        // console.log("cen",cen)
         let oc = ray.origin.sub(cen)
+        // console.log("oc",oc)
+        // console.log("dir",ray.dir)
         let a = ray.dir.dot(ray.dir)
+        // console.log('a',a)
         let b = 2.0 * oc.dot(ray.dir)
+        // console.log("b",b)
+        // console.log("rad",rad)
         let c = oc.dot(oc) - rad*rad
+        // console.log("c",c)
         let discr = b*b - 4*a*c
+        // console.log("discr",discr)
+        let dist = -99
         if (discr < 0) {
-            return -1
+            dist = -1
         } else {
-            return (-b -Math.sqrt(discr))/(2.0*a)
+            dist = (-b -Math.sqrt(discr))/(2.0*a)
         }
+        // console.log("dist",dist)
+        return dist
     }
 
     function point_at_t(A, B, t) {
@@ -126,96 +95,104 @@
     }
 
     let spheres = [
-        {
-            pos: new Vector(-1,0,-1),
-            rad:0.25,
-            color:RED,
-        },
+        // {
+        //     pos: new Vector(-1,0,-1),
+        //     rad:0.25,
+        //     color:RED,
+        // },
         {
             pos: new Vector(0,0,-1),
             rad:0.5,
             color:BLUE,
         },
-        {
-            pos:new Vector(1,0,-1),
-            rad:0.25,
-            color:GREEN,
-        },
+        // {
+        //     pos:new Vector(1,0,-1),
+        //     rad:0.25,
+        //     color:GREEN,
+        // },
     ]
     let light = {
         pos:new Vector(10,0,-1)
     }
 
+    function trace(x,y) {
+        console.log("tracing",x,y)
+        let u = x/w
+        let v = y/h
+        //ray << [origin, [-2+u*4, 1-v*2, -1]]
+        let ray = {
+            origin:new Vector(0,0,0),
+            dir:new Vector(-2+u*4,1-v*2,-1),
+        }
+
+        //shoot ray, look for intersection
+        let inter = null
+        let c = [0,0,0]
+        // spheres >> map(with: (obj) -> intersect(obj,ray)) >> sort(by:"distance") >> hits
+        for(let i=0; i<spheres.length; i++) {
+            let sph = spheres[i]
+            let t = hit_sphere(sph.pos, sph.rad, ray)
+            console.log(t)
+            //if intersection
+            if (t > 0) {
+                draw_px(ctx,x,y,RED)
+                inter = { t:t, obj:sph}
+            } else {
+                draw_px(ctx,x,y,BLUE)
+            }
+        }
+        // closest = hits[0]
+        // if closest.distance < INFINITY then light_object(closest) else BACKGROUND
+        if(inter) {
+            c = [0,0,1]
+            // shoot ray to light
+            // hit_point << ray.origin + ray.dir*closest.distance
+            // normal << unit(hit_point - closest.object.position)
+            let hit_point = point_at_t(ray.origin,ray.dir,inter.t)
+            let N = hit_point.sub(inter.obj.pos).normalize()
+            // ray2 << [hit_point, light.pos - hit_point]
+            let ray2 = {
+                origin:hit_point,
+                dir:light.pos.sub(hit_point)
+            }
+            let inter2 = null
+            // spheres >> map(with: obj -> intersect(obj,ray2)) >> sort(by:"distance") >> shadows
+            // shadow = shadows[0]
+            for(let j=0; j<spheres.length; j++) {
+                let sph = spheres[j]
+                if(sph === inter.obj) continue
+                let tt = hit_sphere(sph.pos,sph.rad,ray2)
+                if(tt > 0) {
+                    inter2 = {t:tt, obj:sph}
+                }
+            }
+            // if reach light
+            // if shadow.distance < INFINITY then shade_diffuse(shadow,obj) else shade_ambient(obj)
+            if(!inter2) {
+                //color = ambient * material + diffuse * material
+                let diffuse = light.pos.sub(hit_point).normalize().dot(N)
+                c = inter.obj.color.scale(ambient).add(inter.obj.color.scale(diffuse))
+                // diffuse << unit(light.pos - hit_point) DOT normal
+                // c << obj.color * ambient + obj.color * diffuse
+            } else {
+                // if in shadow, use just ambient
+                // c = obj.color * ambient
+                c = inter.obj.color.scale(ambient)
+            }
+        } else {
+            // background color
+            c = WHITE
+        }
+
+        // draw_px(ctx,x,y,c)
+        // ctx.fillStyle = 'black'
+        // ctx.font = '16px sans-serif';
+        // let t = ray.dir[1]
+        // ctx.fillText(t.toFixed(2),x*size+3,y*size+size*0.5)
+    }
     for(let x=0; x<w; x++) {
         for(let y=0; y<h; y++) {
-            let u = x/w
-            let v = y/h
-            //ray << [origin, [-2+u*4, 1-v*2, -1]]
-            let ray = {
-                origin:new Vector(0,0,0),
-                dir:new Vector(-2+u*4,1-v*2,-1),
-            }
-
-            //shoot ray, look for intersection
-            let inter = null
-            let c = [0,0,0]
-            // spheres >> map(with: (obj) -> intersect(obj,ray)) >> sort(by:"distance") >> hits
-            for(let i=0; i<spheres.length; i++) {
-                let sph = spheres[i]
-                let t = hit_sphere(sph.pos, sph.rad, ray)
-                //if intersection
-                if (t > 0) {
-                    inter = { t:t, obj:sph}
-                }
-            }
-            // closest = hits[0]
-            // if closest.distance < INFINITY then light_object(closest) else BACKGROUND
-            if(inter) {
-                c = [0,0,1]
-                // shoot ray to light
-                // hit_point << ray.origin + ray.dir*closest.distance
-                // normal << unit(hit_point - closest.object.position)
-                let hit_point = point_at_t(ray.origin,ray.dir,inter.t)
-                let N = hit_point.sub(inter.obj.pos).normalize()
-                // ray2 << [hit_point, light.pos - hit_point]
-                let ray2 = {
-                    origin:hit_point,
-                    dir:light.pos.sub(hit_point)
-                }
-                let inter2 = null
-                // spheres >> map(with: obj -> intersect(obj,ray2)) >> sort(by:"distance") >> shadows
-                // shadow = shadows[0]
-                for(let j=0; j<spheres.length; j++) {
-                    let sph = spheres[j]
-                    if(sph === inter.obj) continue
-                    let tt = hit_sphere(sph.pos,sph.rad,ray2)
-                    if(tt > 0) {
-                        inter2 = {t:tt, obj:sph}
-                    }
-                }
-                // if reach light
-                // if shadow.distance < INFINITY then shade_diffuse(shadow,obj) else shade_ambient(obj)
-                if(!inter2) {
-                    //color = ambient * material + diffuse * material
-                    let diffuse = light.pos.sub(hit_point).normalize().dot(N)
-                    c = inter.obj.color.scale(ambient).add(inter.obj.color.scale(diffuse))
-                    // diffuse << unit(light.pos - hit_point) DOT normal
-                    // c << obj.color * ambient + obj.color * diffuse
-                } else {
-                    // if in shadow, use just ambient
-                    // c = obj.color * ambient
-                    c = inter.obj.color.scale(ambient)
-                }
-            } else {
-                // background color
-                c = WHITE
-            }
-
-            draw_px(ctx,x,y,c)
-            // ctx.fillStyle = 'black'
-            // ctx.font = '16px sans-serif';
-            // let t = ray.dir[1]
-            // ctx.fillText(t.toFixed(2),x*size+3,y*size+size*0.5)
+            trace(x,y)
         }
     }
 </script>
