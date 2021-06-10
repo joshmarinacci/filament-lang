@@ -35,6 +35,18 @@ export class Scope {
 
         return result;
     }
+    lookupOrNull(name) {
+        let result = this.funs[name];
+        if(!result) {
+            if(this.parent) {
+                result = this.parent.lookupOrNull(name)
+            } else {
+                result = null;
+            }
+        }
+
+        return result;
+    }
     install(...funs) {
         funs.forEach(fun => {
             this.funs[fun.name] = fun
