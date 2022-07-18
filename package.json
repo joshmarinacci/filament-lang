@@ -4,6 +4,9 @@
   "description": "filament language",
   "browser": "dist/filament.js",
   "main": "src/index.js",
+  "engines": {
+    "node": ">=15.0.0"
+  },
   "scripts": {
     "clean": "rm -rf dist/ output/ node_modules/ src/filament.ohm.js filament-lang-*.tgz",
     "compile-ohm": "tools/compile_ohm.js",
