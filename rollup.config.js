@@ -1,6 +1,7 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
+import json from "@rollup/plugin-json";
 
 
 // https://rollupjs.org/guide/en/#configuration-files
@@ -19,12 +20,13 @@ export default {
         // which would point to the browser-safe bundle for ohm-js. So instead,
         // we use rollup's alias plugin to do the job.
         //
-        { find: 'ohm-js', replacement: '../node_modules/ohm-js/dist/ohm.min.js' },
+        // { find: 'ohm-js', replacement: '../node_modules/ohm-js/dist/ohm.min.js' },
       ]
     }),
   	resolve({
       browser: true,  // Default: false
     }),
-    commonjs()
+    commonjs(),
+      json()
   ]
 };
