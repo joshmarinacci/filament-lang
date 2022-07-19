@@ -1,4 +1,4 @@
-import {ASTNode, CanvasResult, FTable, is_string, string, unpack} from './ast.js'
+import {ASTNode, CanvasResult, FTable, is_string, string, unpack} from './ast'
 import {
     Bounds,
     clear, COLORS,
@@ -7,8 +7,8 @@ import {
     max,
     min,
     STYLE
-} from './graphics.js'
-import {FilamentFunction, REQUIRED} from "./base.js";
+} from './graphics'
+import {FilamentFunction, REQUIRED} from "./base";
 
 function draw_legend(c, b, m) {
     c.font = STYLE.FONT

@@ -15,9 +15,9 @@ import {
     pipeline_right,
     scalar, Scope,
     string
-} from './ast.js'
-import {is_valid_unit, to_canonical_unit} from './units.js'
-import {strip_under} from './util.js'
+} from './ast'
+import {is_valid_unit, to_canonical_unit} from './units'
+import {strip_under} from './util'
 
 
 function do_bin_op(op, a, c) {

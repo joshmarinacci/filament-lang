@@ -1,6 +1,6 @@
-import {CanvasResult, scalar} from './ast.js'
-import {apply_fun} from './util.js'
-import {FilamentFunctionWithScope} from "./base.js";
+import {CanvasResult, scalar} from './ast'
+import {apply_fun} from './util'
+import {FilamentFunctionWithScope} from "./base";
 
 class Point {
     readonly x:number

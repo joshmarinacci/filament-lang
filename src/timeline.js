@@ -1,4 +1,4 @@
-import {CanvasResult, is_string, unpack} from './ast.js'
+import {CanvasResult, is_string, unpack} from './ast'
 import {
     compareAsc,
     compareDesc,
@@ -6,8 +6,8 @@ import {
     format as formatDate,
     parse as parseDate
 } from 'date-fns'
-import {FilamentFunction, REQUIRED} from './base.js'
-import {clear} from './graphics.js'
+import {FilamentFunction, REQUIRED} from './base'
+import {clear} from './graphics'
 
 export const timeline = new FilamentFunction('timeline',
     {

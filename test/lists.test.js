@@ -1,4 +1,4 @@
-import {boolean, list} from '../build/ast.js'
+import {boolean, list} from '../dist/index.js'
 import {all, s, l, b, setup} from "./common.js"
 
 const t = boolean(true)

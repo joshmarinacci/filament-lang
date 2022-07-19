@@ -1,6 +1,7 @@
-import {Parser} from './parser.js'
-import {make_standard_scope} from './lang.js'
+import {Parser} from './parser'
+import {make_standard_scope} from './lang'
 import filament_grammar from "./filament.ohm.js"
+export {FilamentFunction,FilamentFunctionWithScope} from "./base";
 
 let scope
 let parser
@@ -28,8 +29,12 @@ export {
     is_error_result,
     is_list,
     is_string,
-} from "./ast.js"
+    scalar,
+    string,
+    list,
+    Scope,
+} from "./ast"
 export {
-    make_standard_scope
-} from "./lang.js"
+    make_standard_scope,
+} from "./lang"
 

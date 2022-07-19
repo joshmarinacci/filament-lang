@@ -1,4 +1,4 @@
-import {unpack} from './ast.js'
+import {unpack} from './ast'
 
 export const COLORS = ['red','green','blue','yellow','magenta','cyan']
 const font_size = 20

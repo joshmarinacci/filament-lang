@@ -6,3 +6,4 @@
 filament-lang-*.tgz
 /src/filament.ohm.js
 /src/api.json.js
+.parcel-cache

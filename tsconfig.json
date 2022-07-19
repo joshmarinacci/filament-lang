@@ -1,16 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "lib": ["dom"],
-    "allowJs": true,
-    "esModuleInterop": true,
-    "moduleResolution": "Node",
+    "lib": ["dom","ES2017"],
     "outDir": "dist",
-    "checkJs": true,
-    "allowSyntheticDefaultImports": true,
-    "noEmitOnError": true,
-    "declaration": true,
-    "declarationDir": "dist/dts"
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src"

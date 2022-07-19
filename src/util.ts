@@ -1,5 +1,5 @@
-import {REQUIRED} from "./base.js";
-import {mkdir as real_mkdir} from "fs"
+import {REQUIRED} from "./base";
+// import {mkdir as real_mkdir} from "fs"
 export function resolve_in_order(proms) {
     let rets = []
     let pp = Promise.resolve()
@@ -12,16 +12,16 @@ export function resolve_in_order(proms) {
     return pp.then(()=>rets)
 }
 
-async function mkdir(dir) {
-    return new Promise((res,rej)=>{
-        real_mkdir(dir,(err)=>{
-            if(err) {
-                // console.log(err)//return rej(err)
-            }
-            res("void")
-        })
-    })
-}
+// async function mkdir(dir) {
+//     return new Promise((res,rej)=>{
+//         real_mkdir(dir,(err)=>{
+//             if(err) {
+//                 // console.log(err)//return rej(err)
+//             }
+//             res("void")
+//         })
+//     })
+// }
 
 export function match_args_to_params(args,old_params,name) {
     return Object.entries(old_params).map(([key, value]) => {

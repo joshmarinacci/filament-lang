@@ -10,10 +10,10 @@ import {
     unpack,
     ASTNode,
     FList
-} from './ast.js'
-import {convert_unit, find_conversion, to_canonical_unit} from './units.js'
+} from './ast'
+import {convert_unit, find_conversion, to_canonical_unit} from './units'
 import {parse as parse_date, getYear, getMonth, getDate, toDate, getHours, getMinutes, getSeconds, differenceInDays, differenceInSeconds, addSeconds} from "date-fns"
-import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from "./base.js";
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from "./base";
 
 function binop(a:ASTNode,b:ASTNode,cb) {
     // console.log("binop-ing",a,b)

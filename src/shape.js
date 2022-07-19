@@ -1,5 +1,5 @@
-import {CanvasResult, FObject, list, scalar, string, unpack} from './ast.js'
-import {FilamentFunctionWithScope, REQUIRED} from './base.js'
+import {CanvasResult, FObject, list, scalar, string, unpack} from './ast'
+import {FilamentFunctionWithScope, REQUIRED} from './base'
 
 export const rect = new FilamentFunctionWithScope('rect',
     {

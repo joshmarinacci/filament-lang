@@ -1,7 +1,7 @@
-import {list, scalar} from './ast.js'
+import {list, scalar} from './ast'
 import {default as PImage} from 'pureimage'
 import {default as fetch} from "node-fetch"
-import {FilamentFunctionWithScope, REQUIRED} from "./base.js";
+import {FilamentFunctionWithScope, REQUIRED} from "./base";
 
 
 export const make_image = new FilamentFunctionWithScope('makeimage',

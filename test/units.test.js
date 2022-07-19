@@ -1,5 +1,5 @@
 import {all, all_close_scalar, b, l, s, setup} from "./common.js"
-import {list, scalar, string} from '../build/ast.js'
+import {scalar} from '../dist/index.js'
 
 await setup()
 console.log("done with setup")

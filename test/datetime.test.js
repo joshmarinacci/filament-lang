@@ -1,5 +1,5 @@
 import {all, s, setup} from './common.js'
-import {date, pack, scalar, time, unpack} from '../build/ast.js'
+import {date, pack, scalar, time, unpack} from '../dist/index.js'
 
 await setup()
 

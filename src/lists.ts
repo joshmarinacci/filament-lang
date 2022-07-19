@@ -1,8 +1,8 @@
-import {is_list, list, pack, scalar, unpack} from './ast.js'
-import {apply_fun, resolve_in_order} from './util.js'
-import {is_date} from './math.js'
+import {is_list, list, pack, scalar, unpack} from './ast'
+import {apply_fun, resolve_in_order} from './util'
+import {is_date} from './math'
 import {getYear} from 'date-fns'
-import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from "./base.js";
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from "./base";
 
 /**
  * @name (range)

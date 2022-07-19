@@ -1,7 +1,7 @@
 import {isDate} from "date-fns"
-import {to_canonical_unit} from './units.js'
-import {match_args_to_params, strip_under} from './util.js'
-import {FilamentFunction} from "./base.js";
+import {to_canonical_unit} from './units'
+import {match_args_to_params, strip_under} from './util'
+import {FilamentFunction} from "./base";
 
 export abstract class ASTNode {
     type:string

@@ -22,15 +22,15 @@ import {
     sin, sqrt,
     subtract,
     tan, time_cons, today
-} from './math.js'
-import {drop, get_field, join, length, map, range, reverse, select, sort, sum, take} from './lists.js'
-import {chart} from './chart.js'
-import {dataset, stockhistory} from './dataset.js'
+} from './math'
+import {drop, get_field, join, length, map, range, reverse, select, sort, sum, take} from './lists'
+import {chart} from './chart'
+import {dataset, stockhistory} from './dataset'
 
-import {scalar, Scope} from './ast.js'
-import {plot} from './plot.js'
-import {load_image, make_image, map_image} from './image.js'
-import {circle, draw, hsl_to_rgb, rect, row} from './shape.js'
+import {scalar, Scope} from './ast'
+import {plot} from './plot'
+import {load_image, make_image, map_image} from './image'
+import {circle, draw, hsl_to_rgb, rect, row} from './shape'
 import {
     turtle_done,
     turtle_forward,
@@ -39,11 +39,11 @@ import {
     turtle_penup,
     turtle_right,
     turtle_start
-} from './turtle.js'
-import {histogram} from './histogram.js'
-import {timeline} from './timeline.js'
-import {FilamentFunctionWithScope, REQUIRED} from './base.js'
-import {Parser} from './parser.js'
+} from './turtle'
+import {histogram} from './histogram'
+import {timeline} from './timeline'
+import {FilamentFunctionWithScope, REQUIRED} from './base'
+import {Parser} from './parser'
 
 
 

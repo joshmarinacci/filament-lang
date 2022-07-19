@@ -1,4 +1,4 @@
-import {match_args_to_params, strip_under} from "./util.js";
+import {match_args_to_params, strip_under} from "./util";
 
 export const REQUIRED = Symbol('REQUIRED')
 export class FilamentFunction {

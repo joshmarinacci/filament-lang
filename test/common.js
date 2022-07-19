@@ -1,6 +1,6 @@
 import assert from "assert"
-import {eval_code, setup_parser} from '../build/index.js'
-import {boolean, list, scalar} from '../build/ast.js'
+import {eval_code, setup_parser, scalar, list} from '../dist/index.js'
+
 
 
 export async function setup() {

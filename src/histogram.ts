@@ -1,4 +1,4 @@
-import {CanvasResult, is_scalar, scalar, string, unpack} from './ast.js'
+import {CanvasResult, is_scalar, scalar, string, unpack} from './ast'
 import {
     Bounds,
     clear,
@@ -7,8 +7,8 @@ import {
     draw_right_aligned_text,
     max,
     STYLE
-} from './graphics.js'
-import {FilamentFunctionWithScope, REQUIRED} from "./base.js";
+} from './graphics'
+import {FilamentFunctionWithScope, REQUIRED} from "./base";
 
 function draw_y_axis(c,b,max) {
     //y axis line

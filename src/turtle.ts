@@ -11,8 +11,8 @@
  */
 
 
-import {CanvasResult, list, scalar} from './ast.js'
-import {FilamentFunctionWithScope, REQUIRED} from "./base.js";
+import {CanvasResult, list, scalar} from './ast'
+import {FilamentFunctionWithScope, REQUIRED} from "./base";
 
 class TurtleState {
     x:number

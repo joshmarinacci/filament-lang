@@ -1,12 +1,9 @@
 import {setup} from "./common.js"
-import {Scope} from '../build/ast.js'
-import {make_standard_scope} from '../build/lang.js'
-import {load_image, make_image, map_image} from '../build/image.js'
+import {make_standard_scope} from '../dist/index.js'
 import {mkdir} from '../tools/util.js'
-import {eval_code} from '../build/index.js'
 import {default as PImage} from 'pureimage'
 import {createWriteStream} from 'fs'
-import {default as path} from 'path'
+import path from 'path'
 
 await setup()
 

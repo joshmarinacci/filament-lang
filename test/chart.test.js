@@ -1,10 +1,10 @@
 import {mkdir} from '../tools/util.js'
-import {eval_code} from '../build/index.js'
+import {eval_code} from '../dist/index.js'
 import {default as PImage} from 'pureimage'
 import {createWriteStream} from 'fs'
-import {default as path} from 'path'
-import {make_standard_scope} from '../build/lang.js'
+import path from 'path'
 import {setup} from './common.js'
+import {make_standard_scope} from '../test-umd/dist/index.js'
 
 await setup()
 
