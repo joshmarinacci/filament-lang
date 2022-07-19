@@ -8,7 +8,9 @@
     "outDir": "dist",
     "checkJs": true,
     "allowSyntheticDefaultImports": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "declaration": true,
+    "declarationDir": "dist/dts"
   },
   "include": [
     "src"

@@ -27,6 +27,9 @@ export {
     is_canvas_result,
     is_error_result,
     is_list,
-    is_string
+    is_string,
 } from "./ast.js"
+export {
+    make_standard_scope
+} from "./lang.js"
 
