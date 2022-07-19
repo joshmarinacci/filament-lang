@@ -1,6 +1,6 @@
-import {eval_code, setup_parser} from '../src/index.js'
+import {eval_code, setup_parser} from '../src/index.ts'
 import {createWriteStream, promises as fs} from 'fs'
-import {make_standard_scope} from '../src/lang.js'
+import {make_standard_scope} from '../src/lang.ts'
 import {default as PImage} from 'pureimage'
 import {default as path} from 'path'
 

@@ -1,5 +1,5 @@
-import {REQUIRED} from './parser.js'
-
+import {REQUIRED} from "./base.js";
+import {mkdir as real_mkdir} from "fs"
 export function resolve_in_order(proms) {
     let rets = []
     let pp = Promise.resolve()
@@ -18,7 +18,7 @@ async function mkdir(dir) {
             if(err) {
                 // console.log(err)//return rej(err)
             }
-            res()
+            res("void")
         })
     })
 }
@@ -53,3 +53,5 @@ export async function apply_fun(scope,obj, args) {
         return obj.fun.apply(obj, args)
     }
 }
+
+export const strip_under = s => s.replaceAll("_", "")

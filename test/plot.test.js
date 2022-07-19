@@ -1,6 +1,6 @@
 import {promises as fs, createWriteStream, mkdir as real_mkdir} from 'fs'
 import {setup} from './common.js'
-import {eval_code} from '../src/index.js'
+import {eval_code} from '../build/index.js'
 import {default as PImage} from 'pureimage'
 
 await setup()

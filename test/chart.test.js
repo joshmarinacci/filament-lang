@@ -1,9 +1,9 @@
 import {mkdir} from '../tools/util.js'
-import {eval_code} from '../src/index.js'
+import {eval_code} from '../build/index.js'
 import {default as PImage} from 'pureimage'
 import {createWriteStream} from 'fs'
 import {default as path} from 'path'
-import {make_standard_scope} from '../src/lang.js'
+import {make_standard_scope} from '../build/lang.js'
 import {setup} from './common.js'
 
 await setup()

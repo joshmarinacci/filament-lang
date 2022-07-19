@@ -1,7 +1,7 @@
 import {parse as parseDate} from 'date-fns'
 import {cached_json_fetch} from './cache.js'
-import {FilamentFunction, REQUIRED} from './parser.js'
 import {FTable} from './ast.js'
+import {FilamentFunction, REQUIRED} from "./base.js";
 
 let AV_API_KEY= '1S4KT3P0F4XXIVRL'
 export const dataset = new FilamentFunction('dataset', {

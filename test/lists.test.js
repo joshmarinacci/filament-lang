@@ -1,5 +1,4 @@
-import {boolean, list} from '../src/ast.js'
-import {setup_parser} from "../src/index.js"
+import {boolean, list} from '../build/ast.js'
 import {all, s, l, b, setup} from "./common.js"
 
 const t = boolean(true)

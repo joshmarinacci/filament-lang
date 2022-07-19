@@ -6,7 +6,7 @@ import json from "@rollup/plugin-json";
 
 // https://rollupjs.org/guide/en/#configuration-files
 export default {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: {
     file: 'dist/filament.js',
     format: 'umd',

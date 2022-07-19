@@ -1,11 +1,11 @@
 import {mkdir} from '../tools/util.js'
-import {eval_code} from '../src/index.js'
+import {eval_code} from '../build/index.js'
 import {default as PImage} from 'pureimage'
 import {createWriteStream} from 'fs'
 import {default as path} from 'path'
-import {make_standard_scope} from '../src/lang.js'
+import {make_standard_scope} from '../build/lang.js'
 import {setup} from './common.js'
-import {circle, draw, hsl_to_rgb, rect, row} from '../src/shape.js'
+import {circle, draw, hsl_to_rgb, rect, row} from '../build/shape.js'
 
 await setup()
 

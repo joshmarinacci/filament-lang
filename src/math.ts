@@ -1,26 +1,37 @@
-import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
-import {date, is_boolean, is_list, is_scalar, list, pack, scalar, time, unpack} from './ast.js'
+import {
+    date,
+    is_boolean,
+    is_list,
+    is_scalar,
+    list,
+    pack,
+    scalar,
+    time,
+    unpack,
+    ASTNode,
+    FList
+} from './ast.js'
 import {convert_unit, find_conversion, to_canonical_unit} from './units.js'
 import {parse as parse_date, getYear, getMonth, getDate, toDate, getHours, getMinutes, getSeconds, differenceInDays, differenceInSeconds, addSeconds} from "date-fns"
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from "./base.js";
 
-function binop(a,b,cb) {
+function binop(a:ASTNode,b:ASTNode,cb) {
     // console.log("binop-ing",a,b)
     if(is_scalar(a) && is_scalar(b)) return pack(cb(unpack(a),unpack(b)))
     if(is_boolean(a) && is_boolean(b)) return pack(cb(unpack(a),unpack(b)))
     if(is_list(a) && is_list(b)) {
-        return list(a.value.map((aa,i)=> pack(cb(unpack(a.value[i]),unpack(b.value[i])))))
+        return list((a as FList).value.map((aa,i)=> pack(cb(unpack((a as FList).value[i]),unpack((b as FList).value[i])))))
     }
     if(is_list(a) && is_scalar(b)) {
-        return list(a.value.map((_,i)=> pack(cb(unpack(a.value[i]),unpack(b)))))
+        return list((a as FList).value.map((_,i)=> pack(cb(unpack((a as FList).value[i]),unpack(b)))))
     }
     if(is_scalar(a) && is_list(b)) {
-        return list(b.value.map((_,i)=> pack(cb(unpack(a),unpack(b.value[i])))))
+        return list((b as FList).value.map((_,i)=> pack(cb(unpack(a),unpack((b as FList).value[i])))))
     }
-    console.log("erroring",a,b,cb)
     throw new Error("can't binop " + a.toString() + " " + b.toString())
 }
 
-function unop(a,cb) {
+function unop(a:ASTNode,cb) {
     if(Array.isArray(a)) return a.map(v => cb(v))
     return pack(cb(unpack(a)))
 }

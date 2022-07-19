@@ -1,7 +1,7 @@
-import {FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {list, scalar} from './ast.js'
 import {default as PImage} from 'pureimage'
 import {default as fetch} from "node-fetch"
+import {FilamentFunctionWithScope, REQUIRED} from "./base.js";
 
 
 export const make_image = new FilamentFunctionWithScope('makeimage',
@@ -66,7 +66,8 @@ export const load_image = new FilamentFunctionWithScope('loadimage',
     },
     async function (scope, src) {
         let url = src.value
-        if(process.browser) {
+        // @ts-ignore
+        if(process && process.browser) {
             return new Promise((res,rej)=>{
                 let img = new Image()
                 img.crossOrigin = "Anonymous";

@@ -1,6 +1,5 @@
 import {all, s, setup} from './common.js'
-import {date, pack, scalar, time, unpack} from '../src/ast.js'
-import {FilamentFunction, REQUIRED} from '../src/parser.js'
+import {date, pack, scalar, time, unpack} from '../build/ast.js'
 
 await setup()
 

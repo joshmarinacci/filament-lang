@@ -51,6 +51,15 @@ const abbrevations = {
 
 }
 
+type UnitType = "volume" | "area" | "format" | "none" | "length" | "storage" | "duration" | "mass"
+type Unit = {
+    name:string,
+    base:string,
+    ratio:number,
+    type:UnitType
+    dimension:number
+}
+
 const cvs = {
     units: {
         'sqft': {
@@ -59,28 +68,28 @@ const cvs = {
             ratio: 1,
             type: 'area',
             dimension: 2
-        },
+        } as Unit,
         'cuft': {
             name: 'foot',
             base: 'foot',
             ratio: 1,
             type: 'volume',
             dimension: 3
-        },
+        } as Unit,
         'hex': {
             name: 'hex',
             base: 'hex',
             ratio: 1,
             type: 'format',
             dimension: 0
-        },
+        } as Unit,
         'decimal': {
             name: 'decimal',
             base: 'decimal',
             ratio: 1,
             type: 'format',
             dimension: 0
-        }
+        } as Unit
     },
     //convert between unit bases
     bases: [
@@ -180,8 +189,8 @@ const cvs = {
     ]
 }
 
-function addUnit(name,base,ratio,type) {
-    cvs.units[name] = {
+function addUnit(name:string,base:string,ratio:number,type:UnitType) {
+    cvs.units[name] = ({
         name:name,
         base:base,
         ratio:ratio,
@@ -193,7 +202,7 @@ function addUnit(name,base,ratio,type) {
         toString: function() {
             return this.name + "^"+this.dimension;
         }
-    }
+    } as Unit)
 }
 addUnit('none','none',1,'none');
 addUnit('meter','meter',1,'length');
@@ -308,15 +317,15 @@ const UNITS = {
 };
 
 
-export function is_valid_unit(name) {
+export function is_valid_unit(name:string):boolean {
     name = UNITS.getCanonicalName(name)
     return (name !== null)
 }
-export function to_canonical_unit(b) {
+export function to_canonical_unit(b):Unit {
     return UNITS.getCanonicalName(b)
 }
 
-export function get_proper_unit(b) {
+export function get_proper_unit(b):Unit {
     let name = UNITS.getCanonicalName(b)
     console.log("proper name is",name)
     let unit = UNITS.lookupUnit(name)
@@ -324,8 +333,13 @@ export function get_proper_unit(b) {
     return unit
 }
 
+type UnitConversion = {
+    from: Unit,
+    ratio:number,
+    to:Unit
+}
 
-export function find_conversion(a,b) {
+export function find_conversion(a,b):UnitConversion {
     // console.log("finding a conversion from",a,'to',b)
     let a_unit = UNITS.lookupUnit(a.unit)
     let b_unit = UNITS.lookupUnit(b.unit)
@@ -399,5 +413,5 @@ export function convert_unit(a_val,a_unit, b_unit) {
         }
         throw new Error(`no conversion found for ${a_unit} to ${b_unit}. bases ${a_base} <> ${b_base}`)
     }
-    return a_val
+    // return a_val
 }

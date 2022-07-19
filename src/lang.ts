@@ -27,7 +27,6 @@ import {drop, get_field, join, length, map, range, reverse, select, sort, sum, t
 import {chart} from './chart.js'
 import {dataset, stockhistory} from './dataset.js'
 
-import {FilamentFunctionWithScope, Parser, REQUIRED} from './parser.js'
 import {scalar, Scope} from './ast.js'
 import {plot} from './plot.js'
 import {load_image, make_image, map_image} from './image.js'
@@ -43,6 +42,8 @@ import {
 } from './turtle.js'
 import {histogram} from './histogram.js'
 import {timeline} from './timeline.js'
+import {FilamentFunctionWithScope, REQUIRED} from './base.js'
+import {Parser} from './parser.js'
 
 
 

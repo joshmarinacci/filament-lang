@@ -1,7 +1,8 @@
 import {promises as fs} from 'fs'
-import {Parser, strip_under} from '../src/parser.js'
-import {make_standard_scope} from '../src/lang.js'
+import {Parser} from '../src/parser.ts'
+import {make_standard_scope} from '../src/lang.ts'
 import filament_grammar from '../src/filament.ohm.js'
+import {strip_under} from '../src/util.ts'
 
 export async function highlight_code() {
 

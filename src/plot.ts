@@ -1,8 +1,10 @@
-import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
-import {CanvasResult, is_string, scalar, string, unpack} from './ast.js'
+import {CanvasResult, scalar} from './ast.js'
 import {apply_fun} from './util.js'
+import {FilamentFunctionWithScope} from "./base.js";
 
 class Point {
+    readonly x:number
+    readonly y:number
     constructor(cx, cy) {
         this.x = cx
         this.y = cy
@@ -10,6 +12,14 @@ class Point {
 }
 
 class Rect {
+    readonly x:number
+    readonly y:number
+    readonly w:number
+    readonly h:number
+    readonly x2:number
+    readonly y2:number
+    readonly cx:number
+    readonly cy:number
     constructor(x,y,w,h) {
         this.x = x
         this.y = y
@@ -24,12 +34,12 @@ class Rect {
         return new Point(this.cx,this.cy)
     }
 }
-function calc_bounds(canvas) {
+function calc_bounds(canvas:HTMLCanvasElement) {
     return new Rect(0,0,canvas.width,canvas.height)
 }
 
-function axes(ctx, b, zoom, origin) {
-    zoom = zoom
+function axes(ctx:CanvasRenderingContext2D, b:Rect, zoom, origin) {
+    // zoom = zoom
     ctx.save()
     ctx.strokeStyle = '#cccccc'
     ctx.translate(b.cx,b.cy)
@@ -64,12 +74,12 @@ function axes(ctx, b, zoom, origin) {
 
 }
 
-function background(ctx, bounds, zoom, origin) {
+function background(ctx:CanvasRenderingContext2D, bounds:Rect, zoom, origin) {
     ctx.fillStyle = '#f0f0f0'
     ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h)
 }
 
-function draw_plot(ctx, b, zoom, origin, vals) {
+function draw_plot(ctx:CanvasRenderingContext2D, b:Rect, zoom, origin, vals) {
     ctx.save()
     ctx.translate(b.cx,b.cy)
     ctx.scale(zoom.value,-zoom.value)
@@ -81,7 +91,7 @@ function draw_plot(ctx, b, zoom, origin, vals) {
     ctx.restore()
 }
 
-async function draw_y_to_x(scope, ctx, b, zoom, origin, xfun,min,max) {
+async function draw_y_to_x(scope, ctx:CanvasRenderingContext2D, b:Rect, zoom:number, origin, xfun,min,max) {
     let vals = []
     for( let i=min.value; i<max.value; i+=0.1) {
         let y = scalar(i)
@@ -92,7 +102,7 @@ async function draw_y_to_x(scope, ctx, b, zoom, origin, xfun,min,max) {
     return vals
 }
 
-async function draw_x_to_y(scope, ctx, b, zoom, origin, yfun,min,max) {
+async function draw_x_to_y(scope, ctx:CanvasRenderingContext2D, b:Rect, zoom:number, origin, yfun,min,max) {
     let vals = []
     for( let i=min.value; i<max.value; i+=0.1) {
         let x = scalar(i)
@@ -103,7 +113,7 @@ async function draw_x_to_y(scope, ctx, b, zoom, origin, yfun,min,max) {
     return vals
 }
 
-async function draw_t_to_xy(scope, ctx, b, zoom, origin, xfun, yfun,min,max) {
+async function draw_t_to_xy(scope, ctx:CanvasRenderingContext2D, b:Rect, zoom:number, origin, xfun, yfun,min,max) {
     let vals = []
     for (let i = min.value; i < max.value; i += 0.1) {
         let t = scalar(i)

@@ -1,5 +1,5 @@
 import {all, b, l, s, setup} from "./common.js"
-import {list, string} from '../src/ast.js'
+import {list, string} from '../build/ast.js'
 
 await setup()
 console.log("done with setup")

@@ -1,5 +1,4 @@
-import {FilamentFunction, REQUIRED} from './parser.js'
-import {CanvasResult, is_string, string, unpack} from './ast.js'
+import {ASTNode, CanvasResult, FTable, is_string, string, unpack} from './ast.js'
 import {
     Bounds,
     clear, COLORS,
@@ -9,6 +8,7 @@ import {
     min,
     STYLE
 } from './graphics.js'
+import {FilamentFunction, REQUIRED} from "./base.js";
 
 function draw_legend(c, b, m) {
     c.font = STYLE.FONT
@@ -60,9 +60,29 @@ function draw_scatter(c, b, m) {
     c.stroke()
 }
 
+type Getter = {
+    get(d:any, i:number):ASTNode
+    values?:number[]
+    max?:number,
+    min?:number,
+}
+type Metrics = {
+    x:string,
+    x_label:string,
+    y:string
+    y_label:string
+    count:number
+    size:number
+    name:string
+    data:FTable
+    x_axis?:Getter
+    y_axis?:Getter
+    size_axis?:Getter
+    name_axis?:Getter
+}
 function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
     if(!x) x = 'index'
-    let m = {
+    let m:Metrics = {
         data:data,
         x:x,
         x_label:x_label,
@@ -75,7 +95,7 @@ function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
     if(x) {
         m.x_axis = {
             get: (d, i) => {
-                if (m.x === 'index') return i + ""
+                if (m.x === 'index') return string(i)
                 return m.data._get_field_from(m.x, d, i)
             },
         }
@@ -86,7 +106,7 @@ function calc_data_metrics(data, x, x_label, y, y_label, size, name) {
 
     m.y_axis = {
         get:(d,i)=>{
-            if(typeof m.y === 'function') return m.y(d,i)
+            if(typeof m.y === 'function') return (m.y as Function)(d,i)
             if(is_string(m.y)) return m.data._get_field_from(m.y,d,i)
             return d
         },
@@ -183,7 +203,7 @@ export const chart = new FilamentFunction('chart',
     })
 
 
-function draw_bars(ctx, bounds, m) {
+function draw_bars(ctx:CanvasRenderingContext2D, bounds:Bounds, m) {
     let bar_inset = 5
     const bar_width = bounds.w/m.count
     let y_scale = (bounds.h)/m.y_axis.max
@@ -199,7 +219,7 @@ function draw_bars(ctx, bounds, m) {
     })
 }
 
-function draw_xaxis(c, b, m) {
+function draw_xaxis(c:CanvasRenderingContext2D, b:Bounds, m) {
     const bar_width = b.w/m.count
 
 
@@ -230,7 +250,7 @@ function draw_xaxis(c, b, m) {
     })
 }
 
-function draw_yaxis(c, b, m) {
+function draw_yaxis(c:CanvasRenderingContext2D, b:Bounds, m) {
     let ticks = m.y_axis.max - 0
     let tick_gap = b.h/ticks
     while(tick_gap < 20) {

@@ -1,10 +1,10 @@
 import {promises as fs, createWriteStream, mkdir as real_mkdir} from 'fs'
 import {default as path} from 'path'
 import {setup} from './common.js'
-import {eval_code} from '../src/index.js'
+import {eval_code} from '../build/index.js'
 import {default as PImage} from 'pureimage'
-import {Scope} from '../src/ast.js'
-import {make_standard_scope} from '../src/lang.js'
+import {Scope} from '../build/ast.js'
+import {make_standard_scope} from '../build/lang.js'
 import {
     turtle_done,
     turtle_forward, turtle_left,
@@ -12,8 +12,7 @@ import {
     turtle_penup,
     turtle_right,
     turtle_start
-} from '../src/turtle.js'
-import {FilamentFunctionWithScope, REQUIRED} from '../src/parser.js'
+} from '../build/turtle.js'
 import {mkdir} from '../tools/util.js'
 
 await setup()

@@ -1,8 +1,10 @@
 import {unpack} from './ast.js'
 
 export const COLORS = ['red','green','blue','yellow','magenta','cyan']
+const font_size = 20
 export const STYLE = {
-    FONT_SIZE:20,
+    FONT_SIZE:font_size,
+    FONT:`${font_size}px sans-serif`,
     FONT_COLOR: 'black',
     X_AXIS: {
         TICK_LENGTH:10,
@@ -18,9 +20,14 @@ export const STYLE = {
         FILL_COLOR: '#cccccc'
     }
 }
-STYLE.FONT = `${STYLE.FONT_SIZE}px sans-serif`
 
 export class Bounds {
+    readonly x: number
+    readonly y: number
+    readonly w: number
+    readonly h: number
+    readonly x2:number
+    readonly y2:number
     constructor(x, y, w, h) {
         this.x = x
         this.y = y

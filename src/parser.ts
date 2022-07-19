@@ -4,21 +4,21 @@ import {
     boolean,
     call,
     fundef,
-    ident, ifexp,
-    indexed, IndexRef, lambda,
+    ident,
+    ifexp,
+    indexed,
+    IndexRef,
+    lambda,
     list,
     named,
     pipeline_left,
     pipeline_right,
-    scalar,
+    scalar, Scope,
     string
 } from './ast.js'
 import {is_valid_unit, to_canonical_unit} from './units.js'
-import {match_args_to_params} from './util.js'
+import {strip_under} from './util.js'
 
-export const REQUIRED = Symbol('REQUIRED')
-
-export const strip_under = s => s.replaceAll("_", "")
 
 function do_bin_op(op, a, c) {
     if (BINOPS[op]) return call(BINOPS[op], [indexed(a), indexed(c)])
@@ -31,13 +31,16 @@ function do_un_op(op,val) {
 
 
 export class Parser {
-    constructor(scope, grammar_source) {
-        this.scope = scope
+    private grammar_source: string;
+    private grammar: ohm.Grammar;
+    private semantics: ohm.Semantics;
+    constructor(scope:Scope, grammar_source:string) {
+        // this.scope = scope
         this.grammar_source = grammar_source
-        this.init(this.scope)
+        this.init()
     }
 
-    init(scope) {
+    init() {
         this.grammar = ohm.grammar(this.grammar_source)
         this.semantics = this.grammar.createSemantics()
         this.semantics.addOperation('ast', {
@@ -106,14 +109,14 @@ export class Parser {
                 return ""+v.value
             },
             MulExp_mul: (v1, op, v2) => {
-                op = op.ast()
-                if(op === '*') op = "×"
-                return `${v1.unicode()} ${op} ${v2.unicode()}`
+                let sop = op.ast()
+                if(sop === '*') sop = "×"
+                return `${v1.unicode()} ${sop} ${v2.unicode()}`
             },
             BoolExp_bool: (v1, op, v2) => {
-                op = op.unicode()
-                if(op === '<>') op = "≠"
-                return `${v1.unicode()} ${op} ${v2.unicode()}`
+                let sop = op.unicode()
+                if(sop === '<>') sop = "≠"
+                return `${v1.unicode()} ${sop} ${v2.unicode()}`
             },
             PipeOp_right: (first, _, next) => `${first.unicode()} → ${next.unicode()}`
         })
@@ -129,49 +132,6 @@ export class Parser {
 
 }
 
-export class FilamentFunction {
-    constructor(name, params, fun, opts) {
-        this.type = 'native-function'
-        this.name = strip_under(name.toLowerCase())
-        this.params = params
-        this.fun = fun
-        this.summary = ""
-        if(opts) {
-            if(opts.summary) this.summary = opts.summary
-        }
-    }
-
-    log() {
-        let args = Array.prototype.slice.call(arguments)
-        console.log('###', this.name.toUpperCase(), ...args)
-    }
-
-    apply_function(args) {
-        let params = match_args_to_params(args,this.params,this.name)
-        return this.apply_with_parameters(params)
-    }
-
-    async apply_with_parameters(params) {
-        let ps = []
-        for (let p of params) {
-            if (p && p.type === 'callsite') {
-                ps.push(await p.apply())
-            } else {
-                ps.push(await p)
-            }
-        }
-        return await this.fun.apply(this, ps)
-    }
-    do_apply(scope,params) {
-        return this.fun.apply(this,params)
-    }
-}
-
-export class FilamentFunctionWithScope extends FilamentFunction {
-    do_apply(scope,params) {
-        return this.fun.apply(this,[scope].concat(params.slice()))
-    }
-}
 
 function parseBoolean(sourceString) {
     if (sourceString.toLowerCase() === 'true') return true

@@ -1,21 +1,23 @@
-import {FilamentFunction, strip_under} from './parser.js'
 import {isDate} from "date-fns"
 import {to_canonical_unit} from './units.js'
-import {match_args_to_params} from './util.js'
+import {match_args_to_params, strip_under} from './util.js'
+import {FilamentFunction} from "./base.js";
 
-class ASTNode {
-    constructor() {
+export abstract class ASTNode {
+    type:string
+    log(...args) {
+        console.log(`## AST Node ${this.type} ## `,...args)
     }
-    log() {
-        console.log(`## AST Node ${this.type} ## `,...arguments)
-    }
-    async evalFilament() {
-        throw new Error(`ASTNode ${this.type}  hasn't implemented evalFilament`)
-    }
+    abstract evalFilament(scope?:any, prepend?:any):Promise<any>
+    abstract evalJS(scope?:any):any
+    abstract toString():string
 }
 
 export class Scope {
-    constructor(id,parent) {
+    private id: string;
+    private parent: Scope|null;
+    private funs: {};
+    constructor(id,parent?) {
         this.funs= {}
         this.id = id
         this.parent = parent
@@ -53,13 +55,19 @@ export class Scope {
 }
 
 class FScalar extends ASTNode {
-    constructor(value,unit,dim=1) {
+    private unit: any;
+    readonly value: number;
+    private dim: number;
+    constructor(value:number|FScalar,unit,dim=1) {
         super()
         this.type = 'scalar'
-        this.value = value
         this.unit = unit
         this.dim = dim
-        if(value instanceof FScalar) this.value = this.value.value
+        if(value instanceof FScalar) {
+            this.value = value.value
+        } else {
+            this.value = value
+        }
         if(!unit) this.unit = null
         if(Array.isArray(unit)) {
             if (unit.length === 0) this.unit = null
@@ -85,9 +93,10 @@ class FScalar extends ASTNode {
         return this
     }
 }
-export const scalar = (n,u,d) => new FScalar(n,u,d)
+export const scalar = (n,u?,d?) => new FScalar(n,u,d)
 
 class FUnit extends ASTNode {
+    private unit: any;
     constructor(u) {
         super();
         this.type = 'unit'
@@ -96,10 +105,19 @@ class FUnit extends ASTNode {
     async evalFilament() {
         return this
     }
+
+    evalJS(): any {
+        return this
+    }
+
+    toString(): string {
+        return this.unit.toString()
+    }
 }
 export const unit = (u) => new FUnit(u)
 
 class FString extends ASTNode {
+    private value: any;
     constructor(value) {
         super()
         this.type = 'string'
@@ -121,6 +139,7 @@ class FString extends ASTNode {
 export const string = n => new FString(n)
 
 class FBoolean extends ASTNode {
+    private value: any;
     constructor(value) {
         super()
         this.type = 'boolean'
@@ -139,6 +158,7 @@ class FBoolean extends ASTNode {
 export const boolean = v => new FBoolean(v)
 
 class FDate extends ASTNode {
+    private value: Date;
     constructor(year,month,day) {
         super()
         this.type = 'date'
@@ -157,6 +177,7 @@ class FDate extends ASTNode {
 export const date = (y,m,d) => new FDate(y,m,d)
 
 class FTime extends ASTNode {
+    private value: any;
     constructor(hour,min,sec) {
         super()
         this.type = 'time'
@@ -176,9 +197,10 @@ class FTime extends ASTNode {
         return this
     }
 }
-export const time = (hr,min,sec) => new FTime(hr,min,sec)
+export const time = (hr,min?,sec?) => new FTime(hr,min,sec)
 
-class FList extends ASTNode {
+export class FList extends ASTNode {
+    readonly value: any[];
     constructor(arr) {
         super()
         this.type = 'list'
@@ -242,6 +264,8 @@ class FList extends ASTNode {
 export const list = arr => new FList(arr)
 
 export class FTable extends ASTNode {
+    private schema: any;
+    private value: any;
     constructor(obj) {
         super()
         this.type = 'table'
@@ -250,7 +274,7 @@ export class FTable extends ASTNode {
         this.value = obj.data.items
         Object.entries(this.schema.properties).forEach(([key,val])=>{
             // this.log("schema prop",key,val)
-            if(val.type === 'number') {
+            if((val as ASTNode).type === 'number') {
                 // this.log("validating numbers in data")
                 this.value.forEach(it => {
                     if(typeof it[key] === 'string') it[key] = parseInt(it[key])
@@ -277,9 +301,18 @@ export class FTable extends ASTNode {
     _slice(a,b) {
         return new FTable({data:{schema:this.schema, items:this.value.slice(a,b)}})
     }
+
+    evalJS(scope?: any): any {
+        throw new Error("bad")
+    }
+
+    toString(): string {
+        throw new Error("bad")
+    }
 }
 
 export class FObject extends ASTNode {
+    private value: any;
     constructor(obj) {
         super();
         this.type = 'object'
@@ -288,9 +321,17 @@ export class FObject extends ASTNode {
     async evalFilament() {
         return this
     }
+    evalJS() {
+        throw new Error("Method not implemented.")
+    }
+    toString(): string {
+        throw new Error("Method not implemented.")
+    }
 }
 
 class FCall extends ASTNode {
+    private name: string
+    private args:any[]
     constructor(name,args) {
         super()
         this.type = 'call'
@@ -328,6 +369,9 @@ class FCall extends ASTNode {
 export const call = (name,args) => new FCall(name,args)
 
 class FunctionDefintion extends ASTNode {
+    private name: string;
+    private args: any[];
+    private block: any;
     constructor(name, args, block) {
         super()
         this.type = 'function_definition'
@@ -349,10 +393,15 @@ class FunctionDefintion extends ASTNode {
         }))
         return this
     }
+
+    evalJS(scope?: any): any {
+        throw new Error("bad")
+    }
 }
 export const fundef = (name,args,block) => new FunctionDefintion(name,args,block)
 
 class FIndexedArg extends ASTNode {
+    private value: any;
     constructor(value) {
         super()
         this.type = 'indexed'
@@ -365,11 +414,16 @@ class FIndexedArg extends ASTNode {
         this.log("evaluating value",this.value)
         return this.value.evalFilament(scope)
     }
+
+    evalJS(scope?: any): any {
+    }
 }
 export const indexed = v => new FIndexedArg(v)
 
 class FNamedArg extends ASTNode {
-    constructor(name,value) {
+    private name: string;
+    private value: any;
+    constructor(name:string,value:any) {
         super()
         this.type = 'named'
         this.name = name
@@ -381,10 +435,17 @@ class FNamedArg extends ASTNode {
     async evalFilament(scope) {
         this.log("evaluating",this.value)
     }
+
+    evalJS(scope?: any): any {
+        throw new Error("bad")
+    }
 }
 export const named   = (n,v) => new FNamedArg(n,v)
 
 class Pipeline extends ASTNode {
+    direction: 'left' | 'right'
+    private first: any;
+    private next: any;
     constructor(dir,first,next) {
         super()
         this.type = 'pipeline'
@@ -417,6 +478,8 @@ export const pipeline_right = (a,b) => new Pipeline('right',a,b)
 export const pipeline_left = (a,b) => new Pipeline('left',b,a)
 
 class Identifier extends ASTNode {
+    private name: string;
+    private _source: any;
     constructor(name, source) {
         super()
         this.type = 'identifier'
@@ -435,15 +498,23 @@ class Identifier extends ASTNode {
             let err = new Error()
             err.name = "my name"
             err.message = "error at" + JSON.stringify(this._source)
+            // @ts-ignore
             err.source = this._source
             throw err
         }
+    }
+
+    evalJS(scope?: any): any {
+        throw new Error("bad")
     }
 }
 export const ident = (n,s) => new Identifier(n,s)
 
 class IfExp extends ASTNode {
-    constructor(test,then_block,else_block) {
+    private test: any;
+    private then_block: any;
+    private else_block: any;
+    constructor(test,then_block,else_block?) {
         super();
         this.type = 'if'
         this.test = test
@@ -458,10 +529,20 @@ class IfExp extends ASTNode {
             return await this.else_block.evalFilament(scope)
         }
     }
+
+    evalJS(scope?: any): any {
+        throw new Error("bad")
+    }
+
+    toString(): string {
+        throw new Error("bad")
+    }
 }
-export const ifexp = (cond,then_block,else_block) => new IfExp(cond,then_block,else_block)
+export const ifexp = (cond,then_block,else_block?) => new IfExp(cond,then_block,else_block)
 
 class LambdaExp extends ASTNode {
+    private block: any;
+    private params: any;
     constructor(params, block) {
         super();
         this.type = 'lambda'
@@ -469,8 +550,9 @@ class LambdaExp extends ASTNode {
         this.block = block
     }
 
-    toString() {
-        return `LAMBDA.toString() not implemented`
+    toString():string {
+        throw new Error("bad")
+        // return `LAMBDA.toString() not implemented`
     }
 
     async evalFilament(scope) {
@@ -488,9 +570,14 @@ class LambdaExp extends ASTNode {
         return await this.block.evalFilament(scope2)
     }
 
+    evalJS(scope?: any): any {
+        throw new Error("bad")
+    }
+
 }
 export const lambda = (args,block) => new LambdaExp(args,block)
 class FBlock extends ASTNode{
+    private statements: any[];
     constructor(sts) {
         super()
         this.type = 'block'
@@ -515,27 +602,36 @@ class FBlock extends ASTNode{
 export const block = (sts) => new FBlock(sts)
 
 export class IndexRef extends ASTNode {
+    private exp: any;
+    private index: any;
     constructor(exp,index) {
         super();
         this.exp = exp
         this.index = index
     }
-
     async evalFilament(scope) {
         let obj = await this.exp.evalFilament(scope)
         let index = await this.index.evalFilament(scope)
         return pack(obj._get_at_index(unpack(index)))
     }
+    evalJS(scope?: any) {
+        throw new Error("Method not implemented.");
+    }
+    toString(): string {
+        throw new Error("Method not implemented.");
+    }
 }
 
 export class CanvasResult{
+    private type: string;
+    private cb: any;
     constructor(cb) {
         this.type = 'canvas-result'
         this.cb = cb
     }
 }
 
-export function pack(val) {
+export function pack(val:any):ASTNode {
     if(typeof val === 'number') return scalar(val)
     if(typeof val === 'string') return string(val)
     if(typeof val === 'boolean') return boolean(val)
@@ -550,8 +646,8 @@ export function unpack(v) {
     return v
 }
 export const is_error_result = (result) => result instanceof Error
-export const is_scalar = (a) => a&&a.type === 'scalar'
-export const is_boolean = (a) => a&&a.type === 'boolean'
+export const is_scalar = (a:ASTNode) => a&&a.type === 'scalar'
+export const is_boolean = (a:ASTNode) => a&&a.type === 'boolean'
 export const is_string = (a) => a&&a.type === 'string'
 export const is_list = (b) => b&&b.type === 'list'
 export const is_canvas_result = (b) => b &&b.type === 'canvas-result'

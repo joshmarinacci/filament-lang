@@ -1,4 +1,3 @@
-import {FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {CanvasResult, is_scalar, scalar, string, unpack} from './ast.js'
 import {
     Bounds,
@@ -9,6 +8,7 @@ import {
     max,
     STYLE
 } from './graphics.js'
+import {FilamentFunctionWithScope, REQUIRED} from "./base.js";
 
 function draw_y_axis(c,b,max) {
     //y axis line
@@ -71,7 +71,7 @@ export const histogram = new FilamentFunctionWithScope('histogram',{
         //draw bars
         entries.forEach((pair,i) => {
             const [name,count] = pair
-            let h = hh*count
+            let h = hh*(count as number)
             ctx.fillStyle = COLORS[i%COLORS.length]
             ctx.fillRect(bounds.x+i*w+gap,bounds.y2-h,w-gap*2,h)
         })

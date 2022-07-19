@@ -1,6 +1,5 @@
-import {setup_parser} from "../src/index.js"
 import {all, s, l, b, setup} from "./common.js"
-import {list} from "../src/ast.js"
+import {list} from "../build/ast.js"
 
 await setup()
 // console.log("done with setup")

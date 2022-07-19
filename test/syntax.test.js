@@ -1,8 +1,8 @@
 import {all, b, l, s, setup} from "./common.js"
-import {boolean, list, scalar, string} from '../src/ast.js'
-import {make_standard_scope} from '../src/lang.js'
-import {FilamentFunction} from '../src/parser.js'
-import {eval_code} from '../src/index.js'
+import {boolean, list, scalar, string} from '../build/ast.js'
+import {make_standard_scope} from '../build/lang.js'
+import {FilamentFunction} from '../build/base.js'
+import {eval_code} from '../build/index.js'
 import assert from 'assert'
 
 await setup()

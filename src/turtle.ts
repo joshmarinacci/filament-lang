@@ -11,10 +11,14 @@
  */
 
 
-import {FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {CanvasResult, list, scalar} from './ast.js'
+import {FilamentFunctionWithScope, REQUIRED} from "./base.js";
 
 class TurtleState {
+    x:number
+    y:number
+    heading:number
+    commands:any[]
     constructor() {
         this.x = 0
         this.y = 0

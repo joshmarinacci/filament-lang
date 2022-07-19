@@ -1,8 +1,8 @@
-import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from './parser.js'
 import {is_list, list, pack, scalar, unpack} from './ast.js'
 import {apply_fun, resolve_in_order} from './util.js'
 import {is_date} from './math.js'
 import {getYear} from 'date-fns'
+import {FilamentFunction, FilamentFunctionWithScope, REQUIRED} from "./base.js";
 
 /**
  * @name (range)

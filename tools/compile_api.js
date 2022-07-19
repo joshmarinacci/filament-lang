@@ -4,9 +4,9 @@ import {parse_api_docs} from './api_parser.js'
 import {group_modules} from './api_generator.js'
 
 const SRC = [
-    'src/chart.js',
-    'src/math.js',
-    'src/lists.js',
+    'src/chart.ts',
+    'src/math.ts',
+    'src/lists.ts',
 ]
 
 

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": ["dom"],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "outDir": "build",
+    "checkJs": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true
+  },
+  "include": [
+    "src"
+  ]
+}

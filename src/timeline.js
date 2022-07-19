@@ -1,4 +1,3 @@
-import {FilamentFunction, REQUIRED} from './parser.js'
 import {CanvasResult, is_string, unpack} from './ast.js'
 import {
     compareAsc,
@@ -7,6 +6,8 @@ import {
     format as formatDate,
     parse as parseDate
 } from 'date-fns'
+import {FilamentFunction, REQUIRED} from './base.js'
+import {clear} from './graphics.js'
 
 export const timeline = new FilamentFunction('timeline',
     {
@@ -41,7 +42,7 @@ export const timeline = new FilamentFunction('timeline',
             let pairs = data._map((datum,i) => {
                 return {
                     name:data._get_field_from(name,datum,i),
-                    date:get_date(datum,i)
+                    date:get_date(datum)
                 }
             })
 

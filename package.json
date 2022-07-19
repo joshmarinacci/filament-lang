@@ -1,9 +1,9 @@
 {
   "name": "filament-lang",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "filament language",
   "browser": "dist/filament.js",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "engines": {
     "node": ">=15.0.0"
   },
@@ -15,18 +15,20 @@
     "test-umd": "cd test-umd && rm -f dist && ln -s ../dist && ../node_modules/.bin/http-server -c-1 -o",
     "test": "npm run compile-ohm && mocha -t 200000",
     "docs": "npm run compile-ohm && node tools/alldocs",
-    "exec": "node tools/exec.js"
+    "exec": "node tools/exec.js",
+    "compile": "tsc"
   },
   "author": "joshua@marinacci.org",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "date-fns": "^2.19.0",
-    "mocha": "^8.3.1",
-    "node-fetch": "^2.6.1",
-    "ohm-js": "^15.5.0"
+    "date-fns": "^2.19.0"
   },
   "devDependencies": {
+    "mocha": "^8.3.1",
+    "node-fetch": "^2.6.1",
+    "ohm-js": "^15.5.0",
+    "typescript": "^4.7.4",
     "@rollup/plugin-alias": "^3.1.2",
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.1.0",

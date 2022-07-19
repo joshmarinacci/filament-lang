@@ -1,7 +1,6 @@
-import {promises as fs} from "fs"
 import assert from "assert"
-import {eval_code, setup_parser} from '../src/index.js'
-import {boolean, list, scalar} from '../src/ast.js'
+import {eval_code, setup_parser} from '../build/index.js'
+import {boolean, list, scalar} from '../build/ast.js'
 
 
 export async function setup() {
