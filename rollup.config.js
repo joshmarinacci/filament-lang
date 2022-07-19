@@ -2,13 +2,14 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
 import json from "@rollup/plugin-json";
+import typescript from "@rollup/plugin-typescript"
 
 
 // https://rollupjs.org/guide/en/#configuration-files
 export default {
   input: 'src/index.ts',
   output: {
-    file: 'dist/filament.js',
+    dir:'dist',
     format: 'umd',
     name: 'Filament'
   },
@@ -27,6 +28,7 @@ export default {
       browser: true,  // Default: false
     }),
     commonjs(),
-      json()
+      json(),
+      typescript()
   ]
 };
