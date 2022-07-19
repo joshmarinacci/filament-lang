@@ -24,17 +24,24 @@ export async function eval_code(code, custom_scope) {
 
 export {
     is_scalar,
+    scalar,
     is_boolean,
+    boolean,
     is_canvas_result,
     is_error_result,
     is_list,
     is_string,
-    scalar,
     string,
     list,
     Scope,
+    date,
+    time,
+    is_image_result
 } from "./ast"
 export {
     make_standard_scope,
 } from "./lang"
+export {
+    make_image, map_image, load_image
+} from "./image"
 

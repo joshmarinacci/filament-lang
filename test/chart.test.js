@@ -4,7 +4,7 @@ import {default as PImage} from 'pureimage'
 import {createWriteStream} from 'fs'
 import path from 'path'
 import {setup} from './common.js'
-import {make_standard_scope} from '../test-umd/dist/index.js'
+import {make_standard_scope} from '../dist/index.js'
 
 await setup()
 

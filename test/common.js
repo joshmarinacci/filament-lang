@@ -1,5 +1,5 @@
 import assert from "assert"
-import {eval_code, setup_parser, scalar, list} from '../dist/index.js'
+import {eval_code, setup_parser, scalar, list, boolean} from '../dist/index.js'
 
 
 
