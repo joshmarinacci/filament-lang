@@ -1,4 +1,3 @@
-import {l} from './util.js'
 import ohm from 'ohm-js'
 
 let parser = null

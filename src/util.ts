@@ -1,5 +1,4 @@
 import {REQUIRED} from "./base";
-// import {mkdir as real_mkdir} from "fs"
 export function resolve_in_order(proms) {
     let rets = []
     let pp = Promise.resolve()
@@ -11,18 +10,6 @@ export function resolve_in_order(proms) {
     })
     return pp.then(()=>rets)
 }
-
-// async function mkdir(dir) {
-//     return new Promise((res,rej)=>{
-//         real_mkdir(dir,(err)=>{
-//             if(err) {
-//                 // console.log(err)//return rej(err)
-//             }
-//             res("void")
-//         })
-//     })
-// }
-
 export function match_args_to_params(args,old_params,name) {
     return Object.entries(old_params).map(([key, value]) => {
         let n1 = args.findIndex(a => a.type === 'named' && a.name === key)
@@ -44,8 +31,6 @@ export function match_args_to_params(args,old_params,name) {
         }
     })
 }
-
-
 export async function apply_fun(scope,obj, args) {
     if(obj.type === 'lambda') {
         return obj.apply_function(scope,obj,args)
@@ -53,5 +38,4 @@ export async function apply_fun(scope,obj, args) {
         return obj.fun.apply(obj, args)
     }
 }
-
 export const strip_under = s => s.replaceAll("_", "")

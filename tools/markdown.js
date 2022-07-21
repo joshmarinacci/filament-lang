@@ -1,5 +1,4 @@
 import ohm from 'ohm-js'
-import {l} from './util.js'
 
 const H1    = (content) => ({type:'H1', content})
 const H2    = (content) => ({type:'H2',content})

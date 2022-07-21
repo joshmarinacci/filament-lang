@@ -14,7 +14,7 @@
     "clean": "rm -rf dist/ build/ output/ node_modules/ src/filament.ohm.js filament-lang-*.tgz",
     "compile-ohm": "tools/compile_ohm.js",
     "compile-api": "node tools/compile_api.js",
-    "build-umd": "npm run compile-ohm && npm run compile-api && mkdir -p dist/",
+    "dist": "npm run compile-ohm && npm run compile-api && npm run build",
     "build": "parcel build",
     "test-umd": "cd test-umd && rm -f dist && ln -s ../dist && ../node_modules/.bin/http-server -c-1 -o",
     "test": "npm run compile-ohm && mocha -t 200000",
@@ -28,6 +28,8 @@
     "date-fns": "^2.19.0",
     "node-fetch": "^2.6.1",
     "ohm-js": "^15.5.0",
+    "josh_util": "^0.0.3",
+    "josh_node_util": "^0.0.1",
     "pureimage": "^0.2.7"
   },
   "devDependencies": {

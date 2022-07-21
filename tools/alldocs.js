@@ -1,9 +1,11 @@
 import {convert_file} from './builddocs.js'
 import {promises as fs} from 'fs'
 import path from 'path'
-import {copy, for_each, init_pureimage, l, mkdir} from './util.js'
+import {copy, for_each, init_pureimage} from './util.js'
 import {parse_api_docs} from './api_parser.js'
 import {generate_api_html, group_modules} from './api_generator.js'
+import {mkdir} from 'josh_node_util'
+import {make_logger} from 'josh_util'
 
 
 const OUTDIR = 'output'
@@ -26,9 +28,10 @@ async function setup() {
     await copy("tools/filament-style.js", path.join(OUTDIR, 'filament-style.js'))
 }
 
+const log = make_logger()
 async function make_prose_docs() {
     await for_each(FILES,async (file) => {
-        l("processing",file)
+        log.info("processing",file)
         let outfile = path.join(path.basename(file,'.md')) + '.html'
         await convert_file(file, OUTDIR, outfile)
     })

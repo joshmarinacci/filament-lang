@@ -13,15 +13,12 @@
 
 
 import path from 'path'
+import {mkdir} from "josh_node_util"
 import {createWriteStream, promises as fs} from 'fs'
-import {Parser} from '../src/parser.ts'
-import {is_canvas_result, is_image_result} from "../src/ast.ts"
-import {make_standard_scope} from '../src/lang.ts'
+import {is_canvas_result, is_image_result} from "../dist/index.js"
 import {default as PImage} from "pureimage"
-import {l, mkdir} from './util.js'
 import {parse_markdown} from './markdown.js'
 import {eval_filament} from './code_formatter.js'
-import {strip_under} from '../src/util.ts'
 
 
 async function generate_canvas_images(doc, basedir, subdir) {

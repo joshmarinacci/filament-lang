@@ -1,5 +1,5 @@
 import {default as PImage} from 'pureimage'
-import {mkdir as real_mkdir, promises as fs} from 'fs'
+import {promises as fs} from 'fs'
 
 export async function init_pureimage() {
     return new Promise((res,rej)=>{
@@ -11,15 +11,6 @@ export async function init_pureimage() {
         } catch (e) {
             rej(e)
         }
-    })
-}
-
-export async function mkdir(dir) {
-    return new Promise((res,rej)=>{
-        real_mkdir(dir,(err)=>{
-            if(!err)  console.log("made dir",dir)
-            res()
-        })
     })
 }
 
@@ -37,7 +28,3 @@ export async function for_each(files, process_file) {
     }
 }
 
-
-export function l(...args) {
-    console.log(...args)
-}

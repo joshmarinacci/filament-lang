@@ -1,6 +1,6 @@
 import {parse_api_docs} from './api_parser.js'
-import {all, s} from '../test/common.js'
-import {boolean, list} from '../src/ast.ts'
+// import {all, s} from '../test/common.js'
+// import {boolean, list} from '../src/ast.ts'
 
 
 describe('lists',() => {
