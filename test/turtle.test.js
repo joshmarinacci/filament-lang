@@ -3,9 +3,11 @@ import {default as path} from 'path'
 import {setup} from './common.js'
 import {eval_code} from '../dist/index.js'
 import {default as PImage} from 'pureimage'
-import {mkdir} from '../tools/util.js'
 import {make_standard_scope} from '../dist/index.js'
-import {Scope} from '../dist/index.js'
+import {Scope, turtle_start, turtle_pendown, turtle_forward, turtle_right, turtle_left, turtle_penup,
+    turtle_done,
+} from '../dist/index.js'
+import {mkdir} from "josh_node_util"
 
 await setup()
 

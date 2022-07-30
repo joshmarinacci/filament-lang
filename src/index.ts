@@ -45,5 +45,23 @@ export {
     make_image, map_image, load_image
 } from "./image"
 
+export {
+    rect,
+    draw,
+    row,
+    circle,
+    hsl_to_rgb,
+} from "./shape"
+
 export {Parser} from "./parser"
 export {strip_under} from "./util"
+export {
+    turtle_start,
+    turtle_pendown,
+    turtle_forward,
+    turtle_right,
+    turtle_left,
+    turtle_penup,
+    turtle_done,
+    turtle_pencolor
+} from "./turtle"

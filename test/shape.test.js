@@ -1,9 +1,8 @@
-import {mkdir} from '../tools/util.js'
 import {default as PImage} from 'pureimage'
 import {createWriteStream} from 'fs'
 import path from 'path'
 import {setup} from './common.js'
-import {circle, draw, hsl_to_rgb, rect, row,  } from '../dist/index.js'
+import {make_standard_scope, rect, draw, row, circle, hsl_to_rgb } from '../dist/index.js'
 
 await setup()
 
